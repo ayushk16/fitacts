@@ -1,47 +1,29 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
+import axios from 'axios'
+import { useNavigate } from "react-router-dom";
 const initialState = {
-    loading: false,
     error: null,
     data: {}
 }
 
 
-export const createUser = createAsyncThunk('user/signup', ({ firstname, lastname, email, phone, password }) => {
-    return axios({
-        method: "POST",
-        url: `http://localhost:3000/signup`,
-        data: {
-            firstname, lastname, email, phone, password
-        }
-    }).then(res => {
-        return res.data
-    }).catch(err => {
-        return err
-    })
-})
-
 const createUserSlice = createSlice({
     name: 'user',
     initialState,
-    extraReducers: builder => {
-        builder.addCase(createUser.pending, (state, action) => {
-            state.loading = true;
-            state.data = {};
+    reducers: {
+        signup: (state, action) => {
             state.error = null;
-        })
-        builder.addCase(createUser.fulfilled, (state, action) => {
-            state.loading = false;
-            state.data = action.payload.data;
-            state.error = null;
-        })
-        builder.addCase(createUser.rejected, (state, action) => {
-            state.loading = false;
+            state.data = action.payload;
+        },
+        error: (state, action) => {
             state.data = {};
-            state.error = action.payload.status;
-        })
+            state.error = action.payload;
+        }
     }
+
 })
+
+export const { signup, error } = createUserSlice.actions;
 
 export default createUserSlice.reducer;
 

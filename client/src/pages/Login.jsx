@@ -1,36 +1,118 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
+  Button,
   Container,
-  Box,
-  Typography,
+  FormHelperText,
+  FilledInput,
+  FormControl,
   InputLabel,
   Input,
-  FormHelperText,
+  InputAdornment,
+  IconButton,
   Stack,
+  Typography,
 } from '@mui/material';
-import { FormControl } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { login, logout, error } from '../features/user/userSlice.js';
+
 const Login = () => {
+  const [userEmail, setUserEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+
+  const isValidated = () => {
+    if (userEmail !== '') {
+      if (password !== '') {
+        return true;
+      } else {
+        document.getElementById('filled-login-adornment-password').focus();
+        return false;
+      }
+    } else {
+      document.getElementById('email-login').focus();
+      return false;
+    }
+  };
+  const loginUser = () => {
+    const data = { email: userEmail, password: password };
+    console.log('login initiated', data);
+    if (isValidated()) {
+      axios
+        .get(`http://localhost:3000/login`, { params: data })
+        .then((res) => {
+          dispatch(login(res.data));
+        })
+        .then(() => {
+          navigate('/dashboard/timeline');
+        })
+        .catch((err) => {
+          dispatch(error(err));
+        });
+    }
+  };
   return (
     <>
-      <Container sx={{ border: '1px solid black' }}>
-        <Stack sx={{ border: '1px solid red' }}>
+      <Container sx={{ width: '300px' }}>
+        <Stack spacing={3}>
           <Typography component="h1" variant="h3">
-            login
+            Login
           </Typography>
           <FormControl>
-            <InputLabel htmlFor="email">Email address</InputLabel>
-            <Input id="email" aria-describedby="email-helper-text" />
-            <FormHelperText id="email-helper-text">
+            <InputLabel htmlFor="email-login">Email address</InputLabel>
+            <Input
+              id="email-login"
+              aria-describedby="email-login-helper-text"
+              onChange={(e) => {
+                setUserEmail(() => e.target.value);
+              }}
+            />
+            <FormHelperText id="email-login-helper-text">
               enter your email
             </FormHelperText>
           </FormControl>
-          <FormControl>
-            <InputLabel htmlFor="password">Email address</InputLabel>
-            <Input id="password" aria-describedby="password" />
-            <FormHelperText id="password">
-              We'll never share your email.
-            </FormHelperText>
+          <FormControl sx={{ m: 1, width: '25ch' }} variant="filled">
+            <InputLabel htmlFor="filled-login-adornment-password">
+              Password
+            </InputLabel>
+            <FilledInput
+              id="filled-login-adornment-password"
+              type={showPassword ? 'text' : 'password'}
+              onChange={(e) => {
+                setPassword(() => e.target.value);
+              }}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
+            />
           </FormControl>
+          <Button
+            variant="contained"
+            disableElevation
+            onClick={() => loginUser()}
+          >
+            LOGIN
+          </Button>
         </Stack>
       </Container>
     </>

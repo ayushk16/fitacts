@@ -5,7 +5,9 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const loginController = async (req, res, next) => {
-    const { email, password } = req.body;
+    const email = req.query.email;
+    const password = req.query.password
+    console.log(email, password)
     try {
         const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
         if (user.rows.length === 0) {
