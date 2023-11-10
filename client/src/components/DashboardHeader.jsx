@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 import { AppBar, Box, Stack, Toolbar, Typography } from '@mui/material';
 import { AiOutlineHome } from 'react-icons/ai';
+import { removeUserToken } from '../functions/tokenSet';
 
-const Header = () => {
+const DashboardHeader = () => {
   const navigate = useNavigate();
   return (
     <>
@@ -35,23 +36,14 @@ const Header = () => {
           >
             <Typography
               onClick={() => {
+                removeUserToken();
                 navigate('/login');
               }}
               variant="h6"
               noWrap
               component="div"
             >
-              Login
-            </Typography>
-            <Typography
-              onClick={() => {
-                navigate('/signup');
-              }}
-              variant="h6"
-              noWrap
-              component="div"
-            >
-              Signup
+              LogOut
             </Typography>
           </Stack>
           <div className="trelloLogo"></div>
@@ -61,4 +53,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default DashboardHeader;

@@ -16,13 +16,15 @@ import {
   Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { login, logout, error } from '../features/user/userSlice.js';
-
+import { login, logout, errorlogin } from '../features/user/userSlice.js';
+import Header from '../components/Header.jsx';
 const Login = () => {
   const [userEmail, setUserEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const currentUserState = useSelector((state) => state.user);
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -58,12 +60,13 @@ const Login = () => {
           navigate('/dashboard/timeline');
         })
         .catch((err) => {
-          dispatch(error(err));
+          dispatch(errorlogin(err));
         });
     }
   };
   return (
     <>
+      <Header />
       <Container sx={{ width: '300px' }}>
         <Stack spacing={3}>
           <Typography component="h1" variant="h3">
@@ -106,6 +109,19 @@ const Login = () => {
               }
             />
           </FormControl>
+          {currentUserState.error &&
+            ((currentUserState.error ===
+              'Request failed with status code 404' && (
+              <Typography variant="span" component="h4" color="error">
+                enter correct credentials
+              </Typography>
+            )) ||
+              (currentUserState.error ===
+                'Request failed with status code 401' && (
+                <Typography variant="span" component="h4" color="error">
+                  enter correct password
+                </Typography>
+              )))}
           <Button
             variant="contained"
             disableElevation

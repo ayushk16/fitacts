@@ -16,8 +16,8 @@ import {
   Typography,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-
-import { signup, errorsignup } from '../features/user/userSignupSlice';
+import Header from '../components/Header';
+import { signup, errorsignup, cleanUp } from '../features/user/userSignupSlice';
 const Signup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -31,8 +31,7 @@ const Signup = () => {
     passwordAgain: '',
   });
 
-  const state = useSelector((state) => state.userSignup);
-  console.log(state);
+  const currentUserState = useSelector((state) => state.userSignup);
 
   useEffect(() => {
     if (userData.password === userData.passwordAgain) {
@@ -109,7 +108,6 @@ const Signup = () => {
           navigate('/login');
         })
         .catch((err) => {
-          console.log(err);
           dispatch(errorsignup(err));
         });
     }
@@ -124,6 +122,7 @@ const Signup = () => {
   };
   return (
     <>
+      <Header />
       <Container sx={{ width: '300px' }}>
         <Stack spacing={3}>
           <Typography component="h1" variant="h3">
@@ -171,6 +170,14 @@ const Signup = () => {
               }}
             />
           </FormControl>
+          {currentUserState.error &&
+            currentUserState.error ===
+              'Request failed with status code 400' && (
+              <Typography variant="span" component="h4" color="error">
+                email already exists
+              </Typography>
+            )}
+
           <FormControl>
             <InputLabel htmlFor="phone">Phone</InputLabel>
             <Input

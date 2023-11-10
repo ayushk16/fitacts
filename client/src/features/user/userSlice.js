@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { setUserToken } from "../../functions/tokenSet";
 import axios from 'axios'
 
 const initialState = {
@@ -18,13 +19,16 @@ const userSlice = createSlice({
         login: (state, action) => {
             state.error = null
             state.data = action.payload
+            const token = action.payload.data.token.accessToken;
+            const user = action.payload.data.user;
+            setUserToken({ token: token, user: user })
         },
-        error: (state, action) => {
+        errorlogin: (state, action) => {
             state.data = {}
-            state.error = action.payload
+            state.error = action.payload.message;
         }
     },
 })
 
-export const { login, logout, error } = userSlice.actions;
+export const { login, logout, errorlogin } = userSlice.actions;
 export default userSlice.reducer;

@@ -15,15 +15,19 @@ const createUserSlice = createSlice({
             state.error = null;
             state.data = action.payload;
         },
-        error: (state, action) => {
+        errorsignup: (state, action) => {
             state.data = {};
-            state.error = action.payload;
+            state.error = action.payload.message;
+        },
+        cleanUp: (state) => {
+            state.data = {}
+            state.error = null
         }
     }
 
 })
 
-export const { signup, error } = createUserSlice.actions;
+export const { signup, errorsignup, cleanUp } = createUserSlice.actions;
 
 export default createUserSlice.reducer;
 
