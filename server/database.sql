@@ -43,3 +43,6 @@ INSERT INTO "users" ("firstname", "lastname", "email", "phone", "password", "aad
 
 
 update users set favorites = '{73ceafa7-3d81-4ad4-9131-2912bc79155e ,b86adae3-530e-4825-8b27-cd1646baf6e5, b3646eee-799c-487e-b484-d186083344c2}' where email = 'jai@gmail.com';
+
+ALTER TABLE events
+ADD COLUMN timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
