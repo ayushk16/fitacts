@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { AppBar, Box, Stack, Toolbar, Typography } from '@mui/material';
 import { AiOutlineHome } from 'react-icons/ai';
+import { IoFitness } from 'react-icons/io5';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const Header = () => {
             }}
           >
             <Typography variant="h5" noWrap component="div">
-              <AiOutlineHome className="home-icon" />
+              <IoFitness className="home-icon" />
             </Typography>
           </Box>
           <Stack
@@ -54,7 +55,6 @@ const Header = () => {
               Signup
             </Typography>
           </Stack>
-          <div className="trelloLogo"></div>
         </Toolbar>
       </AppBar>
     </>

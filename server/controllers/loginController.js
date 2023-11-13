@@ -7,26 +7,33 @@ dotenv.config();
 export const loginController = async (req, res, next) => {
     const email = req.query.email;
     const password = req.query.password
-    console.log(email, password)
     try {
-        const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
-        if (user.rows.length === 0) {
-            const error = new Error('user not found');
-            error.status = 'incorrect email';
-            error.statusCode = 404;
+        if (!email || !password) {
+            const error = new Error('email or password not provided');
+            error.status = 'email or password not provided';
+            error.statusCode = 400;
             throw (error);
         }
         else {
-            const isMatch = await bcrypt.compare(password, user.rows[0].password);
-            if (isMatch) {
-                const token = getToken({ id: user.rows[0].id, name: user.rows[0].name, email: user.rows[0].email });
-                res.status(200).json({ data: { token: token, user: user.rows[0] }, message: "login successful" });
+            const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+            if (user.rows.length === 0) {
+                const error = new Error('user not found');
+                error.status = 'incorrect email';
+                error.statusCode = 404;
+                throw (error);
             }
             else {
-                const error = new Error('incorrect password');
-                error.status = 'incorrect password';
-                error.statusCode = 401;
-                throw (error);
+                const isMatch = await bcrypt.compare(password, user.rows[0].password);
+                if (isMatch) {
+                    const token = getToken({ id: user.rows[0].id, name: user.rows[0].name, email: user.rows[0].email });
+                    res.status(200).json({ data: { token: token, user: user.rows[0] }, message: "login successful" });
+                }
+                else {
+                    const error = new Error('incorrect password');
+                    error.status = 'incorrect password';
+                    error.statusCode = 401;
+                    throw (error);
+                }
             }
         }
     } catch (error) {

@@ -47,9 +47,9 @@ const Login = () => {
       return false;
     }
   };
+
   const loginUser = () => {
     const data = { email: userEmail, password: password };
-    console.log('login initiated', data);
     if (isValidated()) {
       axios
         .get(`http://localhost:3000/login`, { params: data })

@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getUser, getToken } from '../functions/tokenSet';
+import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 
 import { AppBar, Box, Stack, Toolbar, Typography } from '@mui/material';
 import { AiOutlineHome } from 'react-icons/ai';
 import { removeUserToken } from '../functions/tokenSet';
+import { login } from '../features/user/userSlice';
 
 const DashboardHeader = () => {
   const navigate = useNavigate();
+
   return (
     <>
       <AppBar position="sticky">
@@ -23,9 +28,43 @@ const DashboardHeader = () => {
             }}
           >
             <Typography variant="h5" noWrap component="div">
-              <AiOutlineHome className="home-icon" />
+              <AiOutlineHome
+                className="home-icon"
+                onClick={() => {
+                  navigate('/dashboard/timeline');
+                }}
+              />
             </Typography>
           </Box>
+          <Stack
+            direction="row"
+            spacing={3}
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-around',
+            }}
+          >
+            <Typography
+              onClick={() => {
+                navigate('/dashboard/activities');
+              }}
+              variant="h6"
+              noWrap
+              component="div"
+            >
+              Activities
+            </Typography>
+            <Typography
+              onClick={() => {
+                navigate('/dashboard/fitscale');
+              }}
+              variant="h6"
+              noWrap
+              component="div"
+            >
+              Fitscale
+            </Typography>
+          </Stack>
           <Stack
             direction="row"
             spacing={2}
@@ -46,7 +85,6 @@ const DashboardHeader = () => {
               LogOut
             </Typography>
           </Stack>
-          <div className="trelloLogo"></div>
         </Toolbar>
       </AppBar>
     </>

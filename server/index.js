@@ -3,13 +3,15 @@ import cors from 'cors';
 
 import { router as signupRoutes } from './routes/signUpRoute.js';
 import { router as loginRoutes } from './routes/loginRoute.js';
+import { router as activitiesRoutes } from './routes/activitiesRoute.js'
+import { router as userRoutes } from './routes/userRoute.js'
 import errorHandler from './midlewares/errorHandler.js';
 
 
 const app = express();
 const PORT = 3000;
 const corsOptions = {
-    origin: '*'
+    origin: '*',
 }
 
 app.use(cors(corsOptions));
@@ -30,6 +32,8 @@ app.get('/', (req, res) => {
 
 app.use("/signup", signupRoutes);
 app.use("/login", loginRoutes);
+app.use("/user", userRoutes);
+app.use("/activities", activitiesRoutes);
 app.all('*', (req, res, next) => {
     const error = new Error(`can't find ${req.originalUrl} on the server.`);
     error.status = 'wrong url';

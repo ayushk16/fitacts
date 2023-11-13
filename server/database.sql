@@ -7,13 +7,19 @@ CREATE TABLE IF NOT EXISTS "users" (
     "email" varchar(255) NOT NULL UNIQUE,
     "phone" varchar(255) NOT NULL,
     "password" varchar(255) NOT NULL,
-    "aadharpresent" boolean NOT NULL
+    "aadharpresent" boolean NOT NULL,
+    "favorites" uuid array[]
 );
 
+DROP TABLE IF EXISTS "users" 
+
+
 CREATE TABLE IF NOT EXISTS "adhaars" (
-    "id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+    "id" uuid DEFAULT uuid_generate_v4() NOT NULL,
     "userid" uuid NOT NULL,
-    "storageinfo" varchar(255) NOT NULL
+    "storageinfo" varchar(255) NOT NULL,
+	PRIMARY KEY ("id"),
+	FOREIGN KEY ("userid") REFERENCES "users" ("id")
 );
 
 CREATE TABLE IF NOT EXISTS "activities" (
@@ -24,10 +30,16 @@ CREATE TABLE IF NOT EXISTS "activities" (
 
 CREATE TABLE IF NOT EXISTS "events"(
     "id" uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
-    "userid" uuid NOT NULL,
-    "activityid" uuid NOT NULL,
+    "userid" uuid  NOT NULL,
+    "activityid" uuid  NOT NULL,
     "distance" float NOT NULL,
-    "duration" float NOT NULL
+    "duration" float NOT NULL,
+    FOREIGN KEY ("userid") REFERENCES "users" ("id"),
+    FOREIGN KEY ("activityid") REFERENCES "activities" ("id")
 )
 
 INSERT INTO "users" ("firstname", "lastname", "email", "phone", "password", "aadharPresent") VALUES ('ayush', 'k', 'ayush@gmail.com', '1234567890', '123456', false);
+
+
+
+update users set favorites = '{73ceafa7-3d81-4ad4-9131-2912bc79155e ,b86adae3-530e-4825-8b27-cd1646baf6e5, b3646eee-799c-487e-b484-d186083344c2}' where email = 'jai@gmail.com';

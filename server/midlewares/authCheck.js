@@ -4,7 +4,8 @@ dotenv.config();
 
 export const authCheck = async (req, res, next) => {
     try {
-        const token = req.header["authorisation"];
+        const token = req.header("x-access-token");
+        console.log(req.header("x-access-token"));
         if (!token) {
             const error = new Error('cant find token');
             error.status = "token not passed";
@@ -20,6 +21,7 @@ export const authCheck = async (req, res, next) => {
                     throw (error);
                 }
                 else {
+                    console.log(user);
                     next();
                 }
             })
