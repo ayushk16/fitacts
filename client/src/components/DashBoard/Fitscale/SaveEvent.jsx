@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Box, Grid, Button, TextField } from '@mui/material';
 
 import { addEvent } from '../../../features/dashboard/eventSlice';
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -72,7 +73,7 @@ const SaveEvent = ({
                 <Grid item xs={6}>
                   <TextField
                     id="standard-multiline-flexible"
-                    label="Multiline"
+                    label="enter an event name"
                     multiline
                     onChange={(e) => {
                       seteventName(e.target.value);
@@ -103,7 +104,11 @@ const SaveEvent = ({
                   <h3>Time</h3>
                 </Grid>
                 <Grid item xs={6}>
-                  <h3>{`${time.hours}:${time.minutes}:${time.seconds}`}</h3>
+                  <h3>
+                    {time.hours < 10 ? `0${time.hours}` : time.hours}:
+                    {time.minutes < 10 ? `0${time.minutes}` : time.minutes}:
+                    {time.seconds < 10 ? `0${time.seconds}` : time.seconds}
+                  </h3>
                 </Grid>
               </Grid>
             </Grid>
@@ -111,8 +116,6 @@ const SaveEvent = ({
               disabled={eventName === '' ? true : false}
               onClick={() => {
                 save();
-                // resetTimer();
-                // clearActivityAndDistance();
               }}
               sx={{ marginRight: '1rem' }}
               variant="contained"

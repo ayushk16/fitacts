@@ -21,7 +21,6 @@ export const addEvent = createAsyncThunk('events/addEvent', ({ name, userid, act
 })
 
 export const updateEvent = createAsyncThunk('events/updateEvent', ({ eventid, showintimeline, userid }) => {
-    console.log({ eventid, showintimeline, userid })
     return axios
         .put("http://localhost:3000/events", { userid, eventid, showintimeline })
         .then(res => { return (res.data) })

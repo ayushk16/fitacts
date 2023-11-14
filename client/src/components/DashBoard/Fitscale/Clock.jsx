@@ -1,11 +1,4 @@
-import {
-  Container,
-  Stack,
-  Button,
-  Typography,
-  Modal,
-  Box,
-} from '@mui/material';
+import { Container, Stack, Button, Typography } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import SaveEvent from './SaveEvent';
 
@@ -66,7 +59,6 @@ const Clock = ({ clearActivityAndDistance, distance, activity }) => {
 
   return (
     <>
-      {/* make a digital clock at center of page */}
       <Container>
         <Stack
           sx={{

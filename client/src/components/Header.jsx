@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { AppBar, Box, Stack, Toolbar, Typography } from '@mui/material';
-import { AiOutlineHome } from 'react-icons/ai';
 import { IoFitness } from 'react-icons/io5';
 
 const Header = () => {

@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Activities from './components/DashBoard/Activities/Activities';
 import Fitscale from './pages/Fitscale';
 import Test from './pages/Test';
+import TopFive from './components/DashBoard/Activities/TopFive';
 function App() {
   return (
     <>
@@ -17,8 +18,9 @@ function App() {
         <Route path="/dashboard/timeline" element={<Dashboard />} />
         <Route path="/dashboard/activities" element={<Activities />} />
         <Route path="/dashboard/fitscale" element={<Fitscale />} />
+        <Route path="/dashboard/activities/:id" element={<TopFive />} />
         <Route path="/test" element={<Test />} />
-        <Route path="*" element={<Home />} />
+        {/* <Route path="*" element={<Home />} /> */}
       </Routes>
     </>
   );

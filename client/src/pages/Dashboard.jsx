@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Skeleton } from '@mui/material';
+
 import { getToken, getUser, removeUserToken } from '../functions/tokenSet.js';
 import { login } from '../features/user/userSlice.js';
+
 import DashboardHeader from '../components/DashboardHeader.jsx';
 import Navheader from '../components/DashBoard/Timeline/Navheader.jsx';
-import axios from 'axios';
 import ActivitiesShowCase from '../components/DashBoard/Timeline/ActivitiesShowCase.jsx';
-import { Container, Skeleton, Stack, Toolbar } from '@mui/material';
 
 const Dashboard = () => {
   const navigate = useNavigate();

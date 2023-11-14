@@ -5,13 +5,17 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  Card,
+  Typography,
 } from '@mui/material';
 import axios from 'axios';
-
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
 import { updateFavorite } from '../../../features/user/userSlice';
 import { getToken, getUser } from '../../../functions/tokenSet';
 const Activity = ({ item }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.user);
   const [checked, setChecked] = useState(
@@ -55,28 +59,47 @@ const Activity = ({ item }) => {
 
   return (
     <>
-      <Grid item xs={12} sm={6} md={4} lg={3} height={100}>
-        <Box>
-          <div>{item.name}</div>
-          <div>{item.distanceunit}</div>
-        </Box>
-        <Box>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={checked}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
-                  name="checkedB"
-                  color="primary"
-                />
-              }
-              label="Favorite"
-            />
-          </FormGroup>
-        </Box>
+      <Grid item xs={12} sm={6} md={4} lg={3} height={100} margin={2}>
+        <Card
+          sx={{
+            height: '100%',
+            padding: 2,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <Box>
+            <Typography
+              gutterBottom
+              variant="h6"
+              component="div"
+              textAlign="center"
+              onClick={(e) => {
+                navigate(`/dashboard/activities/${item.id}`);
+              }}
+            >
+              {item.name}
+            </Typography>
+          </Box>
+          <Box>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={checked}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleChange(e);
+                    }}
+                    name="checkedB"
+                    color="primary"
+                  />
+                }
+                label="Favorite"
+              />
+            </FormGroup>
+          </Box>
+        </Card>
       </Grid>
     </>
   );

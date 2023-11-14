@@ -110,3 +110,26 @@ export const updateEvent = async (req, res, next) => {
         next(Error);
     }
 }
+
+
+export const getTopEvents = async (req, res, next) => {
+    try {
+        const userId = req.query.userId;
+        const activityId = req.query.activityId;
+        if (!userId) {
+            const error = new Error('missing data');
+            error.status = 'missing data';
+            error.statusCode = 400;
+            throw (error);
+        } else {
+            const events = await pool.query("SELECT *, events.id AS eventid , events.name AS eventname, activities.name AS activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1 AND activityid = $2 ORDER BY distance DESC LIMIT 5;", [userId, activityId])
+            res.status(200).json({ data: events.rows, message: 'top events fetched successfuly' });
+        }
+    } catch (error) {
+        const Error = error;
+        Error.status = error.status || "problem in fetching top events";
+        Error.statusCode = error.statusCode || 500;
+        next(Error);
+    }
+
+}

@@ -2,17 +2,16 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import DashboardHeader from '../../DashboardHeader';
 import { fetchActivities } from '../../../features/dashboard/activities/activitiesSlice';
-import { Container, Grid, Box } from '@mui/material';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import { Container, Grid } from '@mui/material';
+import { clearTopEvents } from '../../../features/dashboard/activities/topEvents/topEvents';
 
 import Activity from './Activity';
 const Activities = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchActivities()).then((res) => {});
+    dispatch(fetchActivities());
+    dispatch(clearTopEvents());
   }, []);
 
   const activitiesData = useSelector((state) => state.activities);
@@ -43,7 +42,7 @@ const Activities = () => {
             columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           >
             {activitiesData.data.map((item, index) => {
-              return <Activity item={item} key={item.id} />;
+              return <Activity item={item} key={item.id} data-id={item.id} />;
             })}
           </Grid>
         </Container>

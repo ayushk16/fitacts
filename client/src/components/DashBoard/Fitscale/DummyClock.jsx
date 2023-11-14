@@ -1,5 +1,5 @@
 import { Container, Stack, Button, Typography } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 const DummyClock = () => {
   return (
@@ -20,7 +20,7 @@ const DummyClock = () => {
               00:00:00
             </Typography>
 
-            <Stack direction="row" justifyContent="center">
+            <Stack direction="row" justifyContent="center" spacing={2}>
               <Button variant="contained" disabled>
                 Start
               </Button>

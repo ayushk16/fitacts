@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DashboardHeader from '../components/DashboardHeader';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   Box,
   MenuItem,
@@ -8,17 +8,17 @@ import {
   FormHelperText,
   OutlinedInput,
   Stack,
-  Typography,
   InputLabel,
   FormControl,
   Button,
-  Menu,
 } from '@mui/material';
-import { useSelector, useDispatch } from 'react-redux';
+
 import { fetchActivities } from '../features/dashboard/activities/activitiesSlice';
+
 import Clock from '../components/DashBoard/Fitscale/Clock';
 import Events from '../components/DashBoard/Fitscale/Events';
 import DummyClock from '../components/DashBoard/Fitscale/DummyClock';
+import DashboardHeader from '../components/DashboardHeader';
 
 const Fitscale = () => {
   const dispatch = useDispatch();
@@ -37,7 +37,6 @@ const Fitscale = () => {
   const activitiesData = useSelector((state) => state.activities);
 
   const userData = useSelector((state) => state.user);
-  console.log(userData);
 
   const checkDistanceField = (values) => {
     const value = parseInt(values);

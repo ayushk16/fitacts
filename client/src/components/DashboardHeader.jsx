@@ -1,13 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUser, getToken } from '../functions/tokenSet';
-import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
-
 import { AppBar, Box, Stack, Toolbar, Typography } from '@mui/material';
 import { AiOutlineHome } from 'react-icons/ai';
 import { removeUserToken } from '../functions/tokenSet';
-import { login } from '../features/user/userSlice';
 
 const DashboardHeader = () => {
   const navigate = useNavigate();

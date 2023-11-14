@@ -6,12 +6,13 @@ import {
   Container,
   Grid,
   Typography,
-  Button,
   FormControlLabel,
   Checkbox,
   FormGroup,
 } from '@mui/material';
+
 import { updateEvent } from '../../../features/dashboard/eventSlice';
+
 const Events = () => {
   const dispatch = useDispatch();
   const userData = useSelector((state) => {
@@ -27,11 +28,6 @@ const Events = () => {
   });
 
   const handleChangeEvent = ({ eventid, showintimeline }) => {
-    // console.log({
-    //   eventid,
-    //   showintimeline,
-    //   userid: userData.data.data.user.id,
-    // });
     dispatch(
       updateEvent({
         eventid,
@@ -71,7 +67,20 @@ const Events = () => {
                       distance - {item.distance}
                       {item.distanceunit}
                     </Typography>
-                    <Typography>duration - {item.duration}</Typography>
+                    <Typography>
+                      duration -{' '}
+                      {Math.floor(item.duration / 3600) < 10
+                        ? `0${Math.floor(item.duration / 3600)}`
+                        : `${Math.floor(item.duration / 3600)}`}
+                      :
+                      {Math.floor((item.duration % 3600) / 60) < 10
+                        ? `0${Math.floor((item.duration % 3600) / 60)}`
+                        : `${Math.floor((item.duration % 3600) / 60)}`}
+                      :
+                      {Math.floor((item.duration % 3600) % 60) < 10
+                        ? `0${Math.floor((item.duration % 3600) % 60)}`
+                        : `${Math.floor((item.duration % 3600) % 60)}`}
+                    </Typography>
                     <Typography>
                       on - {new Date(item.timestamp).toLocaleString()}
                     </Typography>

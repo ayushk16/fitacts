@@ -1,7 +1,6 @@
 import { Box, Stack, Container, Typography } from '@mui/material';
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const Navheader = () => {
   const UserData = useSelector((state) => {

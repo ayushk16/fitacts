@@ -130,7 +130,20 @@ const ActivitiesShowCase = () => {
                               {event.distanceunit}
                             </Typography>
 
-                            <Typography>duration - {event.duration}</Typography>
+                            <Typography>
+                              duration -{' '}
+                              {Math.floor(event.duration / 3600) < 10
+                                ? `0${Math.floor(event.duration / 3600)}`
+                                : `${Math.floor(event.duration / 3600)}`}
+                              :
+                              {Math.floor((event.duration % 3600) / 60) < 10
+                                ? `0${Math.floor((event.duration % 3600) / 60)}`
+                                : `${Math.floor((event.duration % 3600) / 60)}`}
+                              :
+                              {Math.floor((event.duration % 3600) % 60) < 10
+                                ? `0${Math.floor((event.duration % 3600) % 60)}`
+                                : `${Math.floor((event.duration % 3600) % 60)}`}
+                            </Typography>
                           </Stack>
                         </Stack>
                       </Card>
