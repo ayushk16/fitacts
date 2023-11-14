@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS "events"(
     "activityid" uuid  NOT NULL,
     "distance" float NOT NULL,
     "duration" float NOT NULL,
+    "showintimeline" boolean NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     FOREIGN KEY ("userid") REFERENCES "users" ("id"),
     FOREIGN KEY ("activityid") REFERENCES "activities" ("id")
 )
@@ -46,3 +48,8 @@ update users set favorites = '{73ceafa7-3d81-4ad4-9131-2912bc79155e ,b86adae3-53
 
 ALTER TABLE events
 ADD COLUMN timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE events
+ADD COLUMN "showintimeline" boolean NOT NULL;
+alter table events add column name varchar not null;
+
+INSERT INTO "events" ("userid", "activityid", "distance", "duration" , "showintimeline") VALUES ('fa056a42-3ef7-429a-88a2-9fb48778ebcf', '73ceafa7-3d81-4ad4-9131-2912bc79155e', 10, 10 ,true);

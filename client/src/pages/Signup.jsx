@@ -96,8 +96,6 @@ const Signup = () => {
       phone: userData.phone,
       password: userData.password,
     };
-    // console.log('submiting initiated', dataLog);
-
     if (isValidated()) {
       axios
         .post(`http://localhost:3000/signup/`, dataLog)

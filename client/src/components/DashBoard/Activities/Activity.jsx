@@ -26,20 +26,16 @@ const Activity = ({ item }) => {
     let itemId = item.id;
     const userId = user.id;
     const value = event.target.checked ? 'true' : 'false';
-    console.log('change', user);
     if (event.target.checked == false) {
       if (user.favorites.includes(itemId)) {
         let temparray = [...user.favorites];
         temparray = temparray.filter((item) => item !== itemId);
         user.favorites = [...temparray];
-        console.log('removed');
       }
     }
     if (event.target.checked == true) {
       if (!user.favorites.includes(itemId)) {
         user.favorites = [...user.favorites, itemId];
-
-        console.log('added');
       }
     }
     axios
@@ -49,7 +45,6 @@ const Activity = ({ item }) => {
         value: value,
       })
       .then((res) => {
-        console.log('api', res.data);
         dispatch(
           updateFavorite({
             data: { user: res.data.data, token: { accessToken: getToken() } },

@@ -6,36 +6,6 @@ import jwt from "jsonwebtoken";
 dotenv.config();
 
 
-export const getAllEvents = async (req, res, next) => {
-    try {
-        const userId = req.query.id;
-        if (!userId) {
-            const error = new Error('cant find userId');
-            error.status = 'user id not available';
-            error.statusCode = 404;
-            throw (error);
-        }
-        else {
-            const events = await pool.query("SELECT * FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1", [userId]);
-            if (!events) {
-                const error = new Error('fetching events');
-                error.status = 'error fetching events';
-                error.statusCode = 401;
-                throw (error);
-            }
-            else {
-                console.log(events.rows)
-                res.status(200).json({ data: events.rows, message: 'events fetched successfuly' });
-            }
-        }
-    } catch (error) {
-        const Error = error;
-        Error.status = error.status || "problem in fetching events";
-        Error.statusCode = error.statusCode || 500;
-        next(Error);
-    }
-}
-
 export const getAllActivities = async (req, res, next) => {
     try {
         const activities = await pool.query("select * from activities");

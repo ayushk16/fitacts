@@ -12,18 +12,11 @@ const Activities = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log('activities');
     dispatch(fetchActivities()).then((res) => {});
   }, []);
 
   const activitiesData = useSelector((state) => state.activities);
-  if (activitiesData) {
-    console.log(activitiesData);
-  }
-  // const userData = useSelector((state) => state.user);
-  // if (userData.data) {
-  //   console.log(userData);
-  // }
+
   if (activitiesData.loading) {
     return (
       <>

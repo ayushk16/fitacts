@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -14,6 +15,8 @@ import { getUser } from '../../../functions/tokenSet.js';
 import { removeUserToken } from '../../../functions/tokenSet.js';
 
 const ActivitiesShowCase = () => {
+  const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
   const UserData = useSelector((state) => {
@@ -26,9 +29,10 @@ const ActivitiesShowCase = () => {
     const user = getUser();
     if (!user) {
       removeUserToken();
-      Navigate('/login');
+      navigate('/login');
+    } else {
+      dispatch(fetchEvents({ userid: user.id }));
     }
-    dispatch(fetchEvents({ userid: user.id }));
   }, [UserData]);
 
   const eventsData = useSelector((state) => {
@@ -106,35 +110,44 @@ const ActivitiesShowCase = () => {
           {eventsData.data &&
             eventsData.data.map((event, index) => {
               return (
-                <Grid
-                  item
-                  key={event.id}
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  lg={3}
-                  height={'auto'}
-                >
-                  <Card sx={{ padding: '1rem' }}>
-                    <Stack spacing={2} width={'100%'} alignItems={'center'}>
-                      <Typography variant="h5">{event.name}</Typography>
-                      <Stack
-                        direction={'row'}
-                        display="flex"
-                        justifyContent="space-evenly"
-                        spacing={2}
-                        flexWrap={'wrap'}
-                      >
-                        <Box>
-                          <Typography>distance - {event.distance}</Typography>
-                        </Box>
-                        <Box>
-                          <Typography>duration - {event.duration}</Typography>
-                        </Box>
-                      </Stack>
-                    </Stack>
-                  </Card>
-                </Grid>
+                <>
+                  {event.showintimeline === true && (
+                    <Grid
+                      item
+                      key={event.id}
+                      xs={12}
+                      sm={6}
+                      md={4}
+                      lg={3}
+                      height={'auto'}
+                    >
+                      <Card sx={{ padding: '1rem' }}>
+                        <Stack spacing={2} width={'100%'} alignItems={'center'}>
+                          <Typography variant="h5">{event.name}</Typography>
+                          <Stack
+                            direction={'row'}
+                            display="flex"
+                            justifyContent="space-evenly"
+                            spacing={2}
+                            flexWrap={'wrap'}
+                          >
+                            <Box>
+                              <Typography>
+                                distance - {event.distance}
+                                {event.distanceunit}
+                              </Typography>
+                            </Box>
+                            <Box>
+                              <Typography>
+                                duration - {event.duration}
+                              </Typography>
+                            </Box>
+                          </Stack>
+                        </Stack>
+                      </Card>
+                    </Grid>
+                  )}
+                </>
               );
             })}
         </Grid>

@@ -12,7 +12,6 @@ const initialState = {
 
 export const fetchActivities = createAsyncThunk("activities/fetchActivities", async () => {
     const token = getToken();
-    console.log("from thunk", token)
     return axios
         .get('http://localhost:3000/activities/all/')
         .then(res => { return res.data })

@@ -25,7 +25,6 @@ const Dashboard = () => {
 
   const userState = useSelector((state) => {
     if (state.user) {
-      console.log('from dashboard', state.user.data);
       return state.user;
     }
   });

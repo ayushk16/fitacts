@@ -13,7 +13,6 @@ const Test = () => {
       removeUserToken();
       navigate('/login');
     } else {
-      console.log('tokenuser', token, user);
       dispatch(login({ data: { token: { accessToken: token }, user: user } }));
     }
   }, []);

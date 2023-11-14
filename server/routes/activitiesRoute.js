@@ -4,8 +4,6 @@ import { authCheck } from "../midlewares/authCheck.js";
 
 export const router = Router();
 
-// router.get("/", authCheck, controllers.getAllActivities);
-router.get("/", controllers.getAllEvents);
 router.get("/all/", controllers.getAllActivities)
 router.get("/one/", controllers.getActivity);
 router.put("/favorite/", controllers.updateFavorite);

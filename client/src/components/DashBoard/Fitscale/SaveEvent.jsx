@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Box, Grid, Button, TextField } from '@mui/material';
 
+import { addEvent } from '../../../features/dashboard/eventSlice';
 const style = {
   position: 'absolute',
   top: '50%',
@@ -23,9 +25,31 @@ const SaveEvent = ({
   handleClose,
   handleOpen,
 }) => {
+  const dispatch = useDispatch();
   const [eventName, seteventName] = useState('');
+  const userData = useSelector((state) => {
+    if (state.user.data.data) {
+      return state.user.data.data.user;
+    }
+  });
 
-  console.log(distance, activity, time);
+  const save = () => {
+    dispatch(
+      addEvent({
+        name: eventName,
+        userid: userData.id,
+        activityid: activity.id,
+        distance: distance.distance,
+        duration: time.hours * 3600 + time.minutes * 60 + time.seconds,
+      })
+    ).then((res) => {
+      seteventName('');
+      clearActivityAndDistance();
+      resetTimer();
+      handleClose();
+    });
+  };
+
   return (
     <>
       <div>
@@ -86,8 +110,9 @@ const SaveEvent = ({
             <Button
               disabled={eventName === '' ? true : false}
               onClick={() => {
-                resetTimer();
-                clearActivityAndDistance();
+                save();
+                // resetTimer();
+                // clearActivityAndDistance();
               }}
               sx={{ marginRight: '1rem' }}
               variant="contained"

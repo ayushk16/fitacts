@@ -18,6 +18,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchActivities } from '../features/dashboard/activities/activitiesSlice';
 import { json } from 'react-router-dom';
 import Clock from '../components/DashBoard/Fitscale/Clock';
+import Events from '../components/DashBoard/Fitscale/Events';
 import DummyClock from '../components/DashBoard/Fitscale/DummyClock';
 
 const Fitscale = () => {
@@ -31,26 +32,12 @@ const Fitscale = () => {
   });
 
   useEffect(() => {
-    console.log(distanceEntered);
-  }, [distanceEntered]);
-
-  useEffect(() => {
-    console.log(selectedActivity);
-  }, [selectedActivity]);
-
-  useEffect(() => {
-    console.log('activities');
     dispatch(fetchActivities()).then((res) => {});
   }, []);
 
   const activitiesData = useSelector((state) => state.activities);
-  if (activitiesData) {
-    console.log(activitiesData);
-  }
+
   const userData = useSelector((state) => state.user);
-  if (userData) {
-    console.log(userData);
-  }
 
   const checkDistanceField = (values) => {
     const value = parseInt(values);
@@ -70,6 +57,7 @@ const Fitscale = () => {
       error: false,
       distance: 0,
     });
+    setDisplayClock(false);
   };
 
   return (
@@ -95,20 +83,20 @@ const Fitscale = () => {
                 label="Activities"
                 onChange={(e) => {
                   const id = e.target.value;
-                  const activity = activitiesData.data.find(
-                    (activity) => activity.id === id
-                  );
+                  const activity =
+                    activitiesData.data &&
+                    activitiesData.data.find((activity) => activity.id === id);
                   setSelectedActivity(() => activity);
                 }}
               >
                 {userData.data.data.user.favorites.map((item, index) => {
                   return (
                     <MenuItem value={item} key={item}>
-                      {
-                        activitiesData.data.find(
-                          (activity) => activity.id === item
-                        ).name
-                      }
+                      {activitiesData
+                        ? activitiesData.data.find(
+                            (activity) => activity.id === item
+                          ).name
+                        : null}
                     </MenuItem>
                   );
                 })}
@@ -144,7 +132,6 @@ const Fitscale = () => {
             }
           </Box>
           <Box>
-            {/* make astart counter button */}
             {
               <Button
                 variant="contained"
@@ -170,6 +157,7 @@ const Fitscale = () => {
       ) : (
         <DummyClock />
       )}
+      <Events />
     </>
   );
 };
