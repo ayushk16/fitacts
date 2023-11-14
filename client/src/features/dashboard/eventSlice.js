@@ -20,6 +20,13 @@ export const addEvent = createAsyncThunk('events/addEvent', ({ name, userid, act
         }).then(res => { return (res.data) })
 })
 
+export const updateEvent = createAsyncThunk('events/updateEvent', ({ eventid, showintimeline, userid }) => {
+    console.log({ eventid, showintimeline, userid })
+    return axios
+        .put("http://localhost:3000/events", { userid, eventid, showintimeline })
+        .then(res => { return (res.data) })
+})
+
 const eventsSlice = createSlice({
     name: 'events',
     initialState,
@@ -50,6 +57,25 @@ const eventsSlice = createSlice({
             state.loading = false;
             state.error = action.payload.message;
         })
+        builder.addCase(updateEvent.pending, (state, action) => {
+            state.loading = true;
+            state.error = null;
+        })
+        builder.addCase(updateEvent.fulfilled, (state, action) => {
+            state.loading = false;
+            state.data = state.data.map(event => {
+                if (event.eventid === action.payload.data.eventid) {
+                    return action.payload.data;
+                }
+                return event;
+            })
+            state.error = null;
+        })
+        builder.addCase(updateEvent.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.error.message;
+        })
+
 
     }
 })

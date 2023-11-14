@@ -102,46 +102,35 @@ const ActivitiesShowCase = () => {
         <Grid
           container
           rowSpacing={1}
-          columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+          columnSpacing={{ xs: 3, sm: 2, md: 3 }}
           marginTop={3}
           height={'auto'}
         >
-          <Grid item></Grid>
           {eventsData.data &&
             eventsData.data.map((event, index) => {
               return (
                 <>
                   {event.showintimeline === true && (
-                    <Grid
-                      item
-                      key={event.id}
-                      xs={12}
-                      sm={6}
-                      md={4}
-                      lg={3}
-                      height={'auto'}
-                    >
+                    <Grid key={event.id} item xs={3} height={'auto'}>
                       <Card sx={{ padding: '1rem' }}>
                         <Stack spacing={2} width={'100%'} alignItems={'center'}>
-                          <Typography variant="h5">{event.name}</Typography>
+                          <Typography variant="h5">
+                            {event.eventname}
+                          </Typography>
                           <Stack
-                            direction={'row'}
+                            direction={'column'}
                             display="flex"
                             justifyContent="space-evenly"
                             spacing={2}
-                            flexWrap={'wrap'}
                           >
-                            <Box>
-                              <Typography>
-                                distance - {event.distance}
-                                {event.distanceunit}
-                              </Typography>
-                            </Box>
-                            <Box>
-                              <Typography>
-                                duration - {event.duration}
-                              </Typography>
-                            </Box>
+                            <Typography>activity - {event.name}</Typography>
+
+                            <Typography>
+                              distance - {event.distance}
+                              {event.distanceunit}
+                            </Typography>
+
+                            <Typography>duration - {event.duration}</Typography>
                           </Stack>
                         </Stack>
                       </Card>

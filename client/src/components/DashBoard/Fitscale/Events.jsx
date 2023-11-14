@@ -1,12 +1,45 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { Card, CardContent, Container, Grid, Typography } from '@mui/material';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  Card,
+  CardContent,
+  Container,
+  Grid,
+  Typography,
+  Button,
+  FormControlLabel,
+  Checkbox,
+  FormGroup,
+} from '@mui/material';
+import { updateEvent } from '../../../features/dashboard/eventSlice';
 const Events = () => {
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => {
+    if (state.user) {
+      return state.user;
+    }
+  });
+
   const eventsData = useSelector((state) => {
     if (state.events) {
       return state.events;
     }
   });
+
+  const handleChangeEvent = ({ eventid, showintimeline }) => {
+    // console.log({
+    //   eventid,
+    //   showintimeline,
+    //   userid: userData.data.data.user.id,
+    // });
+    dispatch(
+      updateEvent({
+        eventid,
+        showintimeline,
+        userid: userData.data.data.user.id,
+      })
+    );
+  };
 
   return (
     <>
@@ -39,6 +72,27 @@ const Events = () => {
                       {item.distanceunit}
                     </Typography>
                     <Typography>duration - {item.duration}</Typography>
+                    <Typography>
+                      on - {new Date(item.timestamp).toLocaleString()}
+                    </Typography>
+                    <FormGroup>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={item.showintimeline}
+                            onChange={(e) => {
+                              handleChangeEvent({
+                                eventid: item.eventid,
+                                showintimeline: e.target.checked,
+                              });
+                            }}
+                            name="checkedB"
+                            color="primary"
+                          />
+                        }
+                        label="Show in timeline"
+                      />
+                    </FormGroup>
                   </CardContent>
                 </Card>
               </Grid>

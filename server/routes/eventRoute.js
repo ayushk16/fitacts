@@ -7,3 +7,4 @@ export const router = Router();
 // router.get("/", authCheck, controllers.getAllActivities);
 router.get("/", controllers.getAllEvents);
 router.post("/", controllers.createEvent);
+router.put("/", controllers.updateEvent);
