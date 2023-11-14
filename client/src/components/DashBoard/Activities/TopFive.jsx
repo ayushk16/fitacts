@@ -40,6 +40,8 @@ const TopFive = () => {
         <Container>
           <Stack
             alignContent={'center'}
+            position={'absolute'}
+            left={0}
             justifyContent={'center'}
             width={'100vw'}
           >

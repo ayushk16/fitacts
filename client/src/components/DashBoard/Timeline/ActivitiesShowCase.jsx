@@ -9,8 +9,12 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { TiDeleteOutline } from 'react-icons/ti';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchEvents } from '../../../features/dashboard/eventSlice.js';
+import {
+  fetchEvents,
+  updateEvent,
+} from '../../../features/dashboard/eventSlice.js';
 import { getUser } from '../../../functions/tokenSet.js';
 import { removeUserToken } from '../../../functions/tokenSet.js';
 
@@ -34,6 +38,10 @@ const ActivitiesShowCase = () => {
       dispatch(fetchEvents({ userid: user.id }));
     }
   }, [UserData]);
+
+  const removeFromTimeline = (event) => {
+    dispatch(updateEvent(event));
+  };
 
   const eventsData = useSelector((state) => {
     if (state.events) {
@@ -112,7 +120,21 @@ const ActivitiesShowCase = () => {
                 <>
                   {event.showintimeline === true && (
                     <Grid key={event.id} item xs={3} height={'auto'}>
-                      <Card sx={{ padding: '1rem' }}>
+                      <Card sx={{ padding: '1rem', position: 'relative' }}>
+                        {/* delete button here */}
+                        <Box position={'absolute'} right={20}>
+                          <TiDeleteOutline
+                            fontSize={24}
+                            onClick={() => {
+                              removeFromTimeline({
+                                userid: event.userid,
+                                eventid: event.eventid,
+                                showintimeline: false,
+                              });
+                            }}
+                          />
+                        </Box>
+
                         <Stack spacing={2} width={'100%'} alignItems={'center'}>
                           <Typography variant="h5">
                             {event.eventname}

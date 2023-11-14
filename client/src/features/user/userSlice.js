@@ -39,7 +39,14 @@ const userSlice = createSlice({
             const user = action.payload.data.user;
             setUserToken({ token: token, user: user })
 
+        },
+        updateAadhar: (state, action) => {
+            state.data = action.payload;
+            const token = action.payload.data.token.accessToken;
+            const user = action.payload.data.user;
+            setUserToken({ token: token, user: user })
         }
+
     },
     // extraReducers: builder => {
     //     builder.addCase(updateUser.pending, (state, action) => {
@@ -63,5 +70,5 @@ const userSlice = createSlice({
     // }
 })
 
-export const { login, logout, errorlogin, updateFavorite } = userSlice.actions;
+export const { login, logout, errorlogin, updateFavorite, updateAadhar } = userSlice.actions;
 export default userSlice.reducer;
