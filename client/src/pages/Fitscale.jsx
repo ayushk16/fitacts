@@ -19,6 +19,7 @@ import Clock from '../components/DashBoard/Fitscale/Clock';
 import Events from '../components/DashBoard/Fitscale/Events';
 import DummyClock from '../components/DashBoard/Fitscale/DummyClock';
 import DashboardHeader from '../components/DashboardHeader';
+import EventsTable from '../components/DashBoard/Fitscale/EventsTable';
 
 const Fitscale = () => {
   const dispatch = useDispatch();
@@ -120,18 +121,6 @@ const Fitscale = () => {
                       }
                     );
                   })}
-
-                  {/* {userData.data.data.user.favorites.map((item, index) => {
-                    return (
-                      <MenuItem value={item} key={item}>
-                        {activitiesData && activitiesData.data
-                          ? activitiesData.data(
-                              (activity) => activity.id === item
-                            ).name
-                          : null}
-                      </MenuItem>
-                    );
-                  })} */}
                 </Select>
               </FormControl>
             </Box>
@@ -189,7 +178,8 @@ const Fitscale = () => {
         ) : (
           <DummyClock />
         )}
-        <Events />
+        <EventsTable />
+        {/* <Events /> */}
       </>
     );
   }

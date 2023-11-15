@@ -27,7 +27,7 @@ const FollowingUsers = () => {
           >
             {followingData.data.map((user, index) => {
               return (
-                <Grid item xs={12}>
+                <Grid item xs={12} key={user.id}>
                   <Card
                     sx={{
                       height: '100px',

@@ -16,7 +16,7 @@ const UserEventPage = () => {
   return (
     <>
       <DashboardHeader />
-      <FollowedActivitiesShowCase />
+      <FollowedActivitiesShowCase userId={userid} />
     </>
   );
 };

@@ -121,7 +121,6 @@ const ActivitiesShowCase = () => {
                   {event.showintimeline === true && (
                     <Grid key={event.id} item xs={3} height={'auto'}>
                       <Card sx={{ padding: '1rem', position: 'relative' }}>
-                        {/* delete button here */}
                         <Box position={'absolute'} right={20}>
                           <TiDeleteOutline
                             fontSize={24}
