@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Activities from '../components/DashBoard/Activities/Activities.jsx';
-import DashboardHeader from '../components/DashboardHeader';
 import AadharUpload from '../components/DashBoard/aadharUpload/AadharUpload.jsx';
 
 const ActivitiesHome = () => {
@@ -11,10 +10,6 @@ const ActivitiesHome = () => {
       return state.user;
     }
   });
-
-  if (userState.data) {
-    console.log(userState);
-  }
 
   if (userState.loading) {
     return (

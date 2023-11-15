@@ -7,7 +7,6 @@ import {
   Card,
   Container,
   Stack,
-  Box,
   Typography,
   Input,
 } from '@mui/material';
@@ -20,16 +19,12 @@ const AadharUpload = ({ userid }) => {
   const [aadhar, setAadhar] = useState(null);
 
   const handleAadhar = (e) => {
-    console.log(e.target.files);
-    console.log(userid);
     setAadhar(e.target.files[0].name);
   };
   const uploadAadhar = () => {
-    console.log(aadhar);
     axios
       .put('http://localhost:3000/user', { userid: userid, aadhardata: aadhar })
       .then((res) => {
-        console.log(res.data);
         dispatch(
           updateAadhar({
             data: { user: res.data.data, token: { accessToken: getToken() } },

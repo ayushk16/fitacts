@@ -1,4 +1,4 @@
-import { Box, Stack, Container, Typography } from '@mui/material';
+import { Stack, Container, Typography } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
 

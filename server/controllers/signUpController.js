@@ -2,8 +2,26 @@ import bcrypt from "bcryptjs";
 import pool from "../app/config/dbConfig.js";
 
 export const getUsers = async (req, res) => {
-    const users = await pool.query("SELECT * FROM users");
-    res.json({ data: users.rows, message: 'signup' })
+    try {
+        const users = await pool.query("SELECT * FROM users");
+        if (!users) {
+            const error = new Error('error fetching users');
+            error.status = "error fetching users"
+            error.statusCode = 400;
+            throw (error);
+        }
+        else {
+            res.status(200).json({ data: users.rows, message: 'signup' })
+        }
+
+
+    } catch (error) {
+        const Error = error;
+        Error.status = error.status || 'error while fetching users';
+        Error.statusCode = error.statusCode || 500;
+        next(Error);
+
+    }
 }
 
 export const creatUserController = async (req, res, next) => {

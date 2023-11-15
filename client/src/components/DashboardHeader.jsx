@@ -59,6 +59,16 @@ const DashboardHeader = () => {
             >
               Fitscale
             </Typography>
+            <Typography
+              onClick={() => {
+                navigate('/dashboard/feed');
+              }}
+              variant="h6"
+              noWrap
+              component="div"
+            >
+              Feed
+            </Typography>
           </Stack>
           <Stack
             direction="row"

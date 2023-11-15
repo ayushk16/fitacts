@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import DashboardHeader from '../../DashboardHeader';
 import { fetchTopEvents } from '../../../features/dashboard/activities/topEvents/topEvents';
 import { Card, Container, Grid, Stack, Typography } from '@mui/material';
-import { Key } from '@mui/icons-material';
 
 const TopFive = () => {
   const { id } = useParams();

@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Box, Grid, Button, TextField } from '@mui/material';
 
@@ -24,7 +23,6 @@ const SaveEvent = ({
   clearActivityAndDistance,
   resetTimer,
   handleClose,
-  handleOpen,
 }) => {
   const dispatch = useDispatch();
   const [eventName, seteventName] = useState('');
