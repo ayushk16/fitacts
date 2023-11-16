@@ -4,36 +4,44 @@ import pool from "../app/config/dbConfig.js";
 
 
 
-export const getUser = async (req, res) => {
-    console.log('userCOntero')
-    const userId = req.params.userid;
-    console.log("userId", userId);
-    if (!userId) {
-        const error = new Error('missing data');
-        error.status = 'missing data';
-        error.statusCode = 400;
-        throw (error);
-    }
-    else {
-        const user = await pool.query("SELECT * FROM users WHERE id = $1", [userId]);
-        if (!user) {
-            const error = new Error(' error fetching users');
-            error.status = 'error fetching users';
-            error.statusCode = 404;
+export const getUser = async (req, res, next) => {
+    try {
+        const userId = req.params.userid;
+        console.log("userId", userId);
+        if (!userId) {
+            const error = new Error('missing data');
+            error.status = 'missing data';
+            error.statusCode = 400;
             throw (error);
         }
         else {
-            if (user.rows.length === 0) {
-                const error = new Error('user not found');
-                error.status = 'user not found';
+            const user = await pool.query("SELECT * FROM users WHERE id = $1", [userId]);
+            if (!user) {
+                const error = new Error(' error fetching users');
+                error.status = 'error fetching users';
                 error.statusCode = 404;
                 throw (error);
             }
             else {
-                const token = getToken({ id: user.rows[0].id, name: user.rows[0].name, email: user.rows[0].email });
-                res.status(200).json({ data: { token: token, user: user.rows[0] }, message: "user fetch successful" });
+                if (user.rows.length === 0) {
+                    const error = new Error('user not found');
+                    error.status = 'user not found';
+                    error.statusCode = 404;
+                    throw (error);
+                }
+                else {
+                    const token = getToken({ id: user.rows[0].id, name: user.rows[0].name, email: user.rows[0].email });
+                    res.status(200).json({ data: { token: token, user: user.rows[0] }, message: "user fetch successful" });
+                }
             }
         }
+
+    } catch (error) {
+        const Error = error;
+        Error.status = error.status || "problem in fetching user";
+        Error.statusCode = error.statusCode || 500;
+        next(Error);
+
     }
 }
 
