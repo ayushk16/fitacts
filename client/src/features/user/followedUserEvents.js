@@ -50,7 +50,6 @@ const followedUserEventsSlice = createSlice({
         })
         builder.addCase(fetchAgain.fulfilled, (state, action) => {
             state.loading = false;
-            console.log(action.payload.data);
             state.data = [...state.data, ...action.payload.data];
 
             state.error = null;

@@ -46,7 +46,7 @@ const FollowedActivitiesShowCase = ({ userId }) => {
               return (
                 <>
                   {event.showintimeline === true && (
-                    <Grid key={event.id} item xs={12} height={'auto'}>
+                    <Grid item xs={12} key={event.id} height={'auto'}>
                       <Stack
                         sx={{
                           minWidth: '400px',

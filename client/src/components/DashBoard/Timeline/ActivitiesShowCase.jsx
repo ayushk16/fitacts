@@ -117,7 +117,7 @@ const ActivitiesShowCase = () => {
           {eventsData.data &&
             eventsData.data.map((event, index) => {
               return (
-                <>
+                <React.Fragment key={index}>
                   {event.showintimeline === true && (
                     <Grid key={event.id} item xs={3} height={'auto'}>
                       <Card sx={{ padding: '1rem', position: 'relative' }}>
@@ -170,7 +170,7 @@ const ActivitiesShowCase = () => {
                       </Card>
                     </Grid>
                   )}
-                </>
+                </React.Fragment>
               );
             })}
         </Grid>
