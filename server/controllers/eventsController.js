@@ -21,7 +21,6 @@ export const getAllEvents = async (req, res, next) => {
                 throw (error);
             }
             else {
-                console.log(events.rows)
                 res.status(200).json({ data: events.rows, message: 'events fetched successfuly' });
             }
         }
@@ -67,7 +66,6 @@ export const createEvent = async (req, res, next) => {
 }
 
 export const updateEvent = async (req, res, next) => {
-    console.log("update event called")
     try {
         const { userid, eventid, showintimeline } = req.body;
         if (!userid || !eventid || showintimeline === undefined) {
@@ -85,7 +83,6 @@ export const updateEvent = async (req, res, next) => {
                 throw (error);
             }
             else {
-                console.log(event);
                 const eventToReturn = await pool.query("SELECT *, events.id as eventid , events.name as eventname, activities.name as activityname FROM events JOIN activities ON activities.id = events.activityid WHERE events.id = $1", [event.rows[0].id]);
                 if (eventToReturn.rows.length === 0) {
                     const error = new Error('event not found');
@@ -128,4 +125,48 @@ export const getTopEvents = async (req, res, next) => {
         next(Error);
     }
 
+}
+
+export const getEventsBreakdown = async (req, res, next) => {
+    try {
+        const userId = req.query.id;
+        const limit = req.query.limit;
+        const offset = req.query.offset;
+        if (!userId || !limit) {
+            const error = new Error('missing data');
+            error.status = 'missing data';
+            error.statusCode = 400;
+            throw (error);
+        } else {
+            const events = await pool.query("SELECT *, events.id AS eventid , events.name AS eventname, activities.name AS activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1 AND showintimeline = true ORDER BY distance DESC LIMIT $2 offset  $3 ;", [userId, limit, offset]);
+            if (!events) {
+                const error = new Error('error fetching events breakdown');
+                error.status = 'error fetching events breakdown';
+                error.statusCode = 401;
+                throw (error);
+            }
+            else {
+                const allevents = await pool.query("SELECT *, events.id AS eventid , events.name AS eventname, activities.name AS activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1 AND showintimeline = true ORDER BY distance DESC;", [userId]);
+                if (!allevents) {
+                    const error = new Error('error fetching events breakdown');
+                    error.status = 'error fetching events breakdown';
+                    error.statusCode = 401;
+                    throw (error);
+                }
+                else {
+                    const breakdown = {
+                        events: events.rows,
+                        length: allevents.rows.length
+                    }
+                    res.status(200).json({ data: breakdown, message: 'events breakdown fetched successfuly' });
+                }
+            }
+        }
+
+    } catch (error) {
+        const Error = error;
+        Error.status = error.status || "problem in fetching events breakdown";
+        Error.statusCode = error.statusCode || 500;
+        next(Error);
+    }
 }

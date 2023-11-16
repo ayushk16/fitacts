@@ -6,8 +6,26 @@ import { fetchAgain } from '../../features/user/followedUserEvents';
 
 const FollowedActivitiesShowCase = ({ userId }) => {
   const dispatch = useDispatch();
+  const [continueLoading, setContinueLoading] = useState(true);
   const [pageloading, setPageloading] = useState(false);
+  const [currentpagelength, setCurrentpagelength] = useState(3);
   const eventsData = useSelector((state) => state.followedUserEvents);
+
+  useEffect(() => {
+    if (continueLoading && eventsData.data.length + 2 > currentpagelength) {
+      console.log('fetching more data');
+      dispatch(
+        fetchAgain({
+          userId: userId,
+          offset: currentpagelength,
+        })
+      );
+    }
+    if (eventsData.data.length + 2 <= currentpagelength) {
+      setContinueLoading(false);
+    }
+    setPageloading(false);
+  }, [currentpagelength]);
 
   const handleInfiniteScroll = async () => {
     try {
@@ -16,8 +34,7 @@ const FollowedActivitiesShowCase = ({ userId }) => {
         document.documentElement.scrollHeight
       ) {
         setPageloading(true);
-        console.log('fetching more data');
-        dispatch(fetchAgain({ userId })).then(setPageloading(false));
+        setCurrentpagelength((prev) => prev + 2);
       }
     } catch (error) {
       console.log(error);

@@ -5,18 +5,19 @@ import axios from "axios";
 const initialState = {
     loading: false,
     data: [],
+    length: 0,
     error: null,
 }
 
 export const fetchFollowedUserEvents = createAsyncThunk('followedUserEvents/fetchFollowedUserEvents', ({ userId }) => {
     return axios
-        .get('http://localhost:3000/events', { params: { id: userId } })
+        .get('http://localhost:3000/events/breakdown', { params: { id: userId, limit: 5, offset: 0 } })
         .then(res => { return (res.data) })
 })
 
-export const fetchAgain = createAsyncThunk('followedUserEvents/fetchAgain', ({ userId }) => {
+export const fetchAgain = createAsyncThunk('followedUserEvents/fetchAgain', ({ userId, offset }) => {
     return axios
-        .get('http://localhost:3000/events', { params: { id: userId } })
+        .get('http://localhost:3000/events/breakdown', { params: { id: userId, limit: 2, offset: offset } })
         .then(res => { return (res.data) })
 })
 
@@ -37,7 +38,11 @@ const followedUserEventsSlice = createSlice({
         })
         builder.addCase(fetchFollowedUserEvents.fulfilled, (state, action) => {
             state.loading = false;
-            state.data = action.payload.data;
+            if (action.payload.data) {
+                console.log(action.payload)
+                state.data = action.payload.data.events;
+                state.length = action.payload.data.length;
+            }
             state.error = null;
         })
         builder.addCase(fetchFollowedUserEvents.rejected, (state, action) => {
@@ -50,8 +55,16 @@ const followedUserEventsSlice = createSlice({
         })
         builder.addCase(fetchAgain.fulfilled, (state, action) => {
             state.loading = false;
-            state.data = [...state.data, ...action.payload.data];
+            if (action.payload.data) {
+                console.log(action.payload);
+                if (action.payload.data.events[0].id === state.data[state.data.length - 1].id) {
 
+                }
+                else {
+                    state.data = [...state.data, ...action.payload.data.events];
+                    state.length = action.payload.length;
+                }
+            }
             state.error = null;
         })
         builder.addCase(fetchAgain.rejected, (state, action) => {
