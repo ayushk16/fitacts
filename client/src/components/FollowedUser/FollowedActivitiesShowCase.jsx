@@ -27,7 +27,7 @@ const FollowedActivitiesShowCase = ({ userId }) => {
   useEffect(() => {
     window.addEventListener('scroll', handleInfiniteScroll);
     return () => window.removeEventListener('scroll', handleInfiniteScroll);
-  });
+  }, []);
 
   if (eventsData.error !== null && eventsData.error !== '') {
     return <div>error fetching events</div>;
