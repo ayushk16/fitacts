@@ -6,7 +6,6 @@ import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import ActivitiesHome from './pages/ActivitiesHome';
 import Fitscale from './pages/Fitscale';
-import Test from './pages/Test';
 import TopFive from './components/DashBoard/Activities/TopFive';
 import Feed from './pages/Feed';
 import UserEventPage from './pages/UserEventPage';
@@ -23,7 +22,7 @@ function App() {
         <Route path="/dashboard/activities/:id" element={<TopFive />} />
         <Route path="/dashboard/feed/" element={<Feed />} />
         <Route path="/events/:userid" element={<UserEventPage />} />
-        <Route path="/test" element={<Test />} />
+        <Route path="*" element={<Home />} />
       </Routes>
     </>
   );

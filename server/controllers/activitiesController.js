@@ -1,8 +1,5 @@
 import pool from "../app/config/dbConfig.js";
-import bcrypt from "bcryptjs";
-import getToken from "../functions/jwtAuth.js";
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
 dotenv.config();
 
 

@@ -1,6 +1,5 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { setUserToken } from "../../functions/tokenSet";
-import axios from 'axios'
 
 const initialState = {
     loading: false,

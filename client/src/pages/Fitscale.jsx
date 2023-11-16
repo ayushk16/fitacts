@@ -16,7 +16,6 @@ import {
 import { fetchActivities } from '../features/dashboard/activities/activitiesSlice';
 
 import Clock from '../components/DashBoard/Fitscale/Clock';
-import Events from '../components/DashBoard/Fitscale/Events';
 import DummyClock from '../components/DashBoard/Fitscale/DummyClock';
 import DashboardHeader from '../components/DashboardHeader';
 import EventsTable from '../components/DashBoard/Fitscale/EventsTable';
@@ -179,7 +178,6 @@ const Fitscale = () => {
           <DummyClock />
         )}
         <EventsTable />
-        {/* <Events /> */}
       </>
     );
   }

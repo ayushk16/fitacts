@@ -1,6 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from 'axios'
-import { useNavigate } from "react-router-dom";
+import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     error: null,
     data: {}
