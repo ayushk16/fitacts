@@ -266,6 +266,7 @@ const Signup = () => {
           <Button
             variant="contained"
             disableElevation
+            style={{ backgroundColor: '#A7727D', color: '#FAFDD6' }}
             onClick={() => {
               submitSignup();
             }}
