@@ -1,9 +1,9 @@
 import { Router } from "express";
-import controllers from "../controllers/index.js";
+import { getAllActivities, getActivity, getUserFavorites, updateFavorite } from "../controllers/activitiesController.js";
 
 export const router = Router();
 
-router.get("/all/", controllers.getAllActivities)
-router.get("/one/", controllers.getActivity);
-router.put("/favorite/", controllers.updateFavorite);
-router.get("/favorite/:id", controllers.getUserFavorites);
+router.get("/all/", getAllActivities)
+router.get("/one/", getActivity);
+router.put("/favorite/", updateFavorite);
+router.get("/favorite/:id", getUserFavorites);

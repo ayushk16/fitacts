@@ -1,6 +1,6 @@
 import { Router } from "express";
-import controllers from "../controllers/index.js";
+import { loginController } from "../controllers/loginController.js";
 
 export const router = Router();
 
-router.get("/", controllers.loginController);
+router.get("/", loginController);

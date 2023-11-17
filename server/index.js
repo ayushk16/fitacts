@@ -22,15 +22,10 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', (req, res) => {
     res.json({
         data: {
-            user: process.env.DBUSER,
-            host: process.env.HOST,
-            database: process.env.DB,
-            password: process.env.DBPASSWORD,
-            port: process.env.DBPORT
+            message: ("connected to db")
         }, message: 'connected'
     })
 })
-
 app.use("/signup", signupRoutes);
 app.use("/login", loginRoutes);
 app.use("/user", userRoutes);

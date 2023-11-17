@@ -1,8 +1,8 @@
 import { Router } from "express";
-import midlewares from "../midlewares/index.js";
-import controllers from "../controllers/index.js";
+import { checkUserExist } from "../midlewares/signupCheck.js";
 
+import { creatUserController, getUsers } from "../controllers/signUpController.js";
 export const router = Router();
 
-router.get("/", controllers.getUsers);
-router.post("/", midlewares.checkUserExist, controllers.creatUserController);
+router.get("/", getUsers);
+router.post("/", checkUserExist, creatUserController);

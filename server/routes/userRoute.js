@@ -1,10 +1,10 @@
 import { Router } from "express";
-import controllers from "../controllers/index.js";
+import { getUser, updateUser, following, follow, unfollow } from "../controllers/userController.js";
 
 export const router = Router();
 
-router.get("/", controllers.getUser);
-router.put('/', controllers.updateUser);
-router.get("/following/", controllers.following);
-router.post("/follow/", controllers.follow);
-router.delete("/unfollow/", controllers.unfollow);
+router.get("/", getUser);
+router.put('/', updateUser);
+router.get("/following/", following);
+router.post("/follow/", follow);
+router.delete("/unfollow/", unfollow);

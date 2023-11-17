@@ -1,11 +1,10 @@
 import { Router } from "express";
-import controllers from "../controllers/index.js";
+import { getAllEvents, createEvent, updateEvent, getTopEvents, getEventsBreakdown } from "../controllers/eventsController.js";
 
 export const router = Router();
 
-// router.get("/", authCheck, controllers.getAllActivities);
-router.get("/", controllers.getAllEvents);
-router.post("/", controllers.createEvent);
-router.put("/", controllers.updateEvent);
-router.get("/top/", controllers.getTopEvents);
-router.get("/breakdown/", controllers.getEventsBreakdown);
+router.get("/", getAllEvents);
+router.post("/", createEvent);
+router.put("/", updateEvent);
+router.get("/top/", getTopEvents);
+router.get("/breakdown/", getEventsBreakdown);
