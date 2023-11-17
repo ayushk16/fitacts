@@ -3,7 +3,7 @@ import pool from "../app/config/dbConfig.js";
 
 export const getUsers = async (req, res) => {
     try {
-        const users = await pool.query("SELECT * FROM users");
+        const users = await pool.query("SELECT id,firstname,lastname,favorites FROM users");
         if (!users) {
             const error = new Error('error fetching users');
             error.status = "error fetching users"

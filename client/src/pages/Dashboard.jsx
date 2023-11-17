@@ -7,7 +7,7 @@ import { getToken, getUser, removeUserToken } from '../functions/tokenSet.js';
 import { login } from '../features/user/userSlice.js';
 
 import DashboardHeader from '../components/DashboardHeader.jsx';
-import Navheader from '../components/DashBoard/Timeline/Navheader.jsx';
+import UserWelcome from '../components/DashBoard/Timeline/UserWelcome.jsx';
 import ActivitiesShowCase from '../components/DashBoard/Timeline/ActivitiesShowCase.jsx';
 
 const Dashboard = () => {
@@ -41,12 +41,11 @@ const Dashboard = () => {
   }
   if (userState.error !== null && userState.error !== '') {
     return <div>error-{userState.error}</div>;
-  }
-  if (userState.data) {
+  } else {
     return (
       <>
         <DashboardHeader />
-        <Navheader />
+        <UserWelcome />
         <ActivitiesShowCase />
       </>
     );

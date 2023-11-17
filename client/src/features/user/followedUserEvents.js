@@ -39,7 +39,6 @@ const followedUserEventsSlice = createSlice({
         builder.addCase(fetchFollowedUserEvents.fulfilled, (state, action) => {
             state.loading = false;
             if (action.payload.data) {
-                console.log(action.payload)
                 state.data = action.payload.data.events;
                 state.length = action.payload.data.length;
             }
@@ -56,7 +55,6 @@ const followedUserEventsSlice = createSlice({
         builder.addCase(fetchAgain.fulfilled, (state, action) => {
             state.loading = false;
             if (action.payload.data) {
-                console.log(action.payload);
                 if (action.payload.data.events[0].id === state.data[state.data.length - 1].id) {
 
                 }

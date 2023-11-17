@@ -119,55 +119,87 @@ const ActivitiesShowCase = () => {
               return (
                 <React.Fragment key={index}>
                   {event.showintimeline === true && (
-                    <Grid key={event.id} item xs={3} height={'auto'}>
-                      <Card sx={{ padding: '1rem', position: 'relative' }}>
-                        <Box position={'absolute'} right={20}>
-                          <TiDeleteOutline
-                            fontSize={24}
-                            onClick={() => {
-                              removeFromTimeline({
-                                userid: event.userid,
-                                eventid: event.eventid,
-                                showintimeline: false,
-                              });
-                            }}
-                          />
-                        </Box>
+                    <Grid key={event.id} item xs={12} height={'auto'}>
+                      <Stack
+                        sx={{
+                          minWidth: '400px',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          marginTop: '1rem',
+                        }}
+                      >
+                        <Card
+                          elevation={3}
+                          style={{
+                            padding: '1rem',
+                            position: 'relative',
+                            width: '400px',
+                            boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.45)',
+                            background:
+                              'linear-gradient(to top, #F9F5E7, #fff)',
+                          }}
+                        >
+                          <Box position={'absolute'} right={20}>
+                            <TiDeleteOutline
+                              fontSize={24}
+                              onClick={() => {
+                                removeFromTimeline({
+                                  userid: event.userid,
+                                  eventid: event.eventid,
+                                  showintimeline: false,
+                                });
+                              }}
+                            />
+                          </Box>
 
-                        <Stack spacing={2} width={'100%'} alignItems={'center'}>
-                          <Typography variant="h5">
-                            {event.eventname}
-                          </Typography>
                           <Stack
-                            direction={'column'}
-                            display="flex"
-                            justifyContent="space-evenly"
                             spacing={2}
+                            width={'100%'}
+                            alignItems={'center'}
                           >
-                            <Typography>activity - {event.name}</Typography>
-
-                            <Typography>
-                              distance - {event.distance}
-                              {event.distanceunit}
+                            <Typography variant="h5">
+                              {event.eventname}
                             </Typography>
+                            <Stack
+                              direction={'column'}
+                              display="flex"
+                              justifyContent="space-evenly"
+                              spacing={2}
+                            >
+                              <Typography>activity - {event.name}</Typography>
 
-                            <Typography>
-                              duration -{' '}
-                              {Math.floor(event.duration / 3600) < 10
-                                ? `0${Math.floor(event.duration / 3600)}`
-                                : `${Math.floor(event.duration / 3600)}`}
-                              :
-                              {Math.floor((event.duration % 3600) / 60) < 10
-                                ? `0${Math.floor((event.duration % 3600) / 60)}`
-                                : `${Math.floor((event.duration % 3600) / 60)}`}
-                              :
-                              {Math.floor((event.duration % 3600) % 60) < 10
-                                ? `0${Math.floor((event.duration % 3600) % 60)}`
-                                : `${Math.floor((event.duration % 3600) % 60)}`}
-                            </Typography>
+                              <Typography>
+                                distance - {event.distance}
+                                {event.distanceunit}
+                              </Typography>
+
+                              <Typography>
+                                duration -{' '}
+                                {Math.floor(event.duration / 3600) < 10
+                                  ? `0${Math.floor(event.duration / 3600)}`
+                                  : `${Math.floor(event.duration / 3600)}`}
+                                :
+                                {Math.floor((event.duration % 3600) / 60) < 10
+                                  ? `0${Math.floor(
+                                      (event.duration % 3600) / 60
+                                    )}`
+                                  : `${Math.floor(
+                                      (event.duration % 3600) / 60
+                                    )}`}
+                                :
+                                {Math.floor((event.duration % 3600) % 60) < 10
+                                  ? `0${Math.floor(
+                                      (event.duration % 3600) % 60
+                                    )}`
+                                  : `${Math.floor(
+                                      (event.duration % 3600) % 60
+                                    )}`}
+                              </Typography>
+                            </Stack>
                           </Stack>
-                        </Stack>
-                      </Card>
+                        </Card>
+                      </Stack>
                     </Grid>
                   )}
                 </React.Fragment>

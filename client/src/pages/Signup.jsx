@@ -189,6 +189,13 @@ const Signup = () => {
               }}
             />
           </FormControl>
+          {currentUserState.error &&
+            currentUserState.error ===
+              'Request failed with status code 405' && (
+              <Typography variant="span" component="h4" color="error">
+                Phone Number already exists
+              </Typography>
+            )}
           <FormControl sx={{ m: 1, width: '25ch' }} variant="filled">
             <InputLabel htmlFor="filled-adornment-password">
               Enter A Password

@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { Card, Grid, Stack, Typography } from '@mui/material';
+import { FaArrowLeft } from 'react-icons/fa';
+import { Card, Grid, Stack, Typography, Box } from '@mui/material';
 import { fetchAgain } from '../../features/user/followedUserEvents';
+import { useNavigate } from 'react-router-dom';
 
-const FollowedActivitiesShowCase = ({ userId }) => {
+const FollowedActivitiesShowCase = ({ userId, username }) => {
   const dispatch = useDispatch();
   const [continueLoading, setContinueLoading] = useState(true);
   const [pageloading, setPageloading] = useState(false);
   const [currentpagelength, setCurrentpagelength] = useState(3);
   const eventsData = useSelector((state) => state.followedUserEvents);
 
+  useEffect(() => {
+    setCurrentpagelength(eventsData.data.length);
+  }, []);
+
+  const navigate = useNavigate();
   useEffect(() => {
     if (continueLoading && eventsData.data.length + 2 > currentpagelength) {
       console.log('fetching more data');
@@ -47,10 +54,55 @@ const FollowedActivitiesShowCase = ({ userId }) => {
   }, []);
 
   if (eventsData.error !== null && eventsData.error !== '') {
-    return <div>error fetching events</div>;
+    return (
+      <>
+        <Typography
+          sx={{
+            fontSize: '2rem',
+            color: '#000000',
+            marginBottom: '2rem',
+            textAlign: 'center',
+            marginTop: '2rem',
+          }}
+        >
+          {username}'s Timeline
+        </Typography>
+        <div>error fetching events</div>;
+      </>
+    );
   } else {
     return (
       <>
+        <Box
+          style={{
+            position: 'fixed',
+            top: '100px',
+            left: '100px',
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-around',
+          }}
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <FaArrowLeft />
+          <Typography>Go Back</Typography>
+        </Box>
+        <Typography
+          sx={{
+            fontSize: '2rem',
+            color: '#000000',
+            marginBottom: '2rem',
+            textAlign: 'center',
+            marginTop: '2rem',
+          }}
+        >
+          {username}'s Timeline
+        </Typography>
+
         <Grid
           container
           rowSpacing={1}
@@ -58,7 +110,23 @@ const FollowedActivitiesShowCase = ({ userId }) => {
           marginTop={3}
           height={'auto'}
         >
-          {eventsData.data &&
+          {eventsData.data && eventsData.data.length === 0 ? (
+            <Grid item xs={12}>
+              <Typography
+                sx={{
+                  fontSize: '2rem',
+                  fontWeight: 'bold',
+                  color: '#000000',
+                  marginBottom: '3rem',
+                  textAlign: 'center',
+                  marginTop: '2rem',
+                }}
+              >
+                No Data Found
+              </Typography>
+            </Grid>
+          ) : (
+            eventsData.data &&
             eventsData.data.map((event, index) => {
               return (
                 <>
@@ -78,6 +146,8 @@ const FollowedActivitiesShowCase = ({ userId }) => {
                             padding: '1rem',
                             position: 'relative',
                             width: '400px',
+                            background:
+                              'linear-gradient(to top, #F9F5D7, #fff)',
                           }}
                         >
                           <Stack
@@ -131,7 +201,8 @@ const FollowedActivitiesShowCase = ({ userId }) => {
                   )}
                 </>
               );
-            })}
+            })
+          )}
         </Grid>
         {pageloading && <div>loading more data...</div>}
       </>

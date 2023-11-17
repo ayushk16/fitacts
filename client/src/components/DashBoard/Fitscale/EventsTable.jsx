@@ -83,7 +83,11 @@ const EventsTable = () => {
     return (
       <>
         <TableContainer>
-          <Table>
+          <Table
+            style={{
+              background: 'linear-gradient(to bottom, #fff, #EDDBC7)',
+            }}
+          >
             <EventsTableHeader
               valueToOrderBy={valueToOrderBy}
               orderDirection={orderDirection}

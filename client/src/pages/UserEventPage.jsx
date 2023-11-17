@@ -6,17 +6,25 @@ import FollowedActivitiesShowCase from '../components/FollowedUser/FollowedActiv
 
 import DashboardHeader from '../components/DashboardHeader.jsx';
 const UserEventPage = () => {
-  const { userid } = useParams();
+  const { username } = useParams();
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.user);
+  const followedUserData = useSelector((state) => state.followedUser);
   useEffect(() => {
-    dispatch(fetchFollowedUserEvents({ userId: userid }));
-  });
+    if (followedUserData.data) {
+      dispatch(fetchFollowedUserEvents({ userId: followedUserData.data.id }));
+    }
+  }, [followedUserData]);
 
   return (
     <>
       <DashboardHeader />
-      <FollowedActivitiesShowCase userId={userid} />
+      {followedUserData.data && (
+        <FollowedActivitiesShowCase
+          userId={followedUserData.data.id}
+          username={followedUserData.data.name}
+        />
+      )}
     </>
   );
 };

@@ -52,20 +52,24 @@ const AllUsers = () => {
             container
             rowSpacing={2}
             columnSpacing={{ xs: 3 }}
-            marginTop={5}
+            marginY={5}
+            spacing={2}
           >
             {users.data &&
               users.data.map((user, index) => {
                 return (
                   <>
                     {userData.data.data.user.id === user.id ? null : (
-                      <Grid item xs={12} key={user.id}>
+                      <Grid item xs={12} key={user.id} marginBottom={2}>
                         <Card
                           sx={{
                             height: '100px',
                             padding: '30px',
                             display: 'flex',
                             flexDirection: 'row',
+
+                            background:
+                              'linear-gradient(to left, #F9F5D7, #fff)',
                           }}
                         >
                           <Box
@@ -83,7 +87,13 @@ const AllUsers = () => {
                                 {user.firstname} {user.lastname}
                               </Typography>
                             </Box>
-                            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                color: '#A7727D',
+                              }}
+                            >
                               {user.favorites &&
                                 user.favorites.map((fav, index) => {
                                   return (
@@ -116,6 +126,10 @@ const AllUsers = () => {
                                 (follow) => follow.followeduserid === user.id
                               ) ? (
                                 <Button
+                                  style={{
+                                    backgroundColor: '#AEC3AE',
+                                    color: '#FAFDD6',
+                                  }}
                                   onClick={(e) => {
                                     unfollowuser({
                                       userId: userData.data.data.user.id,
@@ -127,6 +141,10 @@ const AllUsers = () => {
                                 </Button>
                               ) : (
                                 <Button
+                                  style={{
+                                    backgroundColor: '#FFCACC',
+                                    color: '#FAFDD6',
+                                  }}
                                   onClick={(e) => {
                                     followuser({
                                       userId: userData.data.data.user.id,

@@ -13,6 +13,8 @@ const TopFive = () => {
     dispatch(fetchTopEvents({ id }));
   }, []);
 
+  const activitiesData = useSelector((state) => state.activities);
+
   const topEventsData = useSelector((state) => {
     return state.topEvents;
   });
@@ -55,7 +57,14 @@ const TopFive = () => {
                   marginTop: '2rem',
                 }}
               >
-                No Data Found...
+                No Data Found{' '}
+                {activitiesData.data &&
+                  `for ${
+                    activitiesData.data.filter((activity) => {
+                      return activity.id === id;
+                    })[0].name
+                  }`}
+                ...
               </Typography>
             ) : (
               <Typography
@@ -68,10 +77,15 @@ const TopFive = () => {
                   marginTop: '2rem',
                 }}
               >
-                Top 5 Events
+                Top 5 Events{' '}
+                {`for ${
+                  activitiesData.data.filter((activity) => {
+                    return activity.id === id;
+                  })[0].name
+                }`}
               </Typography>
             )}
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
               {topEventsData &&
                 topEventsData.data.map((event, index) => {
                   return (
@@ -84,7 +98,15 @@ const TopFive = () => {
                         alignItems={'center'}
                         justifyContent={'center'}
                       >
-                        <Card sx={{ width: '50%', padding: '2rem' }}>
+                        <Card
+                          sx={{
+                            width: '50%',
+                            padding: '1.5rem',
+                            background:
+                              'linear-gradient(to bottom, #F9F5E7, #fff)',
+                            boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.15)',
+                          }}
+                        >
                           <div>
                             <Typography
                               sx={{

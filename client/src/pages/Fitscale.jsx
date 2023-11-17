@@ -80,15 +80,15 @@ const Fitscale = () => {
       <>
         <DashboardHeader />
         <Box
-          sx={{ width: '100vw', bgcolor: 'lightblue', height: '100px' }}
+          sx={{ width: '100vw', bgcolor: '#EDDBC7', height: 'auto' }}
           padding={'2rem'}
         >
           <Stack
             display="flex"
-            justifyContent="center"
             spacing={5}
             direction="row"
-            alignContent="center"
+            justifyContent="center"
+            alignItems="center"
           >
             <Box sx={{ minWidth: 120 }}>
               <FormControl fullWidth>
@@ -157,6 +157,15 @@ const Fitscale = () => {
                   variant="contained"
                   disabled={
                     distanceEntered.error || distanceEntered.distance === 0
+                  }
+                  style={
+                    distanceEntered.error || distanceEntered.distance === 0
+                      ? {
+                          backgroundColor: '#A7727D',
+                          color: '#FAFDD6',
+                          opacity: '0.5',
+                        }
+                      : { backgroundColor: '#A7727D', color: '#FAFDD6' }
                   }
                   onClick={() => {
                     setDisplayClock(true);

@@ -15,7 +15,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { BorderBottom, Visibility, VisibilityOff } from '@mui/icons-material';
 import { login, logout, errorlogin } from '../features/user/userSlice.js';
 import Header from '../components/Header.jsx';
 const Login = () => {
@@ -72,7 +72,7 @@ const Login = () => {
           <Typography component="h1" variant="h3">
             Login
           </Typography>
-          <FormControl>
+          <FormControl variant="filled">
             <InputLabel htmlFor="email-login">Email address</InputLabel>
             <Input
               id="email-login"
@@ -81,7 +81,12 @@ const Login = () => {
                 setUserEmail(() => e.target.value);
               }}
             />
-            <FormHelperText id="email-login-helper-text">
+            <FormHelperText
+              id="email-login-helper-text"
+              style={{
+                BorderBottom: '1px solid #A7727D',
+              }}
+            >
               enter your email
             </FormHelperText>
           </FormControl>
@@ -124,6 +129,7 @@ const Login = () => {
               )))}
           <Button
             variant="contained"
+            style={{ backgroundColor: '#A7727D', color: '#FAFDD6' }}
             disableElevation
             onClick={() => loginUser()}
           >

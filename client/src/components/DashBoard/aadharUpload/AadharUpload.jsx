@@ -62,6 +62,15 @@ const AadharUpload = ({ userid }) => {
               <Button
                 variant={'contained'}
                 disabled={!aadhar}
+                style={
+                  aadhar
+                    ? { backgroundColor: '#A7727D', color: '#FAFDD6' }
+                    : {
+                        backgroundColor: '#A7727D',
+                        color: '#FAFDD6',
+                        opacity: '0.5',
+                      }
+                }
                 onClick={() => {
                   uploadAadhar();
                 }}

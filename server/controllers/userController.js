@@ -45,6 +45,8 @@ export const getUser = async (req, res, next) => {
     }
 }
 
+
+
 export const updateUser = async (req, res, next) => {
     try {
         const { userid, aadhardata } = req.body;
@@ -387,4 +389,45 @@ export const unfollow = async (req, res, next) => {
 
     }
 
+}
+
+
+export const getAadhar = async (req, res, next) => {
+    try {
+        const userid = req.query.userid;
+        if (!userid) {
+            const error = new Error('missing data');
+            error.status = 'missing data';
+            error.statusCode = 400;
+            throw (error);
+        }
+        else {
+            const user = await pool.query("Select * from users where id = $1", [userid]);
+            if (!user || user.rows.length === 0 || user.rows[0].aadharpresent === false) {
+                const error = new Error('user adhaar not found');
+                error.status = 'user aadhar not found';
+                error.statusCode = 404;
+                throw (error);
+            }
+            else {
+                const aadharData = await pool.query("Select * from adhaars where userid = $1", [userid]);
+                if (!aadharData || aadharData.rows.length === 0) {
+                    const error = new Error('aadhar data not found');
+                    error.status = 'aadhar data not found';
+                    error.statusCode = 404;
+                    throw (error);
+                }
+                else {
+                    res.status(200).json({ data: aadharData.rows[0], message: "aadhar data fetched successfully" });
+                }
+            }
+        }
+
+    } catch (error) {
+        const Error = error;
+        Error.status = error.status || "problem in fetching aadhar data";
+        Error.statusCode = error.statusCode || 500;
+        next(Error);
+
+    }
 }

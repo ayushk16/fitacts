@@ -9,6 +9,7 @@ import Fitscale from './pages/Fitscale';
 import TopFive from './components/DashBoard/Activities/TopFive';
 import Feed from './pages/Feed';
 import UserEventPage from './pages/UserEventPage';
+import Profile from './pages/Profile';
 function App() {
   return (
     <>
@@ -21,7 +22,8 @@ function App() {
         <Route path="/dashboard/fitscale" element={<Fitscale />} />
         <Route path="/dashboard/activities/:id" element={<TopFive />} />
         <Route path="/dashboard/feed/" element={<Feed />} />
-        <Route path="/events/:userid" element={<UserEventPage />} />
+        <Route path="/events/:username" element={<UserEventPage />} />
+        <Route path="/profile/:username" element={<Profile />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </>

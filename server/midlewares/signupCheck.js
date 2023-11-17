@@ -19,3 +19,23 @@ export const checkUserExist = async (req, res, next) => {
         next(Error)
     }
 }
+
+export const checkPhoneExist = async (req, res, next) => {
+    const { phone } = req.body;
+    try {
+        const isuser = await pool.query(`SELECT * FROM users WHERE phone = ($1)`, [phone]);
+        if (isuser.rows.length === 0) {
+            next();
+        } else {
+            const error = new Error('phone already exist');
+            error.status = 'phone already exist';
+            error.statusCode = 405;
+            throw error;
+        }
+    } catch (error) {
+        const Error = error;
+        Error.status = error.status || 'error while checking phone';
+        Error.statusCode = error.statusCode || 500;
+        next(Error)
+    }
+}

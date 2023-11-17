@@ -38,7 +38,7 @@ const Activities = () => {
         <Container sx={{ marginTop: 5 }}>
           <Grid
             container
-            rowSpacing={2}
+            rowSpacing={1.5}
             columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           >
             {activitiesData.data.map((item, index) => {

@@ -79,21 +79,37 @@ const Clock = ({ clearActivityAndDistance, distance, activity }) => {
 
             <Stack direction="row" justifyContent="center" spacing={2}>
               {timerOn ? (
-                <Button variant="contained" onClick={stopTimer}>
+                <Button
+                  variant="contained"
+                  style={{ backgroundColor: '#A7727D', color: '#FAFDD6' }}
+                  onClick={stopTimer}
+                >
                   pause
                 </Button>
               ) : (
-                <Button variant="contained" onClick={startTimer}>
+                <Button
+                  variant="contained"
+                  style={{ backgroundColor: '#A7727D', color: '#FAFDD6' }}
+                  onClick={startTimer}
+                >
                   Start
                 </Button>
               )}
-              <Button variant="contained" onClick={resetTimer}>
+              <Button
+                variant="contained"
+                style={{ backgroundColor: '#A7727D', color: '#FAFDD6' }}
+                onClick={resetTimer}
+              >
                 Reset
               </Button>
             </Stack>
             <Stack>
               {!timerOn && (seconds > 0 || minutes > 0 || hours > 0) && (
-                <Button sx={{ fontSize: '1.2rem' }} onClick={handleOpen}>
+                <Button
+                  sx={{ fontSize: '1.2rem' }}
+                  onClick={handleOpen}
+                  style={{ color: '#A7727D' }}
+                >
                   Save
                 </Button>
               )}

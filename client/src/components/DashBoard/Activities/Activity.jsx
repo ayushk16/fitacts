@@ -59,13 +59,14 @@ const Activity = ({ item }) => {
 
   return (
     <>
-      <Grid item xs={12} sm={6} md={4} lg={3} height={100} margin={2}>
+      <Grid item xs={12} sm={6} md={4} lg={3} margin={2} height={'auto'}>
         <Card
           sx={{
             height: '100%',
             padding: 2,
             display: 'flex',
             flexDirection: 'column',
+            background: 'linear-gradient(to top, #F9F5E7, #fff)',
           }}
         >
           <Box>
@@ -77,11 +78,19 @@ const Activity = ({ item }) => {
               onClick={(e) => {
                 navigate(`/dashboard/activities/${item.id}`);
               }}
+              style={{ cursor: 'pointer' }}
             >
-              {item.name}
+              {item.name.toUpperCase()}
             </Typography>
           </Box>
-          <Box>
+          <Box
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+            }}
+          >
             <FormGroup>
               <FormControlLabel
                 control={

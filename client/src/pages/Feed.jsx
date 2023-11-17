@@ -36,7 +36,6 @@ const Feed = () => {
       <Container>
         <Stack display={'flex'} alignItems={'center'} justifyContent={'center'}>
           <ToggleButtonGroup
-            color="primary"
             value={alignment}
             exclusive
             onChange={(e) => {
