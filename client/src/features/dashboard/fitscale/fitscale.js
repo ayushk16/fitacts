@@ -16,6 +16,13 @@ export const fetchUserFavorites = createAsyncThunk('events/fetchEvents', ({ user
 const eventsSlice = createSlice({
     name: 'events',
     initialState,
+    reducers: {
+        clearEvents: (state, action) => {
+            state.loading = false;
+            state.data = [];
+            state.error = null;
+        }
+    },
     extraReducers: builder => {
         builder.addCase(fetchEvents.pending, (state, action) => {
             state.loading = true;
@@ -32,5 +39,7 @@ const eventsSlice = createSlice({
         })
     }
 })
+
+export const { clearEvents } = eventsSlice.actions;
 
 export default eventsSlice.reducer;

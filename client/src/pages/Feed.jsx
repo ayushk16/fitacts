@@ -11,6 +11,7 @@ import FollowingUsers from '../components/DashBoard/feed/FollowingUsers';
 import { fetchUsers } from '../features/user/usersSlice';
 import { fetchActivities } from '../features/dashboard/activities/activitiesSlice';
 import { fetchFollowing } from '../features/user/followingSlice';
+import { clearFollowedUser } from '../features/user/followedUserSlice';
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -20,15 +21,19 @@ const Feed = () => {
   useEffect(() => {
     dispatch(fetchUsers());
     dispatch(fetchActivities());
+    dispatch(clearFollowedUser());
     userData &&
       userData.data &&
       dispatch(fetchFollowing({ userId: userData.data.data.user.id }));
   }, []);
 
-  const [alignment, setAlignment] = useState(1);
+  const [alignment, setAlignment] = useState(
+    localStorage.getItem('feedallignment') || '1'
+  );
 
   const handleChange = (event) => {
     setAlignment(event.target.value);
+    localStorage.setItem('feedallignment', event.target.value);
   };
   return (
     <>

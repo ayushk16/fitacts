@@ -21,6 +21,14 @@ export const fetchActivities = createAsyncThunk("activities/fetchActivities", as
 const activitiesSlice = createSlice({
     name: "activities",
     initialState,
+    reducers: {
+        clearActivities: (state, action) => {
+            state.loading = false;
+            state.data = [];
+            state.error = null;
+        }
+
+    },
     extraReducers: builder => {
         builder.addCase(fetchActivities.pending, (state, action) => {
             state.loading = true;
@@ -38,5 +46,7 @@ const activitiesSlice = createSlice({
         })
     }
 });
+
+export const { clearActivities } = activitiesSlice.actions;
 
 export default activitiesSlice.reducer;

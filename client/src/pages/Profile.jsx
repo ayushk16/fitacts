@@ -7,8 +7,21 @@ import PropTypes from 'prop-types';
 import { Button, Card, Modal, Typography, Backdrop } from '@mui/material';
 import { useSpring, animated } from '@react-spring/web';
 
+import { clearTopEvents } from '../features/dashboard/activities/topEvents/topEvents';
+import { clearActivities } from '../features/dashboard/activities/activitiesSlice';
+import { clearEvents } from '../features/dashboard/eventSlice';
+import { clearFollowedUser } from '../features/user/followedUserSlice';
+import { clearFollowing } from '../features/user/followingSlice';
+import { cleanUp } from '../features/user/userSignupSlice';
+import { logout } from '../features/user/userSlice';
+import { clearUsers } from '../features/user/usersSlice';
+
+import { useDispatch } from 'react-redux';
+
 import { getUser, removeUserToken } from '../functions/tokenSet';
 import { useNavigate } from 'react-router-dom';
+
+import { clearAll } from '../functions/clearAll';
 
 const Fade = React.forwardRef(function Fade(props, ref) {
   const {
@@ -64,6 +77,7 @@ const style = {
 };
 
 const Profile = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const userData = getUser();
   const [aadharData, setAadharData] = useState('');
@@ -170,6 +184,15 @@ const Profile = () => {
                 color="error"
                 onClick={(e) => {
                   removeUserToken();
+                  dispatch(clearTopEvents());
+                  dispatch(clearActivities());
+                  dispatch(clearEvents());
+                  dispatch(clearFollowedUser());
+                  dispatch(clearFollowing());
+                  dispatch(clearUsers());
+                  dispatch(cleanUp());
+                  dispatch(logout());
+                  localStorage.removeItem('feedallignment');
                   navigate('/login');
                 }}
               >

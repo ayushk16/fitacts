@@ -6,6 +6,7 @@ import { router as loginRoutes } from './routes/loginRoute.js';
 import { router as activitiesRoutes } from './routes/activitiesRoute.js'
 import { router as userRoutes } from './routes/userRoute.js'
 import { router as eventRoutes } from './routes/eventRoute.js'
+import { router as swaggerRoutes } from './routes/swaggerRoute.js'
 import errorHandler from './midlewares/errorHandler.js';
 
 
@@ -26,6 +27,7 @@ app.get('/', (req, res) => {
         }, message: 'connected'
     })
 })
+app.use('/docs', swaggerRoutes);
 app.use("/signup", signupRoutes);
 app.use("/login", loginRoutes);
 app.use("/user", userRoutes);
