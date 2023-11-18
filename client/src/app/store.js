@@ -6,7 +6,6 @@ import activitiesSlicereducer from "../features/dashboard/activities/activitiesS
 import topEventsSlicereducer from "../features/dashboard/activities/topEvents/topEvents.js";
 import userSlicereducer from "../features/user/usersSlice.js";
 import followingSlicereducer from "../features/user/followingSlice.js";
-import followedUserEventsreducer from "../features/user/followedUserEvents.js";
 import followedUserreducer from "../features/user/followedUserSlice.js";
 
 const store = configureStore({
@@ -18,7 +17,6 @@ const store = configureStore({
         users: userSlicereducer,
         topEvents: topEventsSlicereducer,
         following: followingSlicereducer,
-        followedUserEvents: followedUserEventsreducer,
         followedUser: followedUserreducer,
     }
 })

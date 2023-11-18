@@ -1,0 +1,51 @@
+openapi: 3.1.0
+info:
+  title: Fit Acts
+  version: 1.0.0
+
+tags:
+  - name: User
+    description: User related endpoints
+
+paths:
+  /signup:
+    get:
+      tags:
+        - User
+      description: Get all users
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+              example:
+                - user_id: 17
+                  name: 'Ayush'
+                  email: 'ayush@gmail.com'
+                  mobilenumber: '9330642122'
+                  height: 150
+                  password: '$2b$10$wDuSt/SVxQqdZ67GqRYubepcDaVMS3HbRxi9/3k4UT09SRY3YXsxC'
+                  aadhar: null
+                  timeline: []
+                  favactivities:
+                    - 1
+                    - 5
+                  weight: 69
+                  following: []
+                - user_id: 19
+                  name: 'vishal'
+                  email: 'vishal1@gmail.com'
+                  mobilenumber: '8345621345'
+                  height: 130
+                  password: '$2b$10$e.SdwC9Gu3W3pc3IOh.UJ.I36K2xX/L4xbYzIp3dDUzIxZgJ.NidK'
+                  aadhar: null
+                  timeline: []
+                  favactivities:
+                    - 7
+                    - 4
+                  weight: 45
+                  following: []
+        '500':
+          description: Internal Server Error

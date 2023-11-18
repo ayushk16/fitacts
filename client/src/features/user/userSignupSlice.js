@@ -22,7 +22,6 @@ const createUserSlice = createSlice({
             state.error = null
         }
     }
-
 })
 
 export const { signup, errorsignup, cleanUp } = createUserSlice.actions;

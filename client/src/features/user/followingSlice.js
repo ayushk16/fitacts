@@ -31,6 +31,13 @@ export const unfollow = createAsyncThunk('following/unfollow', ({ userId, follow
 const followingSlice = createSlice({
     name: 'following',
     initialState,
+    reducers: {
+        clearFollowing: (state, action) => {
+            state.loading = false;
+            state.data = [];
+            state.error = null;
+        }
+    },
     extraReducers: builder => {
         builder.addCase(fetchFollowing.pending, (state, action) => {
             state.loading = true;
@@ -73,5 +80,7 @@ const followingSlice = createSlice({
         })
     }
 })
+
+export const { clearFollowing } = followingSlice.actions;
 
 export default followingSlice.reducer;

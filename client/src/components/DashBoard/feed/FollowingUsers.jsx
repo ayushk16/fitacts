@@ -14,9 +14,6 @@ const FollowingUsers = () => {
   const followingData = useSelector((state) => {
     return state.following;
   });
-  useEffect(() => {
-    dispatch(clearFollowedUser());
-  }, []);
 
   if (followingData.loading) {
     return <div>loading</div>;

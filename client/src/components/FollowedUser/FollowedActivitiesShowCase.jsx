@@ -1,36 +1,59 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
 
 import { FaArrowLeft } from 'react-icons/fa';
 import { Card, Grid, Stack, Typography, Box } from '@mui/material';
-import { fetchAgain } from '../../features/user/followedUserEvents';
+
 import { useNavigate } from 'react-router-dom';
 
 const FollowedActivitiesShowCase = ({ userId, username }) => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [eventsData, setEventsData] = useState({ data: [] });
   const [continueLoading, setContinueLoading] = useState(true);
   const [pageloading, setPageloading] = useState(false);
-  const [currentpagelength, setCurrentpagelength] = useState(3);
-  const eventsData = useSelector((state) => state.followedUserEvents);
+  const [currentpagelength, setCurrentpagelength] = useState(0);
+  const [totallength, setTotallength] = useState(0);
 
   useEffect(() => {
-    setCurrentpagelength(eventsData.data.length);
+    axios
+      .get('http://localhost:3000/events/breakdown', {
+        params: { id: userId, limit: 5, offset: 0 },
+      })
+      .then((res) => {
+        setEventsData((prev) => {
+          return { ...prev, data: res.data.data.events };
+        });
+        setTotallength(res.data.data.length);
+        setCurrentpagelength(res.data.data.events.length);
+      });
   }, []);
 
-  const navigate = useNavigate();
   useEffect(() => {
-    if (continueLoading && eventsData.data.length + 2 > currentpagelength) {
-      console.log('fetching more data');
-      dispatch(
-        fetchAgain({
-          userId: userId,
-          offset: currentpagelength,
-        })
-      );
-    }
-    if (eventsData.data.length + 2 <= currentpagelength) {
-      setContinueLoading(false);
-    }
+    if (currentpagelength <= 5) return;
+    console.log('fetching more data');
+    setPageloading(true);
+    axios
+      .get('http://localhost:3000/events/breakdown', {
+        params: { id: userId, limit: 2, offset: currentpagelength - 2 },
+      })
+      .then((res) => {
+        if (res.data.data.events.length === 0) {
+          setContinueLoading(false);
+        } else {
+          if (
+            eventsData.data.filter((event) => {
+              event.id === res.data.data.events[0].id;
+            }).length > 0
+          ) {
+            return;
+          } else {
+            setEventsData((prev) => {
+              return { ...prev, data: [...prev.data, ...res.data.data.events] };
+            });
+          }
+        }
+      });
     setPageloading(false);
   }, [currentpagelength]);
 
@@ -40,8 +63,9 @@ const FollowedActivitiesShowCase = ({ userId, username }) => {
         window.innerHeight + document.documentElement.scrollTop + 1 >=
         document.documentElement.scrollHeight
       ) {
-        setPageloading(true);
-        setCurrentpagelength((prev) => prev + 2);
+        if (currentpagelength < totallength) {
+          setCurrentpagelength((prev) => prev + 2);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -51,26 +75,9 @@ const FollowedActivitiesShowCase = ({ userId, username }) => {
   useEffect(() => {
     window.addEventListener('scroll', handleInfiniteScroll);
     return () => window.removeEventListener('scroll', handleInfiniteScroll);
-  }, []);
+  }, [continueLoading, eventsData.data.length, totallength]);
 
-  if (eventsData.error !== null && eventsData.error !== '') {
-    return (
-      <>
-        <Typography
-          sx={{
-            fontSize: '2rem',
-            color: '#000000',
-            marginBottom: '2rem',
-            textAlign: 'center',
-            marginTop: '2rem',
-          }}
-        >
-          {username}'s Timeline
-        </Typography>
-        <div>error fetching events</div>;
-      </>
-    );
-  } else {
+  if (eventsData.data) {
     return (
       <>
         <Box
@@ -209,5 +216,6 @@ const FollowedActivitiesShowCase = ({ userId, username }) => {
     );
   }
 };
+// };
 
 export default FollowedActivitiesShowCase;
