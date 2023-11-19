@@ -3,12 +3,14 @@ export const swaggerDef = {
     info: {
         title: 'Fit Acts Documentation',
         license: {
-            name: 'MIT',
+            name: 'Aphache 2.0',
+            url: 'https://www.apache.org/licenses/LICENSE-2.0.html',
         },
     },
     servers: [
         {
             url: `http://localhost:3000/`,
+            description: "Local server"
         },
     ],
 };

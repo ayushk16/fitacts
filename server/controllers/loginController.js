@@ -38,7 +38,7 @@ export const loginController = async (req, res, next) => {
         }
     } catch (error) {
         const Error = error;
-        Error.status = error.status || 'error while creating user';
+        Error.status = error.status || 'error while fetching user';
         Error.statusCode = error.statusCode || 500;
         next(Error);
     }

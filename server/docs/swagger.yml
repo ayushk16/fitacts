@@ -4,15 +4,168 @@ info:
   version: 1.0.0
 
 tags:
-  - name: User
+  - name: login
+    description: Login related endpoints
+  - name: signup
+    description: Signup related endpoints
+  - name: user
     description: User related endpoints
+  - name: activities
+    description: Activities related endpoints
+  - name: events
+    description: Events related endpoints
 
 paths:
-  /signup:
+  /login/:
     get:
       tags:
-        - User
+        - login
+      summary: This returns information of user required at Login.
+      description: Get login user's details.
+      parameters:
+        - name: email
+          in: query
+          description: Email of the user
+          required: true
+          schema:
+            type: string
+            example: ayush@gmail.com
+        - name: password
+          in: query
+          description: Password of the user
+          required: true
+          schema:
+            type: string
+            example: 123
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    token:
+                      accessToken: ensysjkd5s8saef9........
+                    user:
+                      id: 73d4a749-b479-4865-8aff-da81e5898b5
+                      firstname: Ayush
+                      lastname: Kumar
+                      email: ayush@gmil.com
+                      phone: '1234567890'
+                      password: afsklwkefoib6dsfg68re........
+                      aadharpressent: false
+                      favorites: []
+                  message: Login Successful
+        '400':
+          description: Bad Request Email of Password in empty
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: email or password not provided
+                  message: email or password not provided
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: User not found
+                  message: User not found
+        '401':
+          description: incorrect password
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: incorrect password
+                  message: incorrect password
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: error while fetching user
+                  message: error while fetching user
+
+  /signup/:
+    post:
+      tags:
+        - signup
+      summary: This creates a new user.
+      description: Create a new user.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                firstname: Ayush
+                lastname: Kumar
+                email: ayush@gmail.com
+                phone: 1234567890
+                password: 123
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    token:
+                      accessToken: ensysjkd5s8saef9........
+                    user:
+                      id: 73d4a749-b479-4865-8aff-da81e5898b5
+                      firstname: Ayush
+                      lastname: Kumar
+                      email: ayush@gmail.com
+                      phone: 1234567890
+                      password: afsklwkefoib6dsfg68re........
+                      aadharpressent: false
+                      favorites: []
+                  message: Signup Successful
+        '400':
+          description: User Email already exist
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: user already exist
+                  message: user already exist
+        '405':
+          desctiption: Phone number already exist
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: phone already exist
+                  message: phone already exist
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: error while creating user
+                  message: error while creating user
+
+    get:
+      tags:
+        - user
       description: Get all users
+      summary: This returns all users.
       responses:
         '200':
           description: Success
@@ -21,31 +174,848 @@ paths:
               schema:
                 type: array
               example:
-                - user_id: 17
-                  name: 'Ayush'
-                  email: 'ayush@gmail.com'
-                  mobilenumber: '9330642122'
-                  height: 150
-                  password: '$2b$10$wDuSt/SVxQqdZ67GqRYubepcDaVMS3HbRxi9/3k4UT09SRY3YXsxC'
-                  aadhar: null
-                  timeline: []
-                  favactivities:
-                    - 1
-                    - 5
-                  weight: 69
-                  following: []
-                - user_id: 19
-                  name: 'vishal'
-                  email: 'vishal1@gmail.com'
-                  mobilenumber: '8345621345'
-                  height: 130
-                  password: '$2b$10$e.SdwC9Gu3W3pc3IOh.UJ.I36K2xX/L4xbYzIp3dDUzIxZgJ.NidK'
-                  aadhar: null
-                  timeline: []
-                  favactivities:
-                    - 7
-                    - 4
-                  weight: 45
-                  following: []
+                - id: 73d4a749-b479-4865-8aff-da81e5898b5
+                  firstname: Ayush
+                  lastname: k
+                  favorites: []
+                - id: 0dd26950-910d-46ff-b839-fd1bccc94960
+                  firstname: karan
+                  lastname: singh
+                  favorites: []
         '500':
           description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: error while fetching users
+                  message: error while fetching users
+  /user/:
+    put:
+      tags:
+        - user
+      description: Update users aadhar data by userid
+      summary: This updates user by userid.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                userid: 73d4a749-b479-4865-8aff-da81e5898b54
+                aadhardata: aadhar-data.jpg
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    id: 73d4a749-b479-4865-8aff-da81e5898b54
+                    firstname: ayush
+                    lastname: k
+                    email: ayush@gmail.com
+                    phone: '7894561230'
+                    password: $2a$10$oImYwMS7NZvGgi1T8SF2wu89G8DBUDo.....
+                    aadharpressent: true
+                    favorites: []
+                  message: user updated successfuly
+        '400':
+          description: Missing Data
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: missing data
+                  message: missing data
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: user not found
+                  message: user not found
+
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in updating user
+                  message: problem in updating user
+
+  /user/following:
+    get:
+      tags:
+        - user
+      description: Get all users that are followed by a user
+      summary: This returns users that are followed by a user
+      parameters:
+        - name: userid
+          in: query
+          description: Id of the user
+          required: true
+          schema:
+            type: string
+            example: 73d4a749-b479-4865-8aff-da81e5898b54
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  - id: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                    firstname: 'karan'
+                    lastname: 'singh'
+                    followeruserid: '73d4a749-b479-4865-8aff-da81e5898b54'
+                    followeduserid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                    followerusername: 'ayush k'
+                    followedusername: 'karan singh'
+                  - id: '9cd15f9d-f02e-49c6-a91a-4ce45a7f011f'
+                    firstname: 'vishal'
+                    lastname: 'sharma'
+                    followeruserid: '73d4a749-b479-4865-8aff-da81e5898b54'
+                    followeduserid: '9cd15f9d-f02e-49c6-a91a-4ce45a7f011f'
+                    followerusername: 'ayush k'
+                    followedusername: 'vishal sharma'
+                message: 'followingdata fetched successful'
+
+        '400':
+          description: Missing Data
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: missing data
+                  message: missing data
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: user not found
+                  message: user not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in fetching following
+                  message: problem in fetching following
+  /user/follow/:
+    post:
+      tags:
+        - user
+      description: Follow a user
+      summary: This follows a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                followerid: 'fa056a42-3ef7-429a-88a2-9fb48778ebcf'
+                followedid: '4e7f1f6e-e9cd-4963-9c74-47765dcaf918'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  id: '35e6fe9e-8b5b-4586-8ac7-cb5c4d9c1951'
+                  firstname: 'dev'
+                  lastname: 'd'
+                  followeruserid: '73d4a749-b479-4865-8aff-da81e5898b54'
+                  followerusername: 'ayush k'
+                  followeduserid: '35e6fe9e-8b5b-4586-8ac7-cb5c4d9c1951'
+                  followedusername: 'dev d'
+                message: 'followdata already present'
+        '400':
+          description: Same user id is passed in both followerid and followedid / Missing Data
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: follower and followed user cannot be same / Missing Data
+                  message: follower and followed user cannot be same / Missing Data
+        '404':
+          description: Any of the user not found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: followed user not found / follower user not found'
+                  message: followed user not found /follower user not found'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in inserting followdata
+                  message: problem in inserting followdata
+
+  /user/unfollow/:
+    delete:
+      description: Unfollow a user deletes a followdata
+      summary: This unfollows a user
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                followerid: 'fa056a42-3ef7-429a-88a2-9fb48778ebcf'
+                followedid: '4e7f1f6e-e9cd-4963-9c74-47765dcaf918'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  id: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                  firstname: 'karan'
+                  lastname: 'singh'
+                  followeruserid: '73d4a749-b479-4865-8aff-da81e5898b54'
+                  followerusername: 'ayush k'
+                  followeduserid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                  followedusername: 'karan singh'
+                message: 'followdata deleted successfully'
+        '400':
+          description: Same user id is passed in both followerid and followedid / Missing Data
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: follower and followed user cannot be same / Missing Data
+                  message: follower and followed user cannot be same / Missing Data
+        '404':
+          description: Any of the user not found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: followed user not found / follower user not found'
+                  message: followed user not found /follower user not found'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in deleting followdata
+                  message: problem in deleting followdata
+
+  /user/aadhar/:
+    get:
+      tags:
+        - user
+      description: Get user's aadhar data
+      summary: This returns user's aadhar data
+      parameters:
+        - name: userid
+          in: query
+          description: Id of the user
+          required: true
+          schema:
+            type: string
+            example: 73d4a749-b479-4865-8aff-da81e5898b54
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  id: 'c9668298-1411-45d0-98d1-2a80c36a96ff'
+                  userid: '73d4a749-b479-4865-8aff-da81e5898b54'
+                  storageinfo: 'aadhar-data.jpg'
+                message: 'aadhar data fetched successfully'
+        '400':
+          description: Missing Data
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: missing data
+                  message: missing data
+        '404':
+          description: User not found / aadhar not found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: user adhaar not found/ aadhar data not found
+                  message: user adhaar not found/ aadhar data not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in fetching aadhar data
+                  message: problem in fetching aadhar data
+
+  /activities/all/:
+    get:
+      tags:
+        - activities
+      description: Get all activities
+      summary: This returns all activities
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  - id: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+                    name: 'walking'
+                    distanceunit: 'km'
+                  - id: '59cf7f01-4f0e-4fe8-942e-b45635b304c6'
+                    name: 'running'
+                    distanceunit: 'km'
+                  - id: 'b86adae3-530e-4825-8b27-cd1646baf6e5'
+                    name: 'tracking'
+                    distanceunit: 'km'
+                  - id: 'def5322c-dbf9-43dd-8fb7-e87a100f3d9b'
+                    name: 'cycling'
+                    distanceunit: 'km'
+                  - id: 'b3646eee-799c-487e-b484-d186083344c2'
+                    name: 'rowing'
+                    distanceunit: 'km'
+                  - id: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    name: 'swimming'
+                    distanceunit: 'm'
+                  - id: '7ec258ed-a500-468e-aa6b-43e1d4ca3cfd'
+                    name: 'marathon'
+                    distanceunit: 'km'
+                  - id: '1e13fc05-022a-4fb3-a2c0-b477ef84b2da'
+                    name: 'sprinting'
+                    distanceunit: 'm'
+                message: 'activities fetched successfully'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in fetching activities
+                  message: problem in fetching activities
+
+  /activities/favorite/:
+    put:
+      tags:
+        - activities
+      summary: This adds/remove activity from user's favorites
+      description: Adds/remove activity from user's favorites
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                userId: '1b9ee5a3-d5c0-499f-81f0-36d438fb0f62'
+                activityId: '59cf7f01-4f0e-4fe8-942e-b45635b304c6'
+                value: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  id: '73d4a749-b479-4865-8aff-da81e5898b54'
+                  firstname: 'ayush'
+                  lastname: 'k'
+                  email: 'ayush@gmail.com'
+                  phone: '1234567890'
+                  password: '$2a$10$oImYwMS7NZvGgi1T8SF2wu89G8DBUDoQbFVItLStSyTH6DXd2al3S'
+                  aadharpresent: true
+                  favorites:
+                    - 'b86adae3-530e-4825-8b27-cd1646baf6e5'
+                message: 'favorites updated successfully'
+        '400':
+          description: Missing Data / value is not boolean
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: missing data / wrong value
+                  message: missing data / wrong value
+        '404':
+          description: User not found / Activity not found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: user not found / activity not found
+                  message: user not found / activity not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: error while updating favorites
+                  message: error while updating favorites
+
+  /events/:
+    get:
+      tags:
+        - events
+      description: Get all events
+      summary: This returns all events
+      parameters:
+        - name: id
+          in: query
+          description: Id of the user
+          required: true
+          schema:
+            type: string
+            example: 1b9ee5a3-d5c0-499f-81f0-36d438fb0f62
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  - id: 'b86adae3-530e-4825-8b27-cd1646baf6e5'
+                    userid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                    activityid: 'b86adae3-530e-4825-8b27-cd1646baf6e5'
+                    distance: 45
+                    duration: 5
+                    timestamp: '2023-11-16T05:27:47.347Z'
+                    showintimeline: true
+                    name: 'tracking'
+                    distanceunit: 'km'
+                    eventid: '54934f12-53b7-4314-b6fe-6757a6fb96ef'
+                    eventname: '1'
+                    activityname: 'tracking'
+                  - id: 'b86adae3-530e-4825-8b27-cd1646baf6e5'
+                    userid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                    activityid: 'b86adae3-530e-4825-8b27-cd1646baf6e5'
+                    distance: 4
+                    duration: 2
+                    timestamp: '2023-11-17T19:20:56.404Z'
+                    showintimeline: false
+                    name: 'tracking'
+                    distanceunit: 'km'
+                    eventid: 'b9fd3fb2-761d-4722-9c6c-98aef698ee31'
+                    eventname: 'tracking test'
+                    activityname: 'tracking'
+                message: 'events fetched successfuly'
+        '404':
+          description: user not found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: user id not available
+                  message: user id not available
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in fetching events
+                  message: problem in fetching events
+
+    post:
+      tags:
+        - events
+      description: Create a new event
+      summary: This creates a new event
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                name: swimming test
+                userid: '1b9ee5a3-d5c0-499f-81f0-36d438fb0f62'
+                activityid: 'def5322c-dbf9-43dd-8fb7-e87a100f3d9b'
+                distance: 4
+                duration: 62
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  id: '1e13fc05-022a-4fb3-a2c0-b477ef84b2da'
+                  userid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                  activityid: '1e13fc05-022a-4fb3-a2c0-b477ef84b2da'
+                  distance: 201
+                  duration: 6
+                  timestamp: '2023-11-19T18:36:03.326Z'
+                  showintimeline: false
+                  name: 'sprinting'
+                  distanceunit: 'm'
+                  eventid: '966d5ca4-59e8-4218-9882-90805eaa39b2'
+                  eventname: '1 sprint'
+                  activityname: 'sprinting'
+                message: 'event created successfully'
+        '400':
+          description: Missing Data
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: missing data
+                  message: missing data
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in creating event
+                  message: problem in creating event
+
+    put:
+      tags:
+        - events
+      description: Update an event to show in timeline
+      summary: This updates an event to show in timeline
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                userid: '1b9ee5a3-d5c0-499f-81f0-36d438fb0f62'
+                eventid: '966d5ca4-59e8-4218-9882-90805eaa39b2'
+                showintimeline: true
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  id: 'b86adae3-530e-4825-8b27-cd1646baf6e5'
+                  userid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                  activityid: 'b86adae3-530e-4825-8b27-cd1646baf6e5'
+                  distance: 2
+                  duration: 2
+                  timestamp: '2023-11-17T19:29:52.708Z'
+                  showintimeline: true
+                  name: 'tracking'
+                  distanceunit: 'km'
+                  eventid: '37183172-4d45-476a-8b55-eff918912e12'
+                  eventname: 'test 9'
+                  activityname: 'tracking'
+                message: 'event updated successfully'
+        '400':
+          description: Missing Data
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: missing data
+                  message: missing data
+        '404':
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: event not found
+                  message: event not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in updating event
+                  message: problem in updating event
+
+  /events/top/:
+    get:
+      description: Get top 5 events
+      summary: This returns top 5 events of the user in a particular activity
+      tags:
+        - events
+      parameters:
+        - name: userId
+          in: query
+          description: Id of the user
+          required: true
+          schema:
+            type: string
+            example: 0dd26950-910d-46ff-b839-fd1bccc94960
+        - name: activityId
+          in: query
+          description: Id of the activity
+          required: true
+          schema:
+            type: string
+            example: a9dccfca-9550-404f-974d-5e2cea357f96
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  - id: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    userid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                    activityid: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    distance: 5
+                    duration: 5
+                    timestamp: '2023-11-16T05:32:45.848Z'
+                    showintimeline: false
+                    name: 'swimming'
+                    distanceunit: 'm'
+                    eventid: 'db14125f-f358-4504-a938-d361ff2f0483'
+                    eventname: '5'
+                    activityname: 'swimming'
+                  - id: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    userid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                    activityid: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    distance: 4
+                    duration: 4
+                    timestamp: '2023-11-17T19:22:43.507Z'
+                    showintimeline: false
+                    name: 'swimming'
+                    distanceunit: 'm'
+                    eventid: '02012575-142d-419c-a066-bb0738e1390e'
+                    eventname: 'test 3'
+                    activityname: 'swimming'
+                  - id: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    userid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                    activityid: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    distance: 2
+                    duration: 2
+                    timestamp: '2023-11-17T19:32:00.291Z'
+                    showintimeline: true
+                    name: 'swimming'
+                    distanceunit: 'm'
+                    eventid: '1d53b7d7-899a-4e56-8bf6-427ca1a3ef1e'
+                    eventname: 'a'
+                    activityname: 'swimming'
+                  - id: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    userid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                    activityid: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    distance: 1
+                    duration: 2
+                    timestamp: '2023-11-16T05:28:26.598Z'
+                    showintimeline: true
+                    name: 'swimming'
+                    distanceunit: 'm'
+                    eventid: 'be43bf1f-0609-488b-a87d-e5c88a32cab6'
+                    eventname: '2'
+                    activityname: 'swimming'
+                  - id: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    userid: '0dd26950-910d-46ff-b839-fd1bccc94960'
+                    activityid: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                    distance: 1
+                    duration: 2
+                    timestamp: '2023-11-16T06:47:42.837Z'
+                    showintimeline: true
+                    name: 'swimming'
+                    distanceunit: 'm'
+                    eventid: '4d8bc9b3-57c3-4f49-8fdf-c4bbc44a57f2'
+                    eventname: 'swim 1'
+                    activityname: 'swimming'
+                message: 'top events fetched successfully'
+        '400':
+          description: Missing Data
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: missing data
+                  message: missing data
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in fetching top events
+                  message: problem in fetching top events
+
+  /events/breakdown/:
+    get:
+      description: Get events of User by breakingdown in parts
+      summary: This returns events of User by breakingdown in parts
+      tags:
+        - events
+      parameters:
+        - name: id
+          in: query
+          description: Id of the user
+          required: true
+          schema:
+            type: string
+            example: fa056a42-3ef7-429a-88a2-9fb48778ebcf
+        - name: limit
+          in: query
+          description: number of events to fetched at max
+          required: true
+          schema:
+            type: integer
+            example: 5
+        - name: offset
+          in: query
+          description: number of events to skip
+          required: true
+          schema:
+            type: integer
+            example: 0
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  events:
+                    - id: '59cf7f01-4f0e-4fe8-942e-b45635b304c6'
+                      userid: 'fa056a42-3ef7-429a-88a2-9fb48778ebcf'
+                      activityid: '59cf7f01-4f0e-4fe8-942e-b45635b304c6'
+                      distance: 445
+                      duration: 3
+                      timestamp: '2023-11-16T08:21:16.154Z'
+                      showintimeline: true
+                      name: 'running'
+                      distanceunit: 'km'
+                      eventid: '94b9a5da-688d-41c4-9db2-2e125fe54ab5'
+                      eventname: 'c running'
+                      activityname: 'running'
+                    - id: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+                      userid: 'fa056a42-3ef7-429a-88a2-9fb48778ebcf'
+                      activityid: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+                      distance: 50
+                      duration: 1
+                      timestamp: '2023-11-14T00:57:50.240Z'
+                      showintimeline: true
+                      name: 'walking'
+                      distanceunit: 'km'
+                      eventid: 'efb91932-18c9-4979-9054-fd488af2262c'
+                      eventname: 'test event 4'
+                      activityname: 'walking'
+                    - id: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+                      userid: 'fa056a42-3ef7-429a-88a2-9fb48778ebcf'
+                      activityid: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+                      distance: 45
+                      duration: 7
+                      timestamp: '2023-11-14T10:12:03.961Z'
+                      showintimeline: true
+                      name: 'walking'
+                      distanceunit: 'km'
+                      eventid: 'ba93218a-41e7-412b-913a-136cd778ba4e'
+                      eventname: 'new event'
+                      activityname: 'walking'
+                    - id: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                      userid: 'fa056a42-3ef7-429a-88a2-9fb48778ebcf'
+                      activityid: 'a9dccfca-9550-404f-974d-5e2cea357f96'
+                      distance: 41
+                      duration: 4
+                      timestamp: '2023-11-14T05:17:11.239Z'
+                      showintimeline: true
+                      name: 'swimming'
+                      distanceunit: 'm'
+                      eventid: '4cbd5a80-8f89-474b-aeaf-757ae10df6ab'
+                      eventname: 'sw'
+                      activityname: 'swimming'
+                    - id: '59cf7f01-4f0e-4fe8-942e-b45635b304c6'
+                      userid: 'fa056a42-3ef7-429a-88a2-9fb48778ebcf'
+                      activityid: '59cf7f01-4f0e-4fe8-942e-b45635b304c6'
+                      distance: 12
+                      duration: 4
+                      timestamp: '2023-11-19T08:37:54.950Z'
+                      showintimeline: true
+                      name: 'running'
+                      distanceunit: 'km'
+                      eventid: '2d3da964-8dcd-4a20-9b9e-de482ff8f81a'
+                      eventname: '1 run'
+                      activityname: 'running'
+                  length: 10
+                message: 'events breakdown fetched successfully'
+        '400':
+          description: Missing Data
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: missing data
+                  message: missing data
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: problem in fetching events breakdown
+                  message: problem in fetching events breakdown

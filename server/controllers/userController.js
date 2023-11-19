@@ -4,47 +4,6 @@ import pool from "../app/config/dbConfig.js";
 
 
 
-export const getUser = async (req, res, next) => {
-    try {
-        const userId = req.params.userid;
-        console.log("userId", userId);
-        if (!userId) {
-            const error = new Error('missing data');
-            error.status = 'missing data';
-            error.statusCode = 400;
-            throw (error);
-        }
-        else {
-            const user = await pool.query("SELECT * FROM users WHERE id = $1", [userId]);
-            if (!user) {
-                const error = new Error(' error fetching users');
-                error.status = 'error fetching users';
-                error.statusCode = 404;
-                throw (error);
-            }
-            else {
-                if (user.rows.length === 0) {
-                    const error = new Error('user not found');
-                    error.status = 'user not found';
-                    error.statusCode = 404;
-                    throw (error);
-                }
-                else {
-                    const token = getToken({ id: user.rows[0].id, name: user.rows[0].name, email: user.rows[0].email });
-                    res.status(200).json({ data: { token: token, user: user.rows[0] }, message: "user fetch successful" });
-                }
-            }
-        }
-
-    } catch (error) {
-        const Error = error;
-        Error.status = error.status || "problem in fetching user";
-        Error.statusCode = error.statusCode || 500;
-        next(Error);
-
-    }
-}
-
 
 
 export const updateUser = async (req, res, next) => {
@@ -148,7 +107,7 @@ export const following = async (req, res, next) => {
                     throw (error);
                 }
                 else {
-                    const following = await pool.query("select *, followerinfo.id as followeruserid , followedinfo.id as followeduserid ,CONCAT(followerinfo.firstname ,' ' ,followerinfo.lastname) as followerusername , CONCAT(followedinfo.firstname ,' ' ,followedinfo.lastname) as followedusername from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followerid= $1", [userid]);
+                    const following = await pool.query("select followedinfo.id as id, followedinfo.firstname as firstname,followedinfo.lastname as lastname, followerinfo.id as followeruserid , followedinfo.id as followeduserid ,CONCAT(followerinfo.firstname ,' ' ,followerinfo.lastname) as followerusername , CONCAT(followedinfo.firstname ,' ' ,followedinfo.lastname) as followedusername from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followerid= $1", [userid]);
                     if (!following) {
                         const error = new Error('error fetching following');
                         error.status = 'error fetching following';
@@ -226,7 +185,7 @@ export const follow = async (req, res, next) => {
                                     throw (error);
                                 }
                                 else {
-                                    const data = await pool.query("SELECT * ,followeruser.id AS followeruserid, CONCAT(followeruser.firstname ,' ' ,followeruser.lastname) AS followerusername, followeduser.id AS followeduserid, CONCAT(followeduser.firstname,' ',followeduser.lastname) AS followedusername FROM users followeruser CROSS JOIN users followeduser where followeruser.id =  $1 and followeduser.id = $2", [followerid, followedid])
+                                    const data = await pool.query("SELECT  followeduser.id as id, followeduser.firstname as firstname,followeduser.lastname as lastname ,followeruser.id AS followeruserid, CONCAT(followeruser.firstname ,' ' ,followeruser.lastname) AS followerusername, followeduser.id AS followeduserid, CONCAT(followeduser.firstname,' ',followeduser.lastname) AS followedusername FROM users followeruser CROSS JOIN users followeduser where followeruser.id =  $1 and followeduser.id = $2", [followerid, followedid])
 
                                     if (followData.rows.length === 0) {
                                         const followData = await pool.query("INSERT INTO followdata (followerid,followingid) VALUES ($1,$2) RETURNING *", [followerid, followedid]);
@@ -326,7 +285,7 @@ export const unfollow = async (req, res, next) => {
                                 throw (error);
                             }
                             else {
-                                const data = await pool.query("SELECT * ,followeruser.id AS followeruserid, CONCAT(followeruser.firstname ,' ' ,followeruser.lastname) AS followerusername, followeduser.id AS followeduserid, CONCAT(followeduser.firstname,' ',followeduser.lastname) AS followedusername FROM users followeruser CROSS JOIN users followeduser where followeruser.id =  $1 and followeduser.id = $2", [followerid, followedid])
+                                const data = await pool.query("SELECT  followeduser.id as id, followeduser.firstname as firstname,followeduser.lastname as lastname,followeruser.id AS followeruserid, CONCAT(followeruser.firstname ,' ' ,followeruser.lastname) AS followerusername, followeduser.id AS followeduserid, CONCAT(followeduser.firstname,' ',followeduser.lastname) AS followedusername FROM users followeruser CROSS JOIN users followeduser where followeruser.id =  $1 and followeduser.id = $2", [followerid, followedid])
                                 if (followData.rows.length === 0) {
                                     if (!data) {
                                         const error = new Error('users not fetched');

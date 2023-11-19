@@ -39,7 +39,7 @@ export const getActivity = async (req, res, next) => {
     } catch (error) {
         const Error = error;
         Error.status = error.status || 'error while fetching activity data';
-        Error.statusCode = error.statusCode || 500
+        Error.statusCode = error.statusCode || 500;
     }
 }
 
@@ -116,45 +116,6 @@ export const updateFavorite = async (req, res, next) => {
     } catch (error) {
         const Error = error;
         Error.status = error.status || 'error while updating favorites';
-        Error.statusCode = error.statusCode || 500;
-        next(Error);
-    }
-}
-
-export const getUserFavorites = async (req, res, next) => {
-    try {
-        const userId = req.query.id;
-        if (!userId) {
-            const error = new Error('cant find userId');
-            error.status = 'user id not available';
-            error.statusCode = 404;
-            throw (error);
-        }
-        else {
-            const user = await pool.query("select * from users where id = $1", [userId]);
-            if (!user) {
-                const error = new Error('user not found');
-                error.status = 'wrong user id';
-                error.statusCode = 404;
-                throw (error);
-            }
-            else {
-                const favorites = user.rows[0].favorites;
-                const activities = await pool.query("select * from activities where id = ANY($1)", [favorites]);
-                if (!activities) {
-                    const error = new Error('error while fetching favorites');
-                    error.status = 'error while fetching favorites';
-                    error.statusCode = 500;
-                    throw (error);
-                }
-                else {
-                    res.status(200).json({ data: activities.rows, message: 'favorites fetched successfully' });
-                }
-            }
-        }
-    } catch (error) {
-        const Error = error;
-        Error.status = error.status || 'error while fetching favorites';
         Error.statusCode = error.statusCode || 500;
         next(Error);
     }
