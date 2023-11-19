@@ -58,7 +58,7 @@ const AllUsers = () => {
             {users.data &&
               users.data.map((user, index) => {
                 return (
-                  <>
+                  <React.Fragment key={user.id}>
                     {userData.data.data.user.id === user.id ? null : (
                       <Grid item xs={12} key={user.id} marginBottom={2}>
                         <Card
@@ -160,7 +160,7 @@ const AllUsers = () => {
                         </Card>
                       </Grid>
                     )}
-                  </>
+                  </React.Fragment>
                 );
               })}
           </Grid>

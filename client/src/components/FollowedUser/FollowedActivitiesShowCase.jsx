@@ -136,9 +136,9 @@ const FollowedActivitiesShowCase = ({ userId, username }) => {
             eventsData.data &&
             eventsData.data.map((event, index) => {
               return (
-                <>
+                <React.Fragment key={index}>
                   {event.showintimeline === true && (
-                    <Grid item xs={12} key={event.id} height={'auto'}>
+                    <Grid item xs={12} key={index} height={'auto'}>
                       <Stack
                         sx={{
                           minWidth: '400px',
@@ -206,7 +206,7 @@ const FollowedActivitiesShowCase = ({ userId, username }) => {
                       </Stack>
                     </Grid>
                   )}
-                </>
+                </React.Fragment>
               );
             })
           )}

@@ -265,6 +265,7 @@ const Signup = () => {
           </FormControl>
           <Button
             variant="contained"
+            style={{ backgroundColor: '#A7727D', color: '#FAFDD6' }}
             disableElevation
             onClick={() => {
               submitSignup();
