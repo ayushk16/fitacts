@@ -1019,3 +1019,157 @@ paths:
                 example:
                   data: problem in fetching events breakdown
                   message: problem in fetching events breakdown
+
+components:
+  schemas:
+    users:
+      type: object
+      properties:
+        id:
+          type: uuid
+          example: '1b9ee5a3-d5c0-499f-81f0-36d438fb0f62'
+        firstname:
+          type: string
+          format: varChar
+          example: 'Ayush'
+        lastname:
+          type: string
+          format: varChar
+          example: 'Kumar'
+        email:
+          type: string
+          format: varChar
+          example: 'ayush@gmail.com'
+          uniqueItems: true
+        password:
+          type: string
+          format: varChar
+          example: '$2b$10$wDuSt/SVxQqdZ67GqRYubepcDaVMS3HbRxi9/3k4UT09SRY3YXsxC'
+        phone:
+          type: integer
+          format: bigint
+          example: 1234567890
+          uniqueItems: true
+        aadharpressent:
+          type: boolean
+          format: boolean
+          example: true
+        favorites:
+          type: array
+          items:
+            type: uuid
+          example:
+            [
+              '1b9ee5a3-d5c0-499f-81f0-36d438fb0f62',
+              '1b9ee5a3-d5c0-499f-81f0-36d438fb0f62',
+            ]
+
+      example:
+        id: '1b9ee5a3-d5c0-499f-81f0-36d438fb0f62'
+        firstname: 'Ayush'
+        lastname: 'Kumar'
+        email: ayush@gmail.com
+        phone: 1234567890
+        password: '$2b$10$wDuSt/SVxQqdZ67GqRYubepcDaVMS3HbRxi9/3k4UT09SRY3YXsxC'
+        aadharpressent: true
+        favorites:
+          - '1b9ee5a3-d5c0-499f-81f0-36d438fb0f62'
+          - '1b9ee5a3-d5c0-499f-81f0-36d438fb0f62'
+
+    activities:
+      type: object
+      properties:
+        id:
+          type: uuid
+          example: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        activityName:
+          type: string
+          format: varChar
+          example: 'Running'
+        distanceunit:
+          type: string
+          format: varChar
+          example: 'km'
+
+      example:
+        id: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        activityName: 'Running'
+        distanceunit: 'km'
+
+    events:
+      type: object
+      properties:
+        id:
+          type: uuid
+          example: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        userid:
+          type: uuid
+          example: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        activityid:
+          type: uuid
+          example: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        distance:
+          type: numeric
+          format: float
+          example: 10.0
+        duration:
+          type: numeric
+          format: float
+          example: 10.0
+        showintimeline:
+          type: boolean
+          format: boolean
+          example: true
+        name:
+          type: string
+          format: string
+          example: 'Running'
+        created_at:
+          type: timestamp without time zone
+          format: timestamp
+          example: 2023-11-11 10:14:14.948
+
+      example:
+        id: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        userid: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        activityid: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        distance: 10.0
+        duration: 10.0
+        showintimeline: true
+        name: 'Running'
+        created_at: '2023-11-11 10:14:14.948'
+
+    aadhars:
+      type: object
+      properties:
+        id:
+          type: uuid
+          example: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        userid:
+          type: uuid
+          example: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        storageinfo:
+          type: string
+          format: varChar
+          example: 'aadhars/aadhar-data.jpg'
+      example:
+        id: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        userid: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        storageinfo: 'aadhars/aadhar-data.jpg'
+
+    followdata:
+      type: object
+      properties:
+        id:
+          type: uuid
+          example: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        followeruserid:
+          type: uuid
+          example: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        followingid:
+          type: uuid
+          example: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+      example:
+        id: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        followeruserid: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        followingid: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
