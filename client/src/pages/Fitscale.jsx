@@ -51,7 +51,7 @@ const Fitscale = () => {
     }
   };
   const clearActivityAndDistance = () => {
-    setSelectedActivity({});
+    // setSelectedActivity({});
     setDistanceEntered({
       error: false,
       distance: 0,

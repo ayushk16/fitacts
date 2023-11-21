@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Box, Grid, Button, TextField } from '@mui/material';
+import { Modal, Box, Grid, Button, TextField, Stack } from '@mui/material';
 
 import { addEvent } from '../../../features/dashboard/eventSlice';
 
@@ -60,13 +60,21 @@ const SaveEvent = ({
           aria-describedby="keep-mounted-modal-description"
         >
           <Box sx={style}>
-            <Grid container>
+            <Grid container spacing={3}>
               <Grid item xs={12}>
                 <h1>Event Details</h1>
               </Grid>
               <Grid item container xs={12}>
                 <Grid item xs={6}>
-                  <h3>Event Name</h3>
+                  <Stack
+                    style={{
+                      height: '100%',
+                      display: 'flex',
+                      justifyContent: 'flex-end',
+                    }}
+                  >
+                    <h3>Event Name</h3>
+                  </Stack>
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
@@ -115,7 +123,7 @@ const SaveEvent = ({
               onClick={() => {
                 save();
               }}
-              sx={{ marginRight: '1rem' }}
+              sx={{ marginRight: '1rem', marginTop: '1rem' }}
               variant="contained"
             >
               save
