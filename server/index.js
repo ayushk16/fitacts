@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv';
+dotenv.config();
 
 import { router as signupRoutes } from './routes/signUpRoute.js';
 import { router as loginRoutes } from './routes/loginRoute.js';
@@ -11,7 +13,7 @@ import errorHandler from './midlewares/errorHandler.js';
 
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const corsOptions = {
     origin: '*',
 }
