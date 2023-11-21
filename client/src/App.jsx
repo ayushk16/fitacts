@@ -10,6 +10,7 @@ import TopFive from './components/DashBoard/Activities/TopFive';
 import Feed from './pages/Feed';
 import UserEventPage from './pages/UserEventPage';
 import Profile from './pages/Profile';
+import OtherUserProfile from './pages/OtherUserProfile';
 function App() {
   return (
     <>
@@ -24,6 +25,7 @@ function App() {
         <Route path="/dashboard/feed/" element={<Feed />} />
         <Route path="/events/:username" element={<UserEventPage />} />
         <Route path="/profile/:username" element={<Profile />} />
+        <Route path="/dashboard/feed/user/" element={<OtherUserProfile />} />
         <Route path="*" element={<Home />} />
       </Routes>
     </>

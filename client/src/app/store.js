@@ -7,6 +7,9 @@ import topEventsSlicereducer from "../features/dashboard/activities/topEvents/to
 import userSlicereducer from "../features/user/usersSlice.js";
 import followingSlicereducer from "../features/user/followingSlice.js";
 import followedUserreducer from "../features/user/followedUserSlice.js";
+import pendingSlicereducer from "../features/user/pendingSlice.js";
+import pendingUserSlicereducer from "../features/user/pendingUserSlice.js";
+import requestSlicereducer from "../features/user/requestSlice.js";
 
 const store = configureStore({
     reducer: {
@@ -18,6 +21,9 @@ const store = configureStore({
         topEvents: topEventsSlicereducer,
         following: followingSlicereducer,
         followedUser: followedUserreducer,
+        pending: pendingSlicereducer,
+        pendingUser: pendingUserSlicereducer,
+        request: requestSlicereducer,
     }
 })
 

@@ -14,7 +14,6 @@ tags:
     description: Activities related endpoints
   - name: events
     description: Events related endpoints
-
 paths:
   /login/:
     get:
@@ -252,10 +251,216 @@ paths:
                   data: problem in updating user
                   message: problem in updating user
 
+  /user/request:
+    get:
+      tags:
+        - community
+      description: Get all users that are requesting to follow a user
+      summary: This returns users that are requesting to follow a user
+      parameters:
+        - name: userid
+          in: query
+          description: Id of the user
+          required: true
+          schema:
+            type: string
+            example: 73d4a749-b479-4865-8aff-da81e5898b54
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  - id: 4e7f1f6e-e9cd-4963-9c74-47765dcaf918
+                    firstname: vishal
+                    lastname: '2'
+                    email: vishal2@gmail.com
+                    phone: '1234567890'
+                  - id: 6141d734-c81f-4057-90e9-70b383e3a6ce
+                    firstname: test
+                    lastname: user
+                    email: test@user.com
+                    phone: '4569874130'
+
+                message: requests fetched successfully
+        '400':
+          description: missing data
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data: missing data
+                message: missing data
+        '404':
+          description: user not found
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data: user not found
+                message: user not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data: problem in fetching requests
+                message: problem in fetching requests
+
+  /user/pending:
+    get:
+      tags:
+        - community
+      description: Get all users that are pending to be followed by a user
+      summary: This returns users that are pending to be followed by a user
+      parameters:
+        - name: userid
+          in: query
+          desctiption: Id of the user
+          required: true
+          schema:
+            type: string
+            example: 73d4a749-b479-4865-8aff-da81e5898b54
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  - id: 4e7f1f6e-e9cd-4963-9c74-47765dcaf918
+                    firstname: vishal
+                    lastname: '2'
+                    followeruserid: 1b9ee5a3-d5c0-499f-81f0-36d438fb0f62
+                    followeduserid: 4e7f1f6e-e9cd-4963-9c74-47765dcaf918
+                    followerusername: rahul l
+                    followedusername: vishal  2
+                    email: vishal2@gmail.com
+                    phone: '1234567890'
+                  - id: 5d3237c0-8305-4a77-a741-6ad0946c940f
+                    firstname: salman
+                    lastname: 's'
+                    followeruserid: 1b9ee5a3-d5c0-499f-81f0-36d438fb0f62
+                    followeduserid: 5d3237c0-8305-4a77-a741-6ad0946c940f
+                    followerusername: rahul l
+                    followedusername: salman s
+                    email: salman@gmail.com
+                    phone: '4567891230'
+                  - id: e46ceac0-ddd7-48e0-8670-3ad1b11ba32f
+                    firstname: new
+                    lastname: user
+                    followeruserid: 1b9ee5a3-d5c0-499f-81f0-36d438fb0f62
+                    followeduserid: e46ceac0-ddd7-48e0-8670-3ad1b11ba32f
+                    followerusername: rahul l
+                    followedusername: new user
+                    email: new@gmail.com
+                    phone: '7894561230'
+
+                message: pending data fetched successful
+
+        '400':
+          description: missing data
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data: missing data
+                message: missing data
+        '404':
+          description: user not found
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data: user not found
+                message: user not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data: problem in fetching pending
+                message: problem in fetching pending
+
+  /user/addPending:
+    post:
+      tags:
+        - community
+      description: Add a user to pending list used to send a follow request
+      summary: This adds a user to pending list.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                followerid: fa056a42-3ef7-429a-88a2-9fb48778ebcf
+                followedid: 5d3237c0-8305-4a77-a741-6ad0946c940f
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data:
+                  id: 5d3237c0-8305-4a77-a741-6ad0946c940f
+                  firstname: salman
+                  lastname: s
+                  followeruserid: fa056a42-3ef7-429a-88a2-9fb48778ebcf
+                  followerusername: jai H
+                  followeduserid: 5d3237c0-8305-4a77-a741-6ad0946c940f
+                  followedusername: salman s
+                  email: salman@gmail.com
+                  phone: '4567891230'
+
+                message: followdata inserted successful
+        '400':
+          description: Same user id is passed in both followerid and followedid / Missing Data
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data: follower and followed user cannot be same / Missing Data
+                message: follower and followed user cannot be same / Missing Data
+        '404':
+          description: Any of the user not found
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data: followed user not found / follower user not found'
+                message: followed user not found /follower user not found'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                data: problem in inserting followdata pending state
+                message: problem in inserting followdata pending state
+
   /user/following:
     get:
       tags:
-        - user
+        - community
       description: Get all users that are followed by a user
       summary: This returns users that are followed by a user
       parameters:
@@ -318,10 +523,11 @@ paths:
                 example:
                   data: problem in fetching following
                   message: problem in fetching following
+
   /user/follow/:
-    post:
+    put:
       tags:
-        - user
+        - community
       description: Follow a user
       summary: This follows a user
       requestBody:
@@ -379,10 +585,10 @@ paths:
 
   /user/unfollow/:
     delete:
-      description: Unfollow a user deletes a followdata
-      summary: This unfollows a user
+      description: Unfollow a user / remove follow request / deletes a followdata
+      summary: This Deletes a followdata
       tags:
-        - user
+        - community
       requestBody:
         content:
           application/json:
@@ -449,7 +655,15 @@ paths:
           required: true
           schema:
             type: string
-            example: 73d4a749-b479-4865-8aff-da81e5898b54
+            example: 0dd26950-910d-46ff-b839-fd1bccc94960
+        - name: x-access-token
+          in: header
+          description: Token of the user
+          required: false
+          schema:
+            type: string
+            example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBkZDI2OTUwLTkxMGQtNDZmZi1iODM5LWZkMWJjY2M5NDk2MCIsImVtYWlsIjoia2FyYW5AZ21haWwuY29tIiwiaWF0IjoxNzAwNTQ5NjE1LCJleHAiOjE3MDA2MzYwMTV9.-I0y_3jr9i3C__B1XGuO7qORDyEo7zxa_HfFw-L95l4
+
       responses:
         '200':
           description: Success
@@ -472,6 +686,15 @@ paths:
                 example:
                   data: missing data
                   message: missing data
+        '403':
+          description: User not authorized
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data: user not authorized
+                  message: user not authorized
         '404':
           description: User not found / aadhar not found
           content:
@@ -1169,7 +1392,12 @@ components:
         followingid:
           type: uuid
           example: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        state:
+          type: string
+          format: varChar
+          example: 'pending'
       example:
         id: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
         followeruserid: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
         followingid: '73ceafa7-3d81-4ad4-9131-2912bc79155e'
+        state: 'pending'

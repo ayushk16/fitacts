@@ -2,37 +2,31 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+import { Container, Grid, Card, Box, Typography, Button } from '@mui/material';
 import {
-  Container,
-  Grid,
-  Card,
-  Box,
-  Typography,
-  Stack,
-  Button,
-} from '@mui/material';
-import {
-  setFollowedUser,
-  clearFollowedUser,
-} from '../../../features/user/followedUserSlice';
+  setPendingUser,
+  clearPendingUser,
+} from '../../../features/user/pendingUserSlice';
 
-import { unfollow } from '../../../features/user/followingSlice';
+import { Stack } from '@mui/system';
 
-const FollowingUsers = () => {
+import { accept } from '../../../features/user/requestSlice';
+
+const Requests = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const followingData = useSelector((state) => {
-    return state.following;
-  });
   const userData = useSelector((state) => {
     return state.user;
   });
+  const requestsData = useSelector((state) => {
+    return state.request;
+  });
 
-  if (followingData.loading) {
+  if (requestsData.loading) {
     return <div>loading</div>;
   }
-  if (followingData.error !== null && followingData.error !== '') {
-    return <div>error fetching following</div>;
+  if (requestsData.error !== null && requestsData.error !== '') {
+    return <div>error fetching pending users</div>;
   } else {
     return (
       <>
@@ -43,7 +37,7 @@ const FollowingUsers = () => {
             columnSpacing={{ xs: 3 }}
             marginTop={5}
           >
-            {followingData.data.map((user, index) => {
+            {requestsData.data.map((user, index) => {
               return (
                 <Grid item xs={12} key={user.id} marginBottom={2}>
                   <Card
@@ -71,14 +65,16 @@ const FollowingUsers = () => {
                           variant="h4"
                           onClick={() => {
                             dispatch(
-                              setFollowedUser({
+                              setPendingUser({
                                 data: {
                                   name: `${user.firstname} ${user.lastname}`,
                                   id: `${user.id}`,
+                                  phone: `${user.phone}`,
+                                  email: `${user.email}`,
                                 },
                               })
                             );
-                            navigate(`/events/${user.firstname}`);
+                            navigate(`/dashboard/feed/user/`);
                           }}
                         >
                           {user.firstname} {user.lastname}
@@ -96,20 +92,18 @@ const FollowingUsers = () => {
                     >
                       <Stack>
                         <Button
-                          style={{
-                            backgroundColor: '#B31312',
-                            color: '#FAFDD6',
-                          }}
-                          onClick={(e) => {
+                          variant="contained"
+                          style={{ backgroundColor: '#C5E898' }}
+                          onClick={() => {
                             dispatch(
-                              unfollow({
+                              accept({
                                 userId: userData.data.data.user.id,
-                                followingId: user.id,
+                                followerId: user.id,
                               })
                             );
                           }}
                         >
-                          Unfollow
+                          Accept Request
                         </Button>
                       </Stack>
                     </Box>
@@ -124,4 +118,4 @@ const FollowingUsers = () => {
   }
 };
 
-export default FollowingUsers;
+export default Requests;

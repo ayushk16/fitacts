@@ -9,8 +9,8 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { unfollow, addFollowing } from '../../../features/user/followingSlice';
-
+import { unfollow } from '../../../features/user/followingSlice';
+import { addPending, removePending } from '../../../features/user/pendingSlice';
 const AllUsers = () => {
   const dispatch = useDispatch();
   const users = useSelector((state) => {
@@ -22,15 +22,21 @@ const AllUsers = () => {
   const following = useSelector((state) => {
     return state.following;
   });
+  const pending = useSelector((state) => {
+    return state.pending;
+  });
   const userData = useSelector((state) => {
     return state.user;
   });
 
   const followuser = (data) => {
-    dispatch(addFollowing(data));
+    dispatch(addPending(data));
   };
   const unfollowuser = (data) => {
     dispatch(unfollow(data));
+  };
+  const removeFromPending = (data) => {
+    dispatch(removePending(data));
   };
 
   if (users.loading || activities.loading || following.loading) {
@@ -126,8 +132,9 @@ const AllUsers = () => {
                                 (follow) => follow.followeduserid === user.id
                               ) ? (
                                 <Button
+                                  variant="contained"
                                   style={{
-                                    backgroundColor: '#AEC3AE',
+                                    backgroundColor: '#B31312',
                                     color: '#FAFDD6',
                                   }}
                                   onClick={(e) => {
@@ -139,20 +146,40 @@ const AllUsers = () => {
                                 >
                                   Unfollow
                                 </Button>
+                              ) : pending.data.find(
+                                  (pendingUser) =>
+                                    pendingUser.followeduserid === user.id
+                                ) ? (
+                                <Button
+                                  variant="contained"
+                                  style={{
+                                    backgroundColor: '#EA906C',
+                                    color: 'white',
+                                  }}
+                                  onClick={(e) => {
+                                    removeFromPending({
+                                      userId: userData.data.data.user.id,
+                                      pendingId: user.id,
+                                    });
+                                  }}
+                                >
+                                  Remove Request
+                                </Button>
                               ) : (
                                 <Button
+                                  variant="contained"
                                   style={{
-                                    backgroundColor: '#FFCACC',
+                                    backgroundColor: '#B06161',
                                     color: '#FAFDD6',
                                   }}
                                   onClick={(e) => {
                                     followuser({
                                       userId: userData.data.data.user.id,
-                                      followingId: user.id,
+                                      pendingId: user.id,
                                     });
                                   }}
                                 >
-                                  Follow
+                                  Send Request
                                 </Button>
                               )}
                             </Stack>

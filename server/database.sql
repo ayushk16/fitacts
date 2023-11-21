@@ -76,3 +76,10 @@ CROSS JOIN users followeduser
 where followeruser.id = 
 '5910020d-b608-480f-8ff3-5f2bba8abde8'
 and followeduser.id = 'fa056a42-3ef7-429a-88a2-9fb48778ebcf'
+
+
+alter table followdata 
+add column "state" varchar(255) default 'pending';
+
+
+select followerinfo.id as id, followerinfo.firstname as firstname,followerinfo.lastname as lastname , followerinfo.email as email , followerinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followingid= '9cd15f9d-f02e-49c6-a91a-4ce45a7f011f' and state = 'pending'

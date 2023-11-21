@@ -27,6 +27,7 @@ app.get('/', (req, res) => {
         }, message: 'connected'
     })
 })
+
 app.use('/docs', swaggerRoutes);
 app.use("/signup", signupRoutes);
 app.use("/login", loginRoutes);

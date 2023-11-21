@@ -15,10 +15,12 @@ import { clearFollowing } from '../features/user/followingSlice';
 import { cleanUp } from '../features/user/userSignupSlice';
 import { logout } from '../features/user/userSlice';
 import { clearUsers } from '../features/user/usersSlice';
+import { clearPending } from '../features/user/pendingSlice';
+import { clearRequest } from '../features/user/requestSlice';
 
 import { useDispatch } from 'react-redux';
 
-import { getUser, removeUserToken } from '../functions/tokenSet';
+import { getUser, removeUserToken, getToken } from '../functions/tokenSet';
 import { useNavigate } from 'react-router-dom';
 
 import { clearAll } from '../functions/clearAll';
@@ -80,12 +82,15 @@ const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userData = getUser();
+  const token = getToken();
+
   const [aadharData, setAadharData] = useState('');
 
   useEffect(() => {
     axios
       .get('http://localhost:3000/user/aadhar', {
         params: { userid: userData.id },
+        headers: { ['x-access-token']: token },
       })
       .then((res) => {
         setAadharData(res.data);
@@ -149,7 +154,7 @@ const Profile = () => {
             </Typography>
             <Card
               sx={{
-                width: '350px',
+                width: '400px',
                 height: '400px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -161,11 +166,65 @@ const Profile = () => {
                 color: 'black',
               }}
             >
-              <Typography fontSize={25}>
-                {userData.firstname + ' ' + userData.lastname}
-              </Typography>
-              <Typography fontSize={25}>{userData.phone}</Typography>
-              <Typography fontSize={25}>{userData.email}</Typography>
+              <Stack direction="row" spacing={1}>
+                <Typography
+                  textAlign={'center'}
+                  fontSize={25}
+                  fontWeight={'600'}
+                >
+                  Name
+                </Typography>
+                <Typography
+                  textAlign={'center'}
+                  fontSize={25}
+                  fontWeight={'600'}
+                >
+                  -
+                </Typography>
+                <Typography fontSize={25}>
+                  {userData.firstname.charAt(0).toUpperCase() +
+                    userData.firstname.slice(1) +
+                    ' ' +
+                    userData.lastname.charAt(0).toUpperCase() +
+                    userData.lastname.slice(1)}
+                </Typography>
+              </Stack>
+              <Stack direction="row" spacing={1}>
+                <Typography
+                  textAlign={'center'}
+                  fontSize={25}
+                  fontWeight={'600'}
+                >
+                  Phone
+                </Typography>
+                <Typography
+                  textAlign={'center'}
+                  fontSize={25}
+                  fontWeight={'600'}
+                >
+                  -
+                </Typography>
+                <Typography fontSize={25}>{userData.phone}</Typography>
+              </Stack>
+              <Stack direction="row" spacing={1}>
+                <Typography
+                  textAlign={'center'}
+                  fontSize={25}
+                  fontWeight={'600'}
+                >
+                  Email
+                </Typography>
+                <Typography
+                  textAlign={'center'}
+                  fontSize={25}
+                  fontWeight={'600'}
+                >
+                  -
+                </Typography>
+                <Typography textAlign={'center'} fontSize={25}>
+                  {userData.email}
+                </Typography>
+              </Stack>
               {userData.aadharpresent === true ? (
                 <Button
                   variant="contained"
@@ -188,6 +247,8 @@ const Profile = () => {
                   dispatch(clearActivities());
                   dispatch(clearEvents());
                   dispatch(clearFollowedUser());
+                  dispatch(clearPending());
+                  dispatch(clearRequest());
                   dispatch(clearFollowing());
                   dispatch(clearUsers());
                   dispatch(cleanUp());
