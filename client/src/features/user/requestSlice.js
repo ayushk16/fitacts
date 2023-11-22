@@ -20,6 +20,12 @@ export const accept = createAsyncThunk('request/accept', ({ userId, followerId }
         .then((res) => res.data);
 });
 
+export const reject = createAsyncThunk('request/reject', ({ userId, followerId }) => {
+    return axios
+        .delete(`http://localhost:3000/user/unfollow`, { params: { followerid: followerId, followedid: userId } })
+        .then((res) => res.data);
+})
+
 const requestSlice = createSlice({
     name: "request",
     initialState,
@@ -54,6 +60,19 @@ const requestSlice = createSlice({
             state.error = null;
         })
         builder.addCase(accept.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload.message;
+        })
+        builder.addCase(reject.pending, (state, action) => {
+            state.loading = true;
+            state.error = null;
+        })
+        builder.addCase(reject.fulfilled, (state, action) => {
+            state.loading = false;
+            state.data = state.data.filter((item) => item.id !== action.payload.data.followeruserid);
+            state.error = null;
+        })
+        builder.addCase(reject.rejected, (state, action) => {
             state.loading = false;
             state.error = action.payload.message;
         })
