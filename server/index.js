@@ -9,6 +9,7 @@ import { router as activitiesRoutes } from './routes/activitiesRoute.js'
 import { router as userRoutes } from './routes/userRoute.js'
 import { router as eventRoutes } from './routes/eventRoute.js'
 import { router as swaggerRoutes } from './routes/swaggerRoute.js'
+import { router as testRoutes } from './routes/testRoute.js'
 import errorHandler from './midlewares/errorHandler.js';
 
 
@@ -36,6 +37,7 @@ app.use("/login", loginRoutes);
 app.use("/user", userRoutes);
 app.use("/activities", activitiesRoutes);
 app.use("/events", eventRoutes);
+app.use("/test", testRoutes);
 app.all('*', (req, res, next) => {
     const error = new Error(`can't find ${req.originalUrl} on the server.`);
     error.status = 'wrong url';

@@ -3,7 +3,14 @@ import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import DashboardHeader from '../../DashboardHeader';
 import { fetchTopEvents } from '../../../features/dashboard/activities/topEvents/topEvents';
-import { Card, Container, Grid, Stack, Typography } from '@mui/material';
+import {
+  Card,
+  Container,
+  Grid,
+  Skeleton,
+  Stack,
+  Typography,
+} from '@mui/material';
 
 const TopFive = () => {
   const { id } = useParams();
@@ -23,7 +30,12 @@ const TopFive = () => {
     return (
       <>
         <DashboardHeader />
-        <div>loading</div>
+        <Container>
+          <Stack alignContent={'center'} justifyContent={'center'}>
+            <Skeleton variant="rectangular" width={'100%'} height={118} />
+            <Skeleton />
+          </Stack>
+        </Container>
       </>
     );
   }
@@ -31,7 +43,18 @@ const TopFive = () => {
     return (
       <>
         <DashboardHeader />
-        <div>error</div>
+        <Container>
+          <Stack
+            alignContent={'center'}
+            position={'absolute'}
+            left={0}
+            justifyContent={'center'}
+            width={'100vw'}
+          >
+            Something went wrong
+          </Stack>
+        </Container>
+        s
       </>
     );
   } else {

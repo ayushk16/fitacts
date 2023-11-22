@@ -1,5 +1,8 @@
 
-import pool from "../app/config/dbConfig.js";
+// import pool from "../app/config/dbConfig.js";
+
+import { runQuery } from "../utility/db/queryFunc.js";
+import querries from "../utility/db/querries.js"
 
 
 
@@ -14,7 +17,8 @@ export const updateUser = async (req, res, next) => {
             throw (error);
         }
         else {
-            const user = await pool.query("SELECT * FROM users WHERE id = $1", [userid]);
+            const user = await runQuery(querries.getuser, [userid]);
+            // const user = await pool.query("SELECT * FROM users WHERE id = $1", [userid]);
             if (!user) {
                 const error = new Error('fetching users');
                 error.status = 'error fetching users';
@@ -30,7 +34,8 @@ export const updateUser = async (req, res, next) => {
                 }
 
                 else {
-                    const updatedUser = await pool.query("UPDATE users SET aadharpresent = $1 WHERE id = $2 RETURNING *", [aadharpresent, userid]);
+                    const updatedUser = await runQuery(querries.updateUserAadharPresent, [aadharpresent, userid]);
+                    // const updatedUser = await pool.query("UPDATE users SET aadharpresent = $1 WHERE id = $2 RETURNING *", [aadharpresent, userid]);
                     if (!updatedUser) {
                         const error = new Error('error updating user');
                         error.status = 'error updating user';
@@ -38,9 +43,12 @@ export const updateUser = async (req, res, next) => {
                         throw (error);
                     }
                     else {
-                        const aadharData = await pool.query("SELECT * FROM adhaars WHERE userid = $1", [userid]);
+                        const aadharData = await runQuery(querries.getAadhar, [userid]);
+                        // const aadharData = await pool.query("SELECT * FROM adhaars WHERE userid = $1", [userid]);
                         if (!aadharData) {
-                            const updatedAadharData = await pool.query("UPDATE adhaars SET storageinfo = $1 WHERE userid = $2 RETURNING *", [aadhardata, userid]);
+                            const updatedAadharData = await runQuery(querries.updateAadharInfo, [aadhardata, userid]);
+
+                            // const updatedAadharData = await pool.query("UPDATE adhaars SET storageinfo = $1 WHERE userid = $2 RETURNING *", [aadhardata, userid]);
                             if (!updatedAadharData) {
                                 const error = new Error('error updating user');
                                 error.status = 'error updating user';
@@ -52,7 +60,8 @@ export const updateUser = async (req, res, next) => {
                             }
                         }
                         else {
-                            const updatedAadharData = await pool.query("INSERT INTO adhaars (userid,storageinfo) values ($1,$2) RETURNING *", [userid, aadhardata]);
+                            const updatedAadharData = await runQuery(querries.addAadhar, [userid, aadhardata])
+                            // const updatedAadharData = await pool.query("INSERT INTO adhaars (userid,storageinfo) values ($1,$2) RETURNING *", [userid, aadhardata]);
                             if (!updatedAadharData) {
                                 const error = new Error('error updating user');
                                 error.status = 'error updating user';
@@ -66,16 +75,13 @@ export const updateUser = async (req, res, next) => {
                     }
                 }
             }
-
             res.status(200).json({ data: { userid: userid, aadhardata: aadhardata }, message: "user updated successful" });
         }
-
     } catch (error) {
         const Error = error;
         Error.status = error.status || "problem in updating useraadhar";
         Error.statusCode = error.statusCode || 500;
         next(Error);
-
     }
 }
 
@@ -91,7 +97,8 @@ export const following = async (req, res, next) => {
             throw (error);
         }
         else {
-            const user = await pool.query("SELECT * FROM users WHERE id = $1", [userid]);
+            const user = await runQuery(querries.getuser, [userid])
+            // const user = await pool.query("SELECT * FROM users WHERE id = $1", [userid]);
             if (!user) {
                 const error = new Error('error fetching user');
                 error.status = 'error fetching user';
@@ -106,7 +113,8 @@ export const following = async (req, res, next) => {
                     throw (error);
                 }
                 else {
-                    const following = await pool.query("select followedinfo.id as id, followedinfo.firstname as firstname,followedinfo.lastname as lastname, followerinfo.id as followeruserid , followedinfo.id as followeduserid ,CONCAT(followerinfo.firstname ,' ' ,followerinfo.lastname) as followerusername , CONCAT(followedinfo.firstname ,' ' ,followedinfo.lastname) as followedusername, followedinfo.email as email , followedinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followerid= $1 and state = 'followed'", [userid]);
+                    const following = await runQuery(querries.getFollowing, [userid]);
+                    // const following = await pool.query("select followedinfo.id as id, followedinfo.firstname as firstname,followedinfo.lastname as lastname, followerinfo.id as followeruserid , followedinfo.id as followeduserid ,CONCAT(followerinfo.firstname ,' ' ,followerinfo.lastname) as followerusername , CONCAT(followedinfo.firstname ,' ' ,followedinfo.lastname) as followedusername, followedinfo.email as email , followedinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followerid= $1 and state = 'followed'", [userid]);
                     if (!following) {
                         const error = new Error('error fetching following');
                         error.status = 'error fetching following';
@@ -138,7 +146,8 @@ export const pending = async (req, res, next) => {
             next(error);
         }
         else {
-            const user = await pool.query('SELECT * FROM users WHERE id = $1', [userid])
+            const user = await runQuery(querries.getuser, [userid])
+            // const user = await pool.query('SELECT * FROM users WHERE id = $1', [userid])
             if (!user || user.rows.length === 0) {
                 const error = new Error('user not found');
                 error.status = 'user not found';
@@ -146,7 +155,8 @@ export const pending = async (req, res, next) => {
                 throw (error)
             }
             else {
-                const pending = await pool.query("select followedinfo.id as id, followedinfo.firstname as firstname,followedinfo.lastname as lastname, followerinfo.id as followeruserid , followedinfo.id as followeduserid ,CONCAT(followerinfo.firstname ,' ' ,followerinfo.lastname) as followerusername , CONCAT(followedinfo.firstname ,' ' ,followedinfo.lastname) as followedusername , followedinfo.email as email , followedinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followerid= $1 and state = 'pending'", [userid]);
+                const pending = await runQuery(querries.getPending, [userid]);
+                // const pending = await pool.query("select followedinfo.id as id, followedinfo.firstname as firstname,followedinfo.lastname as lastname, followerinfo.id as followeruserid , followedinfo.id as followeduserid ,CONCAT(followerinfo.firstname ,' ' ,followerinfo.lastname) as followerusername , CONCAT(followedinfo.firstname ,' ' ,followedinfo.lastname) as followedusername , followedinfo.email as email , followedinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followerid= $1 and state = 'pending'", [userid]);
                 if (!pending) {
                     const error = new Error('error fetching pending to follow');
                     error.status = 'error fetching pending to follow'
@@ -184,7 +194,8 @@ export const addPendingRequest = async (req, res, next) => {
                 throw (error);
             }
             else {
-                const user = await pool.query("SELECT * FROM users WHERE id = $1", [followerid]);
+                const user = await runQuery(querries.getuser, [followerid])
+                // const user = await pool.query("SELECT * FROM users WHERE id = $1", [followerid]);
                 if (!user) {
                     const error = new Error('error fetching follower user');
                     error.status = 'error fetching follower user';
@@ -199,7 +210,8 @@ export const addPendingRequest = async (req, res, next) => {
                         throw (error);
                     }
                     else {
-                        const followedUser = await pool.query("SELECT * FROM users WHERE id = $1", [followedid]);
+                        const followedUser = await runQuery(querries.getuser, [followedid])
+                        // const followedUser = await pool.query("SELECT * FROM users WHERE id = $1", [followedid]);
                         if (!followedUser) {
                             const error = new Error('error fetching followed user');
                             error.status = 'error fetching followed user';
@@ -214,11 +226,15 @@ export const addPendingRequest = async (req, res, next) => {
                                 throw (error);
                             }
                             else {
-                                const followData = await pool.query("SELECT * FROM followdata WHERE followerid = $1 AND followingid = $2", [followerid, followedid]);
-                                const data = await pool.query("SELECT  followeduser.id as id, followeduser.firstname as firstname,followeduser.lastname as lastname ,followeruser.id AS followeruserid, CONCAT(followeruser.firstname ,' ' ,followeruser.lastname) AS followerusername, followeduser.id AS followeduserid, CONCAT(followeduser.firstname,' ',followeduser.lastname) AS followedusername , followeduser.email as email , followeduser.phone as phone FROM users followeruser CROSS JOIN users followeduser where followeruser.id =  $1 and followeduser.id = $2", [followerid, followedid])
+                                const followData = await runQuery(querries.getFollowData, [followerid, followedid]);
+                                const data = await runQuery(querries.getFollowerAndFollowingData, [followerid, followedid])
+
+                                // const followData = await pool.query("SELECT * FROM followdata WHERE followerid = $1 AND followingid = $2", [followerid, followedid]);
+                                // const data = await pool.query("SELECT  followeduser.id as id, followeduser.firstname as firstname,followeduser.lastname as lastname ,followeruser.id AS followeruserid, CONCAT(followeruser.firstname ,' ' ,followeruser.lastname) AS followerusername, followeduser.id AS followeduserid, CONCAT(followeduser.firstname,' ',followeduser.lastname) AS followedusername , followeduser.email as email , followeduser.phone as phone FROM users followeruser CROSS JOIN users followeduser where followeruser.id =  $1 and followeduser.id = $2", [followerid, followedid])
 
                                 if (!followData || followData.rows.length === 0) {
-                                    const followData2 = await pool.query("INSERT INTO followdata (followerid,followingid,state) VALUES ($1,$2,$3) RETURNING *", [followerid, followedid, state]);
+                                    const followData2 = await runQuery(querries.addFollowData, [followerid, followedid, state]);
+                                    // const followData2 = await pool.query("INSERT INTO followdata (followerid,followingid,state) VALUES ($1,$2,$3) RETURNING *", [followerid, followedid, state]);
                                     if (!followData2) {
                                         const error = new Error('error inserting followdata');
                                         error.status = 'error inserting followdata';
@@ -245,7 +261,8 @@ export const addPendingRequest = async (req, res, next) => {
                                         throw (error);
                                     }
                                     else {
-                                        const updatedData = await pool.query("UPDATE followdata SET state = $1 WHERE followerid = $2 AND followingid = $3 RETURNING *", [state, followerid, followedid]);
+                                        const updatedData = await runQuery(querries.updateFollowData, [state, followerid, followedid]);
+                                        // const updatedData = await pool.query("UPDATE followdata SET state = $1 WHERE followerid = $2 AND followingid = $3 RETURNING *", [state, followerid, followedid]);
                                         res.status(200).json({ data: data.rows[0], message: "followdata updated successfully" });
                                     }
                                 }
@@ -264,7 +281,7 @@ export const addPendingRequest = async (req, res, next) => {
     }
 }
 
-
+// now using for accepting requests
 export const follow = async (req, res, next) => {
     try {
         const { followerid, followedid } = req.body;
@@ -283,7 +300,8 @@ export const follow = async (req, res, next) => {
                 throw (error);
             }
             else {
-                const user = await pool.query("SELECT * FROM users WHERE id = $1", [followerid]);
+                const user = await runQuery(querries.getuser, [followerid]);
+                // const user = await pool.query("SELECT * FROM users WHERE id = $1", [followerid]);
                 if (!user) {
                     const error = new Error('error fetching follower user');
                     error.status = 'error fetching follower user';
@@ -298,7 +316,9 @@ export const follow = async (req, res, next) => {
                         throw (error);
                     }
                     else {
-                        const followedUser = await pool.query("SELECT * FROM users WHERE id = $1", [followedid]);
+                        const followedUser = await runQuery(querries.getuser, [followedid]);
+
+                        // const followedUser = await pool.query("SELECT * FROM users WHERE id = $1", [followedid]);
                         if (!followedUser) {
                             const error = new Error('error fetching followed user');
                             error.status = 'error fetching followed user';
@@ -313,12 +333,15 @@ export const follow = async (req, res, next) => {
                                 throw (error);
                             }
                             else {
-                                const followData = await pool.query("SELECT * FROM followdata WHERE followerid = $1 AND followingid = $2", [followerid, followedid]);
+                                const followData = await runQuery(querries.getFollowData, [followerid, followedid]);
+                                const data = await runQuery(querries.getFollowerData, [followerid, followedid])
+                                // const followData = await pool.query("SELECT * FROM followdata WHERE followerid = $1 AND followingid = $2", [followerid, followedid]);
 
-                                const data = await pool.query("SELECT  followeruser.id as id, followeruser.firstname as firstname,followeruser.lastname as lastname , followeruser.email as email , followeruser.phone as phone FROM users followeruser CROSS JOIN users followeduser where followeruser.id =  $1 and followeduser.id = $2", [followerid, followedid])
+                                // const data = await pool.query("SELECT  followeruser.id as id, followeruser.firstname as firstname,followeruser.lastname as lastname , followeruser.email as email , followeruser.phone as phone FROM users followeruser CROSS JOIN users followeduser where followeruser.id =  $1 and followeduser.id = $2", [followerid, followedid])
 
                                 if (!followData || followData.rows.length === 0) {
-                                    const followData2 = await pool.query("INSERT INTO followdata (followerid,followingid,state) VALUES ($1,$2,$3) RETURNING *", [followerid, followedid, state]);
+                                    const followData2 = await runQuery(querries.addFollowData, [followerid, followedid, state]);
+                                    // const followData2 = await pool.query("INSERT INTO followdata (followerid,followingid,state) VALUES ($1,$2,$3) RETURNING *", [followerid, followedid, state]);
                                     if (!followData2) {
                                         const error = new Error('error inserting followdata');
                                         error.status = 'error inserting followdata';
@@ -345,7 +368,8 @@ export const follow = async (req, res, next) => {
                                         throw (error);
                                     }
                                     else {
-                                        const updatedData = await pool.query("UPDATE followdata SET state = $1 WHERE followerid = $2 AND followingid = $3 RETURNING *", [state, followerid, followedid]);
+                                        const updatedData = await runQuery(querries.updateFollowData, [state, followerid, followedid]);
+                                        // const updatedData = await pool.query("UPDATE followdata SET state = $1 WHERE followerid = $2 AND followingid = $3 RETURNING *", [state, followerid, followedid]);
                                         if (!updatedData) {
                                             const error = new Error('error updating followdata');
                                             error.status = 'error updating followdata';
@@ -386,7 +410,8 @@ export const unfollow = async (req, res, next) => {
             throw (error);
         }
         else {
-            const followerUser = await pool.query("SELECT * FROM users WHERE id = $1", [followerid]);
+            const followerUser = await runQuery(querries.getuser, [followerid])
+            // const followerUser = await pool.query("SELECT * FROM users WHERE id = $1", [followerid]);
             if (!followerUser) {
                 const error = new Error('error fetching follower user');
                 error.status = 'error fetching follower user';
@@ -401,7 +426,9 @@ export const unfollow = async (req, res, next) => {
                     throw (error);
                 }
                 else {
-                    const followedUser = await pool.query("SELECT * FROM users WHERE id = $1", [followedid]);
+                    const followedUser = await runQuery(querries.getuser, [followedid]);
+
+                    // const followedUser = await pool.query("SELECT * FROM users WHERE id = $1", [followedid]);
                     if (!followedUser) {
                         const error = new Error('error fetching followed user');
                         error.status = 'error fetching followed user';
@@ -416,7 +443,7 @@ export const unfollow = async (req, res, next) => {
                             throw (error);
                         }
                         else {
-                            const followData = await pool.query("SELECT * FROM followdata WHERE followerid = $1 AND followingid = $2", [followerid, followedid]);
+                            const followData = await runQuery(querries.getFollowData, [followerid, followedid]);
                             if (!followData) {
                                 const error = new Error('error fetching followdata');
                                 error.status = 'error fetching followdata';
@@ -424,7 +451,8 @@ export const unfollow = async (req, res, next) => {
                                 throw (error);
                             }
                             else {
-                                const data = await pool.query("SELECT  followeduser.id as id, followeduser.firstname as firstname,followeduser.lastname as lastname,followeruser.id AS followeruserid, CONCAT(followeruser.firstname ,' ' ,followeruser.lastname) AS followerusername, followeduser.id AS followeduserid, CONCAT(followeduser.firstname,' ',followeduser.lastname) AS followedusername FROM users followeruser CROSS JOIN users followeduser where followeruser.id =  $1 and followeduser.id = $2", [followerid, followedid])
+                                const data = await runQuery(querries.getFollowerAndFollowingData, [followerid, followedid]);
+                                // const data = await pool.query("SELECT  followeduser.id as id, followeduser.firstname as firstname,followeduser.lastname as lastname,followeruser.id AS followeruserid, CONCAT(followeruser.firstname ,' ' ,followeruser.lastname) AS followerusername, followeduser.id AS followeduserid, CONCAT(followeduser.firstname,' ',followeduser.lastname) AS followedusername FROM users followeruser CROSS JOIN users followeduser where followeruser.id =  $1 and followeduser.id = $2", [followerid, followedid])
                                 if (followData.rows.length === 0) {
                                     if (!data) {
                                         const error = new Error('users not fetched');
@@ -445,7 +473,8 @@ export const unfollow = async (req, res, next) => {
                                     }
                                 }
                                 else {
-                                    const followData = await pool.query("DELETE FROM followdata WHERE followerid = $1 AND followingid = $2 RETURNING *", [followerid, followedid]);
+                                    const followData = await runQuery(querries.deleteFollowData, [followerid, followedid]);
+                                    // const followData = await pool.query("DELETE FROM followdata WHERE followerid = $1 AND followingid = $2 RETURNING *", [followerid, followedid]);
                                     if (!followData) {
                                         const error = new Error('error deleting followdata');
                                         error.status = 'error deleting followdata';
@@ -496,7 +525,8 @@ export const requests = async (req, res, next) => {
             throw (error);
         }
         else {
-            const user = await pool.query("SELECT * FROM users WHERE id = $1", [userid]);
+            const user = await runQuery(querries.getuser, [userid]);
+            // const user = await pool.query("SELECT * FROM users WHERE id = $1", [userid]);
             if (!user) {
                 const error = new Error('error fetching user');
                 error.status = 'error fetching user';
@@ -511,7 +541,8 @@ export const requests = async (req, res, next) => {
                     throw (error);
                 }
                 else {
-                    const requests = await pool.query("select followerinfo.id as id, followerinfo.firstname as firstname,followerinfo.lastname as lastname , followerinfo.email as email , followerinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followingid= $1 and state = 'pending'", [userid]);
+                    const requests = await runQuery(querries.getRequests, [userid]);
+                    // const requests = await pool.query("select followerinfo.id as id, followerinfo.firstname as firstname,followerinfo.lastname as lastname , followerinfo.email as email , followerinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followingid= $1 and state = 'pending'", [userid]);
                     if (!requests) {
                         const error = new Error('error fetching requests');
                         error.status = 'error fetching requests';
@@ -549,7 +580,8 @@ export const getAadhar = async (req, res, next) => {
             throw (error);
         }
         else {
-            const user = await pool.query("Select * from users where id = $1", [userid]);
+            const user = await runQuery(querries.getuser, [userid]);
+            // const user = await pool.query("Select * from users where id = $1", [userid]);
             if (!user || user.rows.length === 0 || user.rows[0].aadharpresent === false) {
                 const error = new Error('user adhaar not found');
                 error.status = 'user aadhar not found';
@@ -557,7 +589,8 @@ export const getAadhar = async (req, res, next) => {
                 throw (error);
             }
             else {
-                const aadharData = await pool.query("Select * from adhaars where userid = $1", [userid]);
+                const aadharData = await runQuery(querries.getAadhar, [userid]);
+                // const aadharData = await pool.query("Select * from adhaars where userid = $1", [userid]);
                 if (!aadharData || aadharData.rows.length === 0) {
                     const error = new Error('aadhar data not found');
                     error.status = 'aadhar data not found';
@@ -569,7 +602,6 @@ export const getAadhar = async (req, res, next) => {
                 }
             }
         }
-
     } catch (error) {
         const Error = error;
         Error.status = error.status || "problem in fetching aadhar data";

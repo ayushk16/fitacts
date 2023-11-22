@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import { FaArrowLeft } from 'react-icons/fa';
-import { Card, Grid, Stack, Typography, Box } from '@mui/material';
+import { Card, Grid, Stack, Typography, Box, Skeleton } from '@mui/material';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -211,11 +211,10 @@ const FollowedActivitiesShowCase = ({ userId, username }) => {
             })
           )}
         </Grid>
-        {pageloading && <div>loading more data...</div>}
+        {pageloading && <Skeleton variant="rectangular" height={250} />}
       </>
     );
   }
 };
-// };
 
 export default FollowedActivitiesShowCase;

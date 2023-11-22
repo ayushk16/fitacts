@@ -9,9 +9,12 @@ import {
   FormControlLabel,
   Checkbox,
   FormGroup,
+  Typography,
+  Skeleton,
 } from '@mui/material';
 
 import EventsTableHeader from './EventsTableHeader';
+import { Container, Stack } from '@mui/system';
 
 const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) {
@@ -75,7 +78,17 @@ const EventsTable = () => {
   );
 
   if (eventsData.loading) {
-    return <div>loading</div>;
+    return (
+      <>
+        <Container>
+          <Stack justifyContent={'center'} alignItems={'center'}>
+            <Typography variant="h3" marginTop={30}>
+              <Skeleton />
+            </Typography>
+          </Stack>
+        </Container>
+      </>
+    );
   }
   if (eventsData.error !== null && eventsData.error !== '') {
     return <div>error fetching events</div>;

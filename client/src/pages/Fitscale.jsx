@@ -11,6 +11,7 @@ import {
   InputLabel,
   FormControl,
   Button,
+  Skeleton,
 } from '@mui/material';
 
 import { fetchActivities } from '../features/dashboard/activities/activitiesSlice';
@@ -19,6 +20,7 @@ import Clock from '../components/DashBoard/Fitscale/Clock';
 import DummyClock from '../components/DashBoard/Fitscale/DummyClock';
 import DashboardHeader from '../components/DashboardHeader';
 import EventsTable from '../components/DashBoard/Fitscale/EventsTable';
+import { Container } from '@mui/system';
 
 const Fitscale = () => {
   const dispatch = useDispatch();
@@ -63,7 +65,12 @@ const Fitscale = () => {
     return (
       <>
         <DashboardHeader />
-        <div>loading</div>
+        <Container>
+          <Stack alignContent={'center'} justifyContent={'center'}>
+            <Skeleton variant="rectangular" width={'100%'} height={118} />
+            <Skeleton />
+          </Stack>
+        </Container>
       </>
     );
   }

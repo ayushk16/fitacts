@@ -1,4 +1,8 @@
-import pool from "../app/config/dbConfig.js";
+import { runQuery } from "../utility/db/queryFunc.js";
+import querries from "../utility/db/querries.js"
+
+
+// import pool from "../app/config/dbConfig.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -13,7 +17,8 @@ export const getAllEvents = async (req, res, next) => {
             throw (error);
         }
         else {
-            const events = await pool.query("SELECT *, events.id as eventid, events.name as eventname, activities.name as activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid =   $1", [userId]);
+            const events = await runQuery(querries.getUsersEvents, [userId]);
+            // const events = await pool.query("SELECT *, events.id as eventid, events.name as eventname, activities.name as activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1", [userId]);
             if (!events) {
                 const error = new Error('fetching events');
                 error.status = 'error fetching events';
@@ -43,7 +48,8 @@ export const createEvent = async (req, res, next) => {
             throw (error);
         }
         else {
-            const newEvent = await pool.query("INSERT INTO events (name,userid,activityid,distance,duration,showintimeline) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *", [name, userid, activityid, distance, duration, showintimeline]);
+            const newEvent = await runQuery(querries.createEvent, [name, userid, activityid, distance, duration, showintimeline]);
+            // const newEvent = await pool.query("INSERT INTO events (name,userid,activityid,distance,duration,showintimeline) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *", [name, userid, activityid, distance, duration, showintimeline]);
             if (!newEvent) {
                 const error = new Error('error creating event');
                 error.status = 'error creating event';
@@ -51,7 +57,10 @@ export const createEvent = async (req, res, next) => {
                 throw (error);
             }
             else {
-                const event = await pool.query("SELECT *, events.id as eventid, events.name as eventname, activities.name as activityname FROM events JOIN activities ON activities.id = events.activityid WHERE events.id = $1", [newEvent.rows[0].id]);
+
+                const event = await runQuery(querries.getEventById, [newEvent.rows[0].id]);
+
+                // const event = await pool.query("SELECT *, events.id as eventid, events.name as eventname, activities.name as activityname FROM events JOIN activities ON activities.id = events.activityid WHERE events.id = $1", [newEvent.rows[0].id]);
                 res.status(200).json({ data: event.rows[0], message: 'event created successfuly' });
             }
         }
@@ -75,7 +84,9 @@ export const updateEvent = async (req, res, next) => {
             throw (error);
         }
         else {
-            const event = await pool.query("UPDATE events SET showintimeline = $1  WHERE id = $2 AND userid = $3 RETURNING *", [showintimeline, eventid, userid]);
+            const event = await runQuery(querries.updateEvent, [showintimeline, eventid, userid]);
+
+            // const event = await pool.query("UPDATE events SET showintimeline = $1  WHERE id = $2 AND userid = $3 RETURNING *", [showintimeline, eventid, userid]);
             if (!event) {
                 const error = new Error('error updating event');
                 error.status = 'error updating event';
@@ -83,7 +94,9 @@ export const updateEvent = async (req, res, next) => {
                 throw (error);
             }
             else {
-                const eventToReturn = await pool.query("SELECT *, events.id as eventid , events.name as eventname, activities.name as activityname FROM events JOIN activities ON activities.id = events.activityid WHERE events.id = $1", [event.rows[0].id]);
+                const eventToReturn = await runQuery(querries.getEventById, [event.rows[0].id]);
+
+                // const eventToReturn = await pool.query("SELECT *, events.id as eventid , events.name as eventname, activities.name as activityname FROM events JOIN activities ON activities.id = events.activityid WHERE events.id = $1", [event.rows[0].id]);
                 if (eventToReturn.rows.length === 0) {
                     const error = new Error('event not found');
                     error.status = 'event not found';
@@ -115,7 +128,9 @@ export const getTopEvents = async (req, res, next) => {
             error.statusCode = 400;
             throw (error);
         } else {
-            const events = await pool.query("SELECT *, events.id AS eventid , events.name AS eventname, activities.name AS activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1 AND activityid = $2 ORDER BY distance DESC LIMIT 5;", [userId, activityId])
+            const events = await runQuery(querries.getTopEvents, [userId, activityId])
+
+            // const events = await pool.query("SELECT *, events.id AS eventid , events.name AS eventname, activities.name AS activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1 AND activityid = $2 ORDER BY distance DESC LIMIT 5;", [userId, activityId])
             res.status(200).json({ data: events.rows, message: 'top events fetched successfuly' });
         }
     } catch (error) {
@@ -138,7 +153,8 @@ export const getEventsBreakdown = async (req, res, next) => {
             error.statusCode = 400;
             throw (error);
         } else {
-            const events = await pool.query("SELECT *, events.id AS eventid , events.name AS eventname, activities.name AS activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1 AND showintimeline = true ORDER BY distance DESC LIMIT $2 offset  $3 ;", [userId, limit, offset]);
+            const events = await runQuery(querries.getEventsInParts, [userId, limit, offset]);
+            // const events = await pool.query("SELECT *, events.id AS eventid , events.name AS eventname, activities.name AS activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1 AND showintimeline = true ORDER BY distance DESC LIMIT $2 offset  $3 ;", [userId, limit, offset]);
             if (!events) {
                 const error = new Error('error fetching events breakdown');
                 error.status = 'error fetching events breakdown';
@@ -146,7 +162,8 @@ export const getEventsBreakdown = async (req, res, next) => {
                 throw (error);
             }
             else {
-                const allevents = await pool.query("SELECT *, events.id AS eventid , events.name AS eventname, activities.name AS activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1 AND showintimeline = true ORDER BY distance DESC;", [userId]);
+                const allevents = await runQuery(querries.getAllTimelineEvents, [userId]);
+                // const allevents = await pool.query("SELECT *, events.id AS eventid , events.name AS eventname, activities.name AS activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1 AND showintimeline = true ORDER BY distance DESC;", [userId]);
                 if (!allevents) {
                     const error = new Error('error fetching events breakdown');
                     error.status = 'error fetching events breakdown';

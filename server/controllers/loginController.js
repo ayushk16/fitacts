@@ -1,7 +1,12 @@
-import pool from "../app/config/dbConfig.js";
+// import pool from "../app/config/dbConfig.js";
 import bcrypt from "bcryptjs";
 import getToken from "../functions/jwtAuth.js";
 import dotenv from "dotenv";
+
+import { runQuery } from "../utility/db/queryFunc.js";
+import querries from "../utility/db/querries.js"
+
+
 dotenv.config();
 
 export const loginController = async (req, res, next) => {
@@ -15,7 +20,8 @@ export const loginController = async (req, res, next) => {
             throw (error);
         }
         else {
-            const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+            const user = await runQuery(querries.getUserByEmail, [email]);
+            // const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
             if (user.rows.length === 0) {
                 const error = new Error('user not found');
                 error.status = 'incorrect email';

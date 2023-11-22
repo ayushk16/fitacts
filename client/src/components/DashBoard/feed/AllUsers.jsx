@@ -5,6 +5,7 @@ import {
   Container,
   Grid,
   Stack,
+  Skeleton,
   Typography,
 } from '@mui/material';
 import React from 'react';
@@ -40,7 +41,34 @@ const AllUsers = () => {
   };
 
   if (users.loading || activities.loading || following.loading) {
-    return <div>loading</div>;
+    return (
+      <>
+        <Container>
+          <Grid
+            container
+            rowSpacing={2}
+            columnSpacing={{ xs: 3 }}
+            marginY={5}
+            spacing={2}
+          >
+            <Grid item xs={12} marginBottom={2}>
+              <Card
+                sx={{
+                  height: '100px',
+                  padding: '30px',
+                  display: 'flex',
+                  flexDirection: 'row',
+
+                  background: 'linear-gradient(to left, #F9F5D7, #fff)',
+                }}
+              >
+                <Skeleton width={'100%'} variant="wave" />
+              </Card>
+            </Grid>
+          </Grid>
+        </Container>
+      </>
+    );
   }
   if (users.error !== null && users.error !== '') {
     return <div>error fetching users</div>;
