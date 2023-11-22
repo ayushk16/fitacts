@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import DashboardHeader from '../components/DashboardHeader';
 import { Container, Stack, Box } from '@mui/system';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -23,7 +23,7 @@ import { useDispatch } from 'react-redux';
 import { getUser, removeUserToken, getToken } from '../functions/tokenSet';
 import { useNavigate } from 'react-router-dom';
 
-import { clearAll } from '../functions/clearAll';
+import { SnackBarContext } from '../App.jsx';
 
 const Fade = React.forwardRef(function Fade(props, ref) {
   const {
@@ -83,6 +83,8 @@ const Profile = () => {
   const navigate = useNavigate();
   const userData = getUser();
   const token = getToken();
+
+  const { handleOpenSnackBar } = useContext(SnackBarContext);
 
   const [aadharData, setAadharData] = useState('');
 
@@ -243,6 +245,7 @@ const Profile = () => {
                 color="error"
                 onClick={(e) => {
                   removeUserToken();
+                  handleOpenSnackBar('Logged out');
                   dispatch(clearTopEvents());
                   dispatch(clearActivities());
                   dispatch(clearEvents());

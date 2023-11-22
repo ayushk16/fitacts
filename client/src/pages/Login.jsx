@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { SnackBarContext } from '../App.jsx';
 import axios from 'axios';
 import {
   Button,
@@ -18,7 +19,10 @@ import {
 import { BorderBottom, Visibility, VisibilityOff } from '@mui/icons-material';
 import { login, logout, errorlogin } from '../features/user/userSlice.js';
 import Header from '../components/Header.jsx';
+
 const Login = () => {
+  const { handleOpenSnackBar } = useContext(SnackBarContext);
+
   const [userEmail, setUserEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -59,11 +63,15 @@ const Login = () => {
         .then(() => {
           navigate('/dashboard/timeline');
         })
+        .then(() => {
+          handleOpenSnackBar('Login Successfully');
+        })
         .catch((err) => {
           dispatch(errorlogin(err));
         });
     }
   };
+
   return (
     <>
       <Header />

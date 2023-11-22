@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,18 +11,20 @@ import {
   Button,
   Skeleton,
 } from '@mui/material';
+import { Stack } from '@mui/system';
+
 import {
   setPendingUser,
   clearPendingUser,
 } from '../../../features/user/pendingUserSlice';
 
 import { removePending } from '../../../features/user/pendingSlice';
-
-import { Stack } from '@mui/system';
+import { SnackBarContext } from '../../../App.jsx';
 
 const PendingUsers = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { handleOpenSnackBar } = useContext(SnackBarContext);
   const userData = useSelector((state) => {
     return state.user;
   });
@@ -154,7 +156,7 @@ const PendingUsers = () => {
                                   userId: userData.data.data.user.id,
                                   pendingId: user.id,
                                 })
-                              );
+                              ).then(handleOpenSnackBar('Request Removed'));
                             }}
                           >
                             Remove Request

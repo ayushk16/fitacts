@@ -8,12 +8,16 @@ import {
   Skeleton,
   Typography,
 } from '@mui/material';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+
 import { unfollow } from '../../../features/user/followingSlice';
 import { addPending, removePending } from '../../../features/user/pendingSlice';
+import { SnackBarContext } from '../../../App.jsx';
+
 const AllUsers = () => {
   const dispatch = useDispatch();
+  const { handleOpenSnackBar } = useContext(SnackBarContext);
   const users = useSelector((state) => {
     return state.users;
   });
@@ -31,13 +35,13 @@ const AllUsers = () => {
   });
 
   const followuser = (data) => {
-    dispatch(addPending(data));
+    dispatch(addPending(data)).then(handleOpenSnackBar('Request sent'));
   };
   const unfollowuser = (data) => {
-    dispatch(unfollow(data));
+    dispatch(unfollow(data)).then(handleOpenSnackBar('Unfollowed'));
   };
   const removeFromPending = (data) => {
-    dispatch(removePending(data));
+    dispatch(removePending(data)).then(handleOpenSnackBar('Request removed'));
   };
 
   if (users.loading || activities.loading || following.loading) {

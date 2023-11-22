@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Box, Grid, Button, TextField, Stack } from '@mui/material';
 
+import { SnackBarContext } from '../../../App.jsx';
 import { addEvent } from '../../../features/dashboard/eventSlice';
 
 const style = {
@@ -25,6 +26,7 @@ const SaveEvent = ({
   handleClose,
 }) => {
   const dispatch = useDispatch();
+  const { handleOpenSnackBar } = useContext(SnackBarContext);
   const [eventName, seteventName] = useState('');
   const userData = useSelector((state) => {
     if (state.user.data.data) {
@@ -42,6 +44,7 @@ const SaveEvent = ({
         duration: time.hours * 3600 + time.minutes * 60 + time.seconds,
       })
     ).then((res) => {
+      handleOpenSnackBar('Event created successfully');
       seteventName('');
       clearActivityAndDistance();
       resetTimer();

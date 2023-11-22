@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,9 +20,12 @@ import { Stack } from '@mui/system';
 
 import { accept, reject } from '../../../features/user/requestSlice';
 
+import { SnackBarContext } from '../../../App.jsx';
+
 const Requests = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { handleOpenSnackBar } = useContext(SnackBarContext);
   const userData = useSelector((state) => {
     return state.user;
   });
@@ -162,7 +165,7 @@ const Requests = () => {
                                   userId: userData.data.data.user.id,
                                   followerId: user.id,
                                 })
-                              );
+                              ).then(handleOpenSnackBar('Request Rejected'));
                             }}
                           >
                             Reject
@@ -176,7 +179,7 @@ const Requests = () => {
                                   userId: userData.data.data.user.id,
                                   followerId: user.id,
                                 })
-                              );
+                              ).then(handleOpenSnackBar('Request Accepted'));
                             }}
                           >
                             Accept Request

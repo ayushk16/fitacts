@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import DashboardHeader from '../../DashboardHeader';
@@ -10,12 +10,14 @@ import {
   Typography,
   Input,
 } from '@mui/material';
+import { SnackBarContext } from '../../../App.jsx';
 import { Upload } from '@mui/icons-material';
 import { updateAadhar } from '../../../features/user/userSlice';
 import { getToken } from '../../../functions/tokenSet';
 
 const AadharUpload = ({ userid }) => {
   const dispatch = useDispatch();
+  const { handleOpenSnackBar } = useContext(SnackBarContext);
   const [aadhar, setAadhar] = useState(null);
 
   const handleAadhar = (e) => {
@@ -29,7 +31,7 @@ const AadharUpload = ({ userid }) => {
           updateAadhar({
             data: { user: res.data.data, token: { accessToken: getToken() } },
           })
-        );
+        ).then(handleOpenSnackBar('Aadhar uploaded successfully'));
       });
   };
 

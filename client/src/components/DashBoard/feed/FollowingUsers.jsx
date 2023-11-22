@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,11 +17,14 @@ import {
   clearFollowedUser,
 } from '../../../features/user/followedUserSlice';
 
+import { SnackBarContext } from '../../../App.jsx';
+
 import { unfollow } from '../../../features/user/followingSlice';
 
 const FollowingUsers = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { handleOpenSnackBar } = useContext(SnackBarContext);
   const followingData = useSelector((state) => {
     return state.following;
   });
@@ -153,7 +156,7 @@ const FollowingUsers = () => {
                                   userId: userData.data.data.user.id,
                                   followingId: user.id,
                                 })
-                              );
+                              ).then(handleOpenSnackBar('unfollowed'));
                             }}
                           >
                             Unfollow
