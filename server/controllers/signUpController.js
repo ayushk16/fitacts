@@ -1,5 +1,4 @@
 import bcrypt from "bcryptjs";
-// import pool from "../app/config/dbConfig.js";
 import { runQuery } from "../utility/db/queryFunc.js";
 import querries from "../utility/db/querries.js"
 
@@ -7,7 +6,6 @@ import querries from "../utility/db/querries.js"
 export const getUsers = async (req, res) => {
     try {
         const users = await runQuery(querries.getAllUsers);
-        // const users = await pool.query("SELECT id,firstname,lastname,favorites FROM users");
         if (!users) {
             const error = new Error('error fetching users');
             error.status = "error fetching users"
@@ -35,7 +33,6 @@ export const creatUserController = async (req, res, next) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await runQuery(querries.createUser, [firstname, lastname, email, phone, hashedPassword, aadharPresent, favorites]);
-        // const newUser = await pool.query("INSERT INTO users (firstname, lastname, email, phone, password , aadharpresent, favorites) VALUES ($1, $2, $3 ,$4, $5, $6 ,$7) RETURNING *", [firstname, lastname, email, phone, hashedPassword, aadharPresent, favorites]);
         res.json({ data: { user: newUser.rows[0] }, message: 'signup successful' })
     } catch (error) {
         const Error = error;

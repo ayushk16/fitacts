@@ -1,4 +1,3 @@
-// import pool from "../app/config/dbConfig.js";
 import bcrypt from "bcryptjs";
 import getToken from "../functions/jwtAuth.js";
 import dotenv from "dotenv";
@@ -21,7 +20,6 @@ export const loginController = async (req, res, next) => {
         }
         else {
             const user = await runQuery(querries.getUserByEmail, [email]);
-            // const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
             if (user.rows.length === 0) {
                 const error = new Error('user not found');
                 error.status = 'incorrect email';
