@@ -1,6 +1,11 @@
 import pool from "../../app/config/dbConfig.js";
 
 export const runQuery = async (query, queryParams) => {
-    const res = await pool.query(query, queryParams);
-    return res;
+    try {
+        const res = await pool.query(query, queryParams);
+        return res;
+    } catch (error) {
+        console.error('logger.query error:',error);
+        throw new Error(error);
+    }
 }

@@ -16,9 +16,9 @@ const getAadhar = 'SELECT * FROM adhaars WHERE userid = $1';
 
 const addAadhar = 'INSERT INTO adhaars (userid,storageinfo) values ($1,$2) RETURNING *';
 
-const getFollowing = "select followedinfo.id as id, followedinfo.firstname as firstname,followedinfo.lastname as lastname, followerinfo.id as followeruserid , followedinfo.id as followeduserid ,CONCAT(followerinfo.firstname ,' ' ,followerinfo.lastname) as followerusername , CONCAT(followedinfo.firstname ,' ' ,followedinfo.lastname) as followedusername, followedinfo.email as email , followedinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followerid= $1 and state = 'followed'";
+const getFollowing = `select followedinfo.id as id, followedinfo.firstname as firstname,followedinfo.lastname as lastname, followerinfo.id as followeruserid , followedinfo.id as followeduserid ,CONCAT(followerinfo.firstname ,' ' ,followerinfo.lastname) as followerusername , CONCAT(followedinfo.firstname ,' ' ,followedinfo.lastname) as followedusername, followedinfo.email as email , followedinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followerid= $1 and state = 'followed'`;
 
-const getPending = "select followedinfo.id as id, followedinfo.firstname as firstname,followedinfo.lastname as lastname, followerinfo.id as followeruserid , followedinfo.id as followeduserid ,CONCAT(followerinfo.firstname ,' ' ,followerinfo.lastname) as followerusername , CONCAT(followedinfo.firstname ,' ' ,followedinfo.lastname) as followedusername , followedinfo.email as email , followedinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followerid= $1 and state = 'pending'";
+const getPending = `select followedinfo.id as id, followedinfo.firstname as firstname,followedinfo.lastname as lastname, followerinfo.id as followeruserid , followedinfo.id as followeduserid ,CONCAT(followerinfo.firstname ,' ' ,followerinfo.lastname) as followerusername , CONCAT(followedinfo.firstname ,' ' ,followedinfo.lastname) as followedusername , followedinfo.email as email , followedinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followerid= $1 and state = 'pending'`;
 
 const getFollowData = 'SELECT * FROM followdata WHERE followerid = $1 AND followingid = $2';
 
@@ -32,7 +32,7 @@ const updateFollowData = "UPDATE followdata SET state = $1 WHERE followerid = $2
 
 const deleteFollowData = "DELETE FROM followdata WHERE followerid = $1 AND followingid = $2 RETURNING *"
 
-const getRequests = "select followerinfo.id as id, followerinfo.firstname as firstname,followerinfo.lastname as lastname , followerinfo.email as email , followerinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followingid= $1 and state = 'pending'"
+const getRequests = `select followerinfo.id as id, followerinfo.firstname as firstname,followerinfo.lastname as lastname , followerinfo.email as email , followerinfo.phone as phone from followdata join users  followerinfo on followdata.followerid = followerinfo.id join users followedinfo on followdata.followingid = followedinfo.id where followingid= $1 and state = 'pending'`
 
 const getUsersEvents = "SELECT *, events.id as eventid, events.name as eventname, activities.name as activityname FROM events JOIN activities ON activities.id = events.activityid WHERE userid = $1";
 

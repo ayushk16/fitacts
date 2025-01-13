@@ -12,7 +12,6 @@ import { router as swaggerRoutes } from './routes/swaggerRoute.js'
 import { router as testRoutes } from './routes/testRoute.js'
 import errorHandler from './midlewares/errorHandler.js';
 
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const corsOptions = {
