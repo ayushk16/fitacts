@@ -149,6 +149,17 @@ const Login = () => {
             LOGIN
           </Button>
         </Stack>
+        <Stack>
+          <Typography style={{fontSize: '9px'}}>
+            You can also explore with demo users
+          </Typography>
+          <Typography style={{fontSize: '9px'}}>
+            ayush@gmail.com - ayush123
+          </Typography>
+          <Typography style={{fontSize: '9px'}}>
+            demo@gmail.com - demo123
+          </Typography>
+        </Stack>
       </Container>
     </>
   );
