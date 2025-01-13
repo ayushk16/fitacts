@@ -5,6 +5,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { Card, Grid, Stack, Typography, Box, Skeleton } from '@mui/material';
 
 import { useNavigate } from 'react-router-dom';
+import config from '../../functions/config';
 
 const FollowedActivitiesShowCase = ({ userId, username }) => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const FollowedActivitiesShowCase = ({ userId, username }) => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/events/breakdown', {
+      .get(config.API_BASE_URL + '/events/breakdown', {
         params: { id: userId, limit: 5, offset: 0 },
       })
       .then((res) => {
@@ -34,7 +35,7 @@ const FollowedActivitiesShowCase = ({ userId, username }) => {
     console.log('fetching more data');
     setPageloading(true);
     axios
-      .get('http://localhost:3000/events/breakdown', {
+      .get(config.API_BASE_URL + '/events/breakdown', {
         params: { id: userId, limit: 2, offset: currentpagelength - 2 },
       })
       .then((res) => {

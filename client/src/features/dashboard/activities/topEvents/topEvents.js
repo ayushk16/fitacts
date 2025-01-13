@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import axios from "axios";
 import { getUser } from "../../../../functions/tokenSet";
+import config from "../../../../functions/config";
 
 const initialState = {
     loading: false,
@@ -11,7 +12,7 @@ const initialState = {
 
 export const fetchTopEvents = createAsyncThunk("events/fetchTopEvents", async ({ id }) => {
     const user = getUser();
-    return axios.get('http://localhost:3000/events/top/', { params: { userId: user.id, activityId: id } })
+    return axios.get(config.API_BASE_URL + '/events/top/', { params: { userId: user.id, activityId: id } })
         .then(res => res.data);
 });
 

@@ -14,6 +14,7 @@ import { SnackBarContext } from '../../../App.jsx';
 import { Upload } from '@mui/icons-material';
 import { updateAadhar } from '../../../features/user/userSlice';
 import { getToken } from '../../../functions/tokenSet';
+import config from '../../../functions/config.js';
 
 const AadharUpload = ({ userid }) => {
   const dispatch = useDispatch();
@@ -25,7 +26,7 @@ const AadharUpload = ({ userid }) => {
   };
   const uploadAadhar = () => {
     axios
-      .put('http://localhost:3000/user', { userid: userid, aadhardata: aadhar })
+      .put(config.API_BASE_URL + '/user', { userid: userid, aadhardata: aadhar })
       .then((res) => {
         dispatch(
           updateAadhar({

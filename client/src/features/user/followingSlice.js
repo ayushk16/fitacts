@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import axios from "axios";
+import config from "../../functions/config";
 
 const initialState = {
     loading: false,
@@ -10,7 +11,7 @@ const initialState = {
 
 export const fetchFollowing = createAsyncThunk('following/fetchFollowing', ({ userId }) => {
     return axios
-        .get(`http://localhost:3000/user/following`, { params: { userid: userId } })
+        .get(config.API_BASE_URL + `/user/following`, { params: { userid: userId } })
         .then((res) => res.data);
 })
 
@@ -18,7 +19,7 @@ export const fetchFollowing = createAsyncThunk('following/fetchFollowing', ({ us
 
 export const unfollow = createAsyncThunk('following/unfollow', ({ userId, followingId }) => {
     return axios
-        .delete(`http://localhost:3000/user/unfollow`, { params: { followerid: userId, followedid: followingId } })
+        .delete(config.API_BASE_URL + `/user/unfollow`, { params: { followerid: userId, followedid: followingId } })
         .then((res) => {
             return res.data;
         });

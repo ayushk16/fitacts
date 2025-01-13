@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import axios from "axios";
+import config from "../../functions/config";
 
 const initialState = {
     loading: false,
@@ -10,19 +11,19 @@ const initialState = {
 
 export const fetchPending = createAsyncThunk('pending/fetchPending', ({ userId }) => {
     return axios
-        .get(`http://localhost:3000/user/pending`, { params: { userid: userId } })
+        .get(config.API_BASE_URL + `/user/pending`, { params: { userid: userId } })
         .then((res) => res.data);
 })
 
 export const addPending = createAsyncThunk('pending/addPending', ({ userId, pendingId }) => {
     return axios
-        .post(`http://localhost:3000/user/addPending`, { followerid: userId, followedid: pendingId })
+        .post(config.API_BASE_URL + `/user/addPending`, { followerid: userId, followedid: pendingId })
         .then((res) => res.data);
 });
 
 export const removePending = createAsyncThunk('pending/removePending', ({ userId, pendingId }) => {
     return axios
-        .delete(`http://localhost:3000/user/unfollow`, { params: { followerid: userId, followedid: pendingId } })
+        .delete(config.API_BASE_URL + `/user/unfollow`, { params: { followerid: userId, followedid: pendingId } })
         .then((res) => {
             return res.data;
         });

@@ -19,6 +19,11 @@ import {
 import { BorderBottom, Visibility, VisibilityOff } from '@mui/icons-material';
 import { login, logout, errorlogin } from '../features/user/userSlice.js';
 import Header from '../components/Header.jsx';
+import config from '../functions/config.js';
+const API_BASE = import.meta.env.VITE_API_URL;
+
+console.log('chec url', API_BASE)
+
 
 const Login = () => {
   const { handleOpenSnackBar } = useContext(SnackBarContext);
@@ -56,7 +61,7 @@ const Login = () => {
     const data = { email: userEmail, password: password };
     if (isValidated()) {
       axios
-        .get(`http://localhost:3000/login`, { params: data })
+        .get(config.API_BASE_URL + `/login`, { params: data })
         .then((res) => {
           dispatch(login(res.data));
         })

@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { updateFavorite } from '../../../features/user/userSlice';
 import { getToken, getUser } from '../../../functions/tokenSet';
+import config from '../../../functions/config';
 const Activity = ({ item }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -43,7 +44,7 @@ const Activity = ({ item }) => {
       }
     }
     axios
-      .put('http://localhost:3000/activities/favorite', {
+      .put(config.API_BASE_URL + '/activities/favorite', {
         userId: userId,
         activityId: itemId,
         value: value,

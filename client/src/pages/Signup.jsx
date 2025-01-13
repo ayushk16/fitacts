@@ -17,6 +17,7 @@ import {
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import Header from '../components/Header';
 import { signup, errorsignup, cleanUp } from '../features/user/userSignupSlice';
+import config from '../functions/config';
 const Signup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ const Signup = () => {
     };
     if (isValidated()) {
       axios
-        .post(`http://localhost:3000/signup/`, dataLog)
+        .post(config.API_BASE_URL + `/signup/`, dataLog)
         .then((res) => {
           dispatch(signup(res.data));
         })

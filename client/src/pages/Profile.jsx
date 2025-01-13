@@ -24,6 +24,7 @@ import { getUser, removeUserToken, getToken } from '../functions/tokenSet';
 import { useNavigate } from 'react-router-dom';
 
 import { SnackBarContext } from '../App.jsx';
+import config from '../functions/config.js';
 
 const Fade = React.forwardRef(function Fade(props, ref) {
   const {
@@ -90,7 +91,7 @@ const Profile = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/user/aadhar', {
+      .get(config.API_BASE_URL + '/user/aadhar', {
         params: { userid: userData.id },
         headers: { ['x-access-token']: token },
       })

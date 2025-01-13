@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import config from "../../functions/config";
 
 const initialState = {
     loading: false,
@@ -9,20 +10,20 @@ const initialState = {
 
 export const fetchEvents = createAsyncThunk('events/fetchEvents', ({ userid }) => {
     return axios
-        .get('http://localhost:3000/events', { params: { id: userid } })
+        .get(config.API_BASE_URL + '/events', { params: { id: userid } })
         .then(res => { return (res.data) })
 })
 
 export const addEvent = createAsyncThunk('events/addEvent', ({ name, userid, activityid, distance, duration }) => {
     return axios
-        .post("http://localhost:3000/events", {
+        .post(config.API_BASE_URL + "/events", {
             name, userid, activityid, distance, duration
         }).then(res => { return (res.data) })
 })
 
 export const updateEvent = createAsyncThunk('events/updateEvent', ({ eventid, showintimeline, userid }) => {
     return axios
-        .put("http://localhost:3000/events", { userid, eventid, showintimeline })
+        .put(config.API_BASE_URL + "/events", { userid, eventid, showintimeline })
         .then(res => { return (res.data) })
 })
 

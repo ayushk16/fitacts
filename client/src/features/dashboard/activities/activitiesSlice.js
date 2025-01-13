@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import axios from "axios";
 import { getToken } from "../../../functions/tokenSet";
+import config from "../../../functions/config";
 
 const initialState = {
     loading: false,
@@ -13,7 +14,7 @@ const initialState = {
 export const fetchActivities = createAsyncThunk("activities/fetchActivities", async () => {
     const token = getToken();
     return axios
-        .get('http://localhost:3000/activities/all/')
+        .get(config.API_BASE_URL + '/activities/all/')
         .then(res => { return res.data })
 });
 
