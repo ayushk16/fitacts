@@ -1,166 +1,253 @@
 import React, { useState, useContext } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { SnackBarContext } from '../App.jsx';
+import { useDispatch } from 'react-redux';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import {
-  Button,
+  Box,
   Container,
-  FormHelperText,
-  FilledInput,
-  FormControl,
-  InputLabel,
-  Input,
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Stack,
   InputAdornment,
   IconButton,
-  Stack,
-  Typography,
+  CircularProgress,
+  Alert,
+  Chip,
+  Divider,
 } from '@mui/material';
-import { BorderBottom, Visibility, VisibilityOff } from '@mui/icons-material';
-import { login, logout, errorlogin } from '../features/user/userSlice.js';
-import Header from '../components/Header.jsx';
-import config from '../functions/config.js';
-const API_BASE = import.meta.env.VITE_API_URL;
-
-console.log('chec url', API_BASE)
-
+import { Visibility, VisibilityOff, AlternateEmail } from '@mui/icons-material';
+import Header from '../components/Header';
+import { login } from '../features/user/userSlice';
+import { setUserToken } from '../functions/tokenSet';
+import { encryptAuthPayload } from '../functions/crypto';
+import config from '../functions/config';
+import { SnackBarContext } from '../App';
+import { useThemeMode } from '../theme/ThemeContext';
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { mode } = useThemeMode();
   const { handleOpenSnackBar } = useContext(SnackBarContext);
 
-  const [userEmail, setUserEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const currentUserState = useSelector((state) => state.user);
-
-  const [showPassword, setShowPassword] = React.useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
-  const isValidated = () => {
-    if (userEmail !== '') {
-      if (password !== '') {
-        return true;
-      } else {
-        document.getElementById('filled-login-adornment-password').focus();
-        return false;
-      }
-    } else {
-      document.getElementById('email-login').focus();
-      return false;
+  const handleLogin = async (e) => {
+    if (e) e.preventDefault();
+    if (!identifier.trim() || !password) {
+      setErrorMessage('Please enter your email or username and password');
+      return;
     }
-  };
 
-  const loginUser = () => {
-    const data = { email: userEmail, password: password };
-    if (isValidated()) {
-      axios
-        .get(config.API_BASE_URL + `/login`, { params: data })
-        .then((res) => {
-          dispatch(login(res.data));
-        })
-        .then(() => {
-          navigate('/dashboard/timeline');
-        })
-        .then(() => {
-          handleOpenSnackBar('Login Successfully');
-        })
-        .catch((err) => {
-          dispatch(errorlogin(err));
+    setSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      const rawPayload = {
+        email: identifier.trim(),
+        username: identifier.trim(),
+        password,
+      };
+
+      // Encrypt auth payload against MITM attacks
+      const securePayload = encryptAuthPayload(rawPayload);
+
+      const res = await axios.post(`${config.API_BASE_URL}/login`, securePayload);
+
+      if (res.data?.data) {
+        const { token, user } = res.data.data;
+        setUserToken({
+          token: token.accessToken,
+          refreshToken: token.refreshToken,
+          user,
         });
+
+        dispatch(login(res.data));
+        handleOpenSnackBar(`Welcome back, ${user.firstname}!`);
+        navigate('/dashboard/timeline');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      const serverMessage =
+        err.response?.data?.message || err.response?.data?.status || 'Invalid email/username or password';
+      setErrorMessage(serverMessage);
+    } finally {
+      setSubmitting(false);
     }
+  };
+
+  const fillDemoUser = (userIdentifier, userPass) => {
+    setIdentifier(userIdentifier);
+    setPassword(userPass);
+    setErrorMessage('');
   };
 
   return (
     <>
       <Header />
-      <Container sx={{ width: '300px' }}>
-        <Stack spacing={3}>
-          <Typography component="h1" variant="h3">
-            Login
-          </Typography>
-          <FormControl variant="filled">
-            <InputLabel htmlFor="email-login">Email address</InputLabel>
-            <Input
-              id="email-login"
-              aria-describedby="email-login-helper-text"
-              onChange={(e) => {
-                setUserEmail(() => e.target.value);
-              }}
-            />
-            <FormHelperText
-              id="email-login-helper-text"
-              style={{
-                BorderBottom: '1px solid #A7727D',
-              }}
-            >
-              enter your email
-            </FormHelperText>
-          </FormControl>
-          <FormControl sx={{ m: 1, width: '25ch' }} variant="filled">
-            <InputLabel htmlFor="filled-login-adornment-password">
-              Password
-            </InputLabel>
-            <FilledInput
-              id="filled-login-adornment-password"
-              type={showPassword ? 'text' : 'password'}
-              onChange={(e) => {
-                setPassword(() => e.target.value);
-              }}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              }
-            />
-          </FormControl>
-          {currentUserState.error &&
-            ((currentUserState.error ===
-              'Request failed with status code 404' && (
-              <Typography variant="span" component="h4" color="error">
-                enter correct credentials
-              </Typography>
-            )) ||
-              (currentUserState.error ===
-                'Request failed with status code 401' && (
-                <Typography variant="span" component="h4" color="error">
-                  enter correct password
-                </Typography>
-              )))}
-          <Button
-            variant="contained"
-            style={{ backgroundColor: '#A7727D', color: '#FAFDD6' }}
-            disableElevation
-            onClick={() => loginUser()}
+      <Box
+        sx={{
+          minHeight: 'calc(100vh - 70px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          py: 6,
+          px: 2,
+          bgcolor: mode === 'dark' ? '#0b0f19' : '#f8fafc',
+        }}
+      >
+        <Container maxWidth="xs">
+          <Card
+            sx={{
+              p: { xs: 2, sm: 3.5 },
+              borderRadius: 4,
+              bgcolor: mode === 'dark' ? '#111827' : '#ffffff',
+            }}
           >
-            LOGIN
-          </Button>
-        </Stack>
-        <Stack>
-          <Typography style={{fontSize: '9px'}}>
-            You can also explore with demo users
-          </Typography>
-          <Typography style={{fontSize: '9px'}}>
-            ayush@gmail.com - ayush123
-          </Typography>
-          <Typography style={{fontSize: '9px'}}>
-            demo@gmail.com - demo123
-          </Typography>
-        </Stack>
-      </Container>
+            <CardContent>
+              <Box sx={{ textAlign: 'center', mb: 3.5 }}>
+                <Typography variant="h4" fontWeight={800} gutterBottom>
+                  Welcome Back
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Log in to track workouts and connect with friends
+                </Typography>
+              </Box>
+
+              {errorMessage && (
+                <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                  {errorMessage}
+                </Alert>
+              )}
+
+              <Box component="form" onSubmit={handleLogin}>
+                <Stack spacing={2.5}>
+                  <TextField
+                    label="Email or Username"
+                    fullWidth
+                    required
+                    value={identifier}
+                    onChange={(e) => {
+                      setIdentifier(e.target.value);
+                      if (errorMessage) setErrorMessage('');
+                    }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AlternateEmail fontSize="small" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+
+                  <TextField
+                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    fullWidth
+                    required
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (errorMessage) setErrorMessage('');
+                    }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    disabled={submitting}
+                    sx={{
+                      py: 1.5,
+                      mt: 1,
+                      fontWeight: 700,
+                      borderRadius: 3,
+                      background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                      boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4)',
+                    }}
+                  >
+                    {submitting ? <CircularProgress size={24} color="inherit" /> : 'Log In'}
+                  </Button>
+                </Stack>
+              </Box>
+
+              <Divider sx={{ my: 3 }}>
+                <Typography variant="caption" color="text.secondary">
+                  OR TRY DEMO ACCOUNTS
+                </Typography>
+              </Divider>
+
+              {/* Demo quick-fill chips */}
+              <Stack direction="row" spacing={1} justifyContent="center">
+                <Chip
+                  label="Ayush (ayush@gmail.com)"
+                  onClick={() => fillDemoUser('ayush@gmail.com', 'ayush123')}
+                  variant="outlined"
+                  size="small"
+                  sx={{ cursor: 'pointer' }}
+                />
+                <Chip
+                  label="Demo (demo@gmail.com)"
+                  onClick={() => fillDemoUser('demo@gmail.com', 'demo123')}
+                  variant="outlined"
+                  size="small"
+                  sx={{ cursor: 'pointer' }}
+                />
+              </Stack>
+
+              <Stack direction="row" spacing={1} justifyContent="center">
+
+                <Chip
+                  label="Sarah (sarah_runner)"
+                  onClick={() => fillDemoUser('sarah_runner', 'sarah123')}
+                  variant="outlined"
+                  size="small"
+                  sx={{ cursor: 'pointer' }}
+                />
+                <Chip
+                  label="Alex (runner_muucj7of)"
+                  onClick={() => fillDemoUser('runner_muucj7of', 'Alex123')}
+                  variant="outlined"
+                  size="small"
+                  sx={{ cursor: 'pointer' }}
+                />
+              </Stack>
+
+              <Box sx={{ textAlign: 'center', mt: 3 }}>
+                <Typography variant="body2" color="text.secondary">
+                  Don't have an account?{' '}
+                  <Link
+                    to="/signup"
+                    style={{
+                      color: mode === 'dark' ? '#818cf8' : '#4f46e5',
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                    }}
+                  >
+                    Sign up
+                  </Link>
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
     </>
   );
 };

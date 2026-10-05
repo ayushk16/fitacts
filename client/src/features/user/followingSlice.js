@@ -47,7 +47,7 @@ const followingSlice = createSlice({
         })
         builder.addCase(fetchFollowing.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to fetch following';
         })
 
         builder.addCase(unfollow.pending, (state, action) => {
@@ -56,12 +56,12 @@ const followingSlice = createSlice({
         })
         builder.addCase(unfollow.fulfilled, (state, action) => {
             state.loading = false;
-            state.data = state.data.filter((item) => item.followeruserid !== action.payload.data.followeruserid || item.followeduserid !== action.payload.data.followeduserid);
+            state.data = state.data.filter((item) => item.followeruserid !== action.payload?.data?.followeruserid || item.followeduserid !== action.payload?.data?.followeduserid);
             state.error = null;
         })
         builder.addCase(unfollow.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to unfollow';
         })
     }
 })

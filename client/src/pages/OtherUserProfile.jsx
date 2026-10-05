@@ -11,6 +11,22 @@ const OtherUserProfile = () => {
 
   const userData = useSelector((state) => state.pendingUser.data);
 
+  if (!userData) {
+    return (
+      <>
+        <DashboardHeader />
+        <Container sx={{ mt: 10, textAlign: 'center' }}>
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            No user selected
+          </Typography>
+          <Button variant="contained" onClick={() => navigate('/dashboard/feed')}>
+            Go to Community Feed
+          </Button>
+        </Container>
+      </>
+    );
+  }
+
   return (
     <>
       <DashboardHeader />

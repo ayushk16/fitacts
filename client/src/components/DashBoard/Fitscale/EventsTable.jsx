@@ -1,28 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateEvent } from '../../../features/dashboard/eventSlice';
+import { updateEvent, deleteEvent, fetchEvents } from '../../../features/dashboard/eventSlice';
+import { getUser } from '../../../functions/tokenSet';
 import {
   TableCell,
   TableContainer,
   Table,
   TableRow,
+  TableBody,
   FormControlLabel,
   Checkbox,
   FormGroup,
   Typography,
   Skeleton,
+  IconButton,
+  Tooltip,
+  Paper,
+  Box,
 } from '@mui/material';
-
+import { FaTrashAlt } from 'react-icons/fa';
 import EventsTableHeader from './EventsTableHeader';
-import { Container, Stack } from '@mui/system';
+import { useThemeMode } from '../../../theme/ThemeContext';
 
 const descendingComparator = (a, b, orderBy) => {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
+  if (b[orderBy] < a[orderBy]) return -1;
+  if (b[orderBy] > a[orderBy]) return 1;
   return 0;
 };
 
@@ -33,7 +35,7 @@ const getComparator = (order, orderBy) => {
 };
 
 const sortedData = (data, comparator) => {
-  const stabilizedRows = data.map((el, index) => [el, index]);
+  const stabilizedRows = (data || []).map((el, index) => [el, index]);
   stabilizedRows.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
@@ -44,121 +46,148 @@ const sortedData = (data, comparator) => {
 
 const EventsTable = () => {
   const [orderDirection, setOrderDirection] = useState('asc');
-  const [valueToOrderBy, setValueToOrderBy] = useState('Eventname');
+  const [valueToOrderBy, setValueToOrderBy] = useState('eventname');
   const dispatch = useDispatch();
-  const userData = useSelector((state) => {
-    if (state.user) {
-      return state.user;
-    }
-  });
+  const { mode } = useThemeMode();
 
-  const eventsData = useSelector((state) => {
-    if (state.events) {
-      return state.events;
+  const reduxUser = useSelector((state) => state.user?.data?.data?.user || state.user?.data?.user);
+  const userData = reduxUser || getUser();
+  const eventsData = useSelector((state) => state.events);
+
+  useEffect(() => {
+    if (userData?.id) {
+      dispatch(fetchEvents({ userid: userData.id }));
     }
-  });
+  }, [dispatch, userData?.id]);
 
   const handleChangeEvent = ({ eventid, showintimeline }) => {
+    if (!userData) return;
     dispatch(
       updateEvent({
         eventid,
         showintimeline,
-        userid: userData.data.data.user.id,
+        userid: userData.id,
       })
     );
   };
+
+  const handleDeleteRecord = (eventid) => {
+    if (!userData || !eventid) return;
+    if (window.confirm('Are you sure you want to delete this workout record?')) {
+      dispatch(deleteEvent({ eventid, userid: userData.id }));
+    }
+  };
+
   const handleRequestSort = (event, property) => {
     const isAscending = valueToOrderBy === property && orderDirection === 'asc';
     setValueToOrderBy(property);
     setOrderDirection(isAscending ? 'desc' : 'asc');
   };
-  const dataToDisplay = sortedData(
-    eventsData.data,
-    getComparator(orderDirection, valueToOrderBy)
-  );
 
   if (eventsData.loading) {
     return (
-      <>
-        <Container>
-          <Stack justifyContent={'center'} alignItems={'center'}>
-            <Typography variant="h3" marginTop={30}>
-              <Skeleton />
-            </Typography>
-          </Stack>
-        </Container>
-      </>
+      <Box sx={{ p: 3 }}>
+        <Skeleton variant="rounded" height={200} />
+      </Box>
     );
   }
-  if (eventsData.error !== null && eventsData.error !== '') {
-    return <div>error fetching events</div>;
-  } else {
-    return (
-      <>
-        <TableContainer>
-          <Table
-            style={{
-              background: 'linear-gradient(to bottom, #fff, #EDDBC7)',
-            }}
-          >
-            <EventsTableHeader
-              valueToOrderBy={valueToOrderBy}
-              orderDirection={orderDirection}
-              handleRequestSort={handleRequestSort}
-            />
-            {dataToDisplay.map((event, index) => {
+
+  const dataToDisplay = sortedData(
+    eventsData.data || [],
+    getComparator(orderDirection, valueToOrderBy)
+  );
+
+  return (
+    <TableContainer
+      component={Paper}
+      sx={{
+        borderRadius: 4,
+        overflow: 'hidden',
+        bgcolor: mode === 'dark' ? '#111827' : '#ffffff',
+        border: mode === 'dark' ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(0, 0, 0, 0.06)',
+      }}
+    >
+      <Table>
+        <EventsTableHeader
+          valueToOrderBy={valueToOrderBy}
+          orderDirection={orderDirection}
+          handleRequestSort={handleRequestSort}
+        />
+        <TableBody>
+          {dataToDisplay.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                <Typography color="text.secondary">No workouts recorded yet.</Typography>
+              </TableCell>
+            </TableRow>
+          ) : (
+            dataToDisplay.map((event, index) => {
+              const eventId = event.id || event.eventid;
+              const durationSec = event.duration || 0;
+              const h = Math.floor(durationSec / 3600);
+              const m = Math.floor((durationSec % 3600) / 60);
+              const s = durationSec % 60;
+              const formattedDuration = `${h < 10 ? `0${h}` : h}:${m < 10 ? `0${m}` : m}:${s < 10 ? `0${s}` : s}`;
+
               return (
-                <TableRow key={index}>
-                  <TableCell>{event.eventname}</TableCell>
-                  <TableCell>{event.activityname}</TableCell>
+                <TableRow
+                  key={eventId || index}
+                  hover
+                  sx={{
+                    '&:last-child td, &:last-child th': { border: 0 },
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: 600 }}>{event.name || event.eventname}</TableCell>
+                  <TableCell>{event.activityname || 'Workout'}</TableCell>
                   <TableCell>
-                    {event.distance} {event.distanceunit}
+                    {event.distance} {event.distanceunit || 'km'}
                   </TableCell>
+                  <TableCell>{formattedDuration}</TableCell>
                   <TableCell>
-                    duration -{' '}
-                    {Math.floor(event.duration / 3600) < 10
-                      ? `0${Math.floor(event.duration / 3600)}`
-                      : `${Math.floor(event.duration / 3600)}`}
-                    :
-                    {Math.floor((event.duration % 3600) / 60) < 10
-                      ? `0${Math.floor((event.duration % 3600) / 60)}`
-                      : `${Math.floor((event.duration % 3600) / 60)}`}
-                    :
-                    {Math.floor((event.duration % 3600) % 60) < 10
-                      ? `0${Math.floor((event.duration % 3600) % 60)}`
-                      : `${Math.floor((event.duration % 3600) % 60)}`}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(event.timestamp).toLocaleString()}
+                    {new Date(event.created_at || event.timestamp || Date.now()).toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
                   </TableCell>
                   <TableCell>
                     <FormGroup>
                       <FormControlLabel
                         control={
                           <Checkbox
-                            checked={event.showintimeline}
+                            checked={Boolean(event.showintimeline)}
                             onChange={(e) => {
                               handleChangeEvent({
-                                eventid: event.eventid,
+                                eventid: eventId,
                                 showintimeline: e.target.checked,
                               });
                             }}
-                            name="checkedB"
                             color="primary"
                           />
                         }
-                        label="Show in timeline"
+                        label="Timeline"
                       />
                     </FormGroup>
                   </TableCell>
+                  <TableCell align="right">
+                    <Tooltip title="Delete Workout Record">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDeleteRecord(eventId)}
+                      >
+                        <FaTrashAlt fontSize={14} />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
                 </TableRow>
               );
-            })}
-          </Table>
-        </TableContainer>
-      </>
-    );
-  }
+            })
+          )}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 };
 
 export default EventsTable;

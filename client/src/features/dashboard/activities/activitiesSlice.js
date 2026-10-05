@@ -43,7 +43,7 @@ const activitiesSlice = createSlice({
         builder.addCase(fetchActivities.rejected, (state, action) => {
             state.loading = false;
             state.data = [];
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to fetch activities';
         })
     }
 });

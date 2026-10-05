@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <!-- Background circular gradient -->
+    <linearGradient id="pulse-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9d76ff" />
+      <stop offset="100%" stop-color="#7645eb" />
+    </linearGradient>
+
+    <!-- Mask to punch the ECG heartbeat line out of the heart -->
+    <mask id="ecg-cutout">
+      <!-- Base: entire heart visible -->
+      <path 
+        d="M50 67 C36 56 28 47 28 39 C28 32.5 33 28 39.5 28 C43.5 28 47.5 30 50 33.5 C52.5 30 56.5 28 60.5 28 C67 28 72 32.5 72 39 C72 47 64 56 50 67 Z" 
+        fill="#ffffff" 
+      />
+      <!-- Cutout stroke: line that carves through the heart -->
+      <path 
+        d="M26 48.5 H41 L45.5 38 L49.5 56 L54 44.5 L57 50.5 H74" 
+        fill="none" 
+        stroke="#000000" 
+        stroke-width="3" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+      />
+    </mask>
+  </defs>
+
+  <!-- Circular background -->
+  <circle cx="50" cy="50" r="42" fill="url(#pulse-bg)" />
+
+  <!-- Heart graphic with ECG cutout -->
+  <rect x="0" y="0" width="100" height="100" fill="#ffffff" mask="url(#ecg-cutout)" />
+</svg>

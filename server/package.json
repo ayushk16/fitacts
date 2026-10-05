@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "fit act server",
   "main": "index.js",
   "type": "module",
@@ -12,9 +12,12 @@
   "author": "ayush",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.556.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.30.10",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
@@ -23,6 +26,7 @@
     "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
+    "drizzle-kit": "^0.20.18",
     "nodemon": "^3.0.1"
   }
 }

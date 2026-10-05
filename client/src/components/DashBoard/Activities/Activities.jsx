@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import DashboardHeader from '../../DashboardHeader';
 import { fetchActivities } from '../../../features/dashboard/activities/activitiesSlice';
-import { Container, Grid, Skeleton } from '@mui/material';
+import { Container, Grid, Skeleton, Typography } from '@mui/material';
 import { clearTopEvents } from '../../../features/dashboard/activities/topEvents/topEvents';
 
 import Activity from './Activity';
@@ -60,24 +60,31 @@ const Activities = () => {
         </Container>
       </>
     );
-  } else {
-    return (
-      <>
-        <DashboardHeader />
-        <Container sx={{ marginTop: 5 }}>
+  }
+
+  const items = activitiesData.data || [];
+  return (
+    <>
+      <DashboardHeader />
+      <Container sx={{ marginTop: 5, pb: 8 }}>
+        {items.length === 0 ? (
+          <Typography variant="body1" color="text.secondary" align="center" sx={{ py: 6 }}>
+            No activities found.
+          </Typography>
+        ) : (
           <Grid
             container
-            rowSpacing={1.5}
+            rowSpacing={2.5}
             columnSpacing={{ xs: 1, sm: 2, md: 3 }}
           >
-            {activitiesData.data.map((item, index) => {
+            {items.map((item) => {
               return <Activity item={item} key={item.id} data-id={item.id} />;
             })}
           </Grid>
-        </Container>
-      </>
-    );
-  }
+        )}
+      </Container>
+    </>
+  );
 };
 
 export default Activities;

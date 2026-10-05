@@ -12,7 +12,7 @@ const initialState = {
 
 export const fetchTopEvents = createAsyncThunk("events/fetchTopEvents", async ({ id }) => {
     const user = getUser();
-    return axios.get(config.API_BASE_URL + '/events/top/', { params: { userId: user.id, activityId: id } })
+    return axios.get(config.API_BASE_URL + '/events/top/', { params: { userId: user?.id, activityId: id } })
         .then(res => res.data);
 });
 
@@ -38,7 +38,7 @@ const topEventsSlice = createSlice({
         })
         builder.addCase(fetchTopEvents.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to fetch top events';
         })
     }
 })
