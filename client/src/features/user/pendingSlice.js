@@ -15,9 +15,9 @@ export const fetchPending = createAsyncThunk('pending/fetchPending', ({ userId }
         .then((res) => res.data);
 })
 
-export const addPending = createAsyncThunk('pending/addPending', ({ userId, pendingId }) => {
+export const addPending = createAsyncThunk('pending/addPending', ({ followerid, followedid }) => {
     return axios
-        .post(config.API_BASE_URL + `/user/addPending`, { followerid: userId, followedid: pendingId })
+        .post(config.API_BASE_URL + `/user/addPending`, { followerid, followedid })
         .then((res) => res.data);
 });
 
@@ -51,7 +51,7 @@ const pendingSlice = createSlice({
         });
         builder.addCase(fetchPending.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to fetch pending requests';
         });
         builder.addCase(addPending.pending, (state, action) => {
             state.loading = true;
@@ -64,7 +64,7 @@ const pendingSlice = createSlice({
         });
         builder.addCase(addPending.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to add pending request';
         });
         builder.addCase(removePending.pending, (state, action) => {
             state.loading = true;
@@ -72,12 +72,12 @@ const pendingSlice = createSlice({
         });
         builder.addCase(removePending.fulfilled, (state, action) => {
             state.loading = false;
-            state.data = state.data.filter((item) => item.followeruserid !== action.payload.data.followeruserid || item.followeduserid !== action.payload.data.followeduserid);
+            state.data = state.data.filter((item) => item.followeruserid !== action.payload?.data?.followeruserid || item.followeduserid !== action.payload?.data?.followeduserid);
             state.error = null;
         });
         builder.addCase(removePending.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to remove pending request';
         });
     }
 })

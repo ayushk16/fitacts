@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import DashboardHeader from '../../DashboardHeader';
-import { fetchTopEvents } from '../../../features/dashboard/activities/topEvents/topEvents';
 import {
   Card,
   Container,
@@ -10,192 +8,196 @@ import {
   Skeleton,
   Stack,
   Typography,
+  Box,
+  Button,
+  Chip,
 } from '@mui/material';
+import { FaArrowLeft, FaTrophy, FaMedal } from 'react-icons/fa';
+import DashboardHeader from '../../DashboardHeader';
+import { fetchTopEvents } from '../../../features/dashboard/activities/topEvents/topEvents';
+import { fetchActivities } from '../../../features/dashboard/activities/activitiesSlice';
+import { useThemeMode } from '../../../theme/ThemeContext';
+
+const getRankColor = (rank) => {
+  if (rank === 1) return '#f59e0b'; // Gold
+  if (rank === 2) return '#94a3b8'; // Silver
+  if (rank === 3) return '#b45309'; // Bronze
+  return '#6366f1';
+};
 
 const TopFive = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { mode } = useThemeMode();
 
   useEffect(() => {
     dispatch(fetchTopEvents({ id }));
-  }, []);
+    dispatch(fetchActivities());
+  }, [dispatch, id]);
 
   const activitiesData = useSelector((state) => state.activities);
+  const topEventsData = useSelector((state) => state.topEvents);
 
-  const topEventsData = useSelector((state) => {
-    return state.topEvents;
-  });
+  const currentActivity = (activitiesData.data || []).find(
+    (a) => String(a.id) === String(id)
+  );
+  const activityName = currentActivity ? currentActivity.name : 'Activity';
 
   if (topEventsData.loading) {
     return (
-      <>
+      <Box sx={{ bgcolor: mode === 'dark' ? '#0b0f19' : '#f8fafc', minHeight: '100vh' }}>
         <DashboardHeader />
-        <Container>
-          <Stack alignContent={'center'} justifyContent={'center'}>
-            <Skeleton variant="rectangular" width={'100%'} height={118} />
-            <Skeleton />
-          </Stack>
+        <Container maxWidth="md" sx={{ mt: 5 }}>
+          <Skeleton variant="rounded" height={60} sx={{ mb: 3, borderRadius: 3 }} />
+          {[1, 2, 3].map((n) => (
+            <Skeleton key={n} variant="rounded" height={90} sx={{ mb: 2, borderRadius: 3 }} />
+          ))}
         </Container>
-      </>
+      </Box>
     );
   }
-  if (topEventsData.error !== null && topEventsData.error !== '') {
-    return (
-      <>
-        <DashboardHeader />
-        <Container>
-          <Stack
-            alignContent={'center'}
-            position={'absolute'}
-            left={0}
-            justifyContent={'center'}
-            width={'100vw'}
+
+  const events = topEventsData.data || [];
+
+  return (
+    <Box sx={{ bgcolor: mode === 'dark' ? '#0b0f19' : '#f8fafc', minHeight: '100vh', pb: 8 }}>
+      <DashboardHeader />
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        {/* Navigation & Header */}
+        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 4 }}>
+          <Button
+            startIcon={<FaArrowLeft />}
+            onClick={() => navigate('/dashboard/activities')}
+            sx={{
+              borderRadius: 3,
+              color: 'text.secondary',
+              textTransform: 'none',
+              fontWeight: 600,
+            }}
           >
-            Something went wrong
+            All Activities
+          </Button>
+        </Stack>
+
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Stack direction="row" justifyContent="center" alignItems="center" spacing={1.5} sx={{ mb: 1 }}>
+            <FaTrophy fontSize={26} color="#f59e0b" />
+            <Typography variant="h4" fontWeight={800}>
+              Top 5 Workouts: {activityName}
+            </Typography>
           </Stack>
-        </Container>
-        s
-      </>
-    );
-  } else {
-    return (
-      <>
-        <DashboardHeader />
-        <Container>
-          <Stack
-            alignContent={'center'}
-            position={'absolute'}
-            left={0}
-            justifyContent={'center'}
-            width={'100vw'}
+          <Typography variant="body2" color="text.secondary">
+            Longest and highest performance records logged for {activityName}
+          </Typography>
+        </Box>
+
+        {events.length === 0 ? (
+          <Card
+            sx={{
+              p: 6,
+              textAlign: 'center',
+              borderRadius: 4,
+              bgcolor: mode === 'dark' ? '#111827' : '#ffffff',
+            }}
           >
-            {!topEventsData.Data && topEventsData.data.length === 0 ? (
-              <Typography
-                sx={{
-                  fontSize: '2rem',
-                  fontWeight: 'bold',
-                  color: '#000000',
-                  marginBottom: '3rem',
-                  textAlign: 'center',
-                  marginTop: '2rem',
-                }}
-              >
-                No Data Found{' '}
-                {activitiesData.data &&
-                  `for ${
-                    activitiesData.data.filter((activity) => {
-                      return activity.id === id;
-                    })[0].name
-                  }`}
-                ...
-              </Typography>
-            ) : (
-              <Typography
-                sx={{
-                  fontSize: '2rem',
-                  fontWeight: 'bold',
-                  color: '#000000',
-                  marginBottom: '3rem',
-                  textAlign: 'center',
-                  marginTop: '2rem',
-                }}
-              >
-                Top 5 Events{' '}
-                {`for ${
-                  activitiesData.data.filter((activity) => {
-                    return activity.id === id;
-                  })[0].name
-                }`}
-              </Typography>
-            )}
-            <Grid container spacing={3}>
-              {topEventsData &&
-                topEventsData.data.map((event, index) => {
-                  return (
-                    <>
-                      <Grid
-                        item
-                        xs={12}
-                        Key={event.eventid}
-                        display={'flex'}
-                        alignItems={'center'}
-                        justifyContent={'center'}
-                      >
-                        <Card
-                          sx={{
-                            width: '50%',
-                            padding: '1.5rem',
-                            background:
-                              'linear-gradient(to bottom, #F9F5E7, #fff)',
-                            boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.15)',
-                          }}
-                        >
-                          <div>
-                            <Typography
-                              sx={{
-                                fontSize: '1.5rem',
-                                fontWeight: 'bold',
-                                color: '#000000',
-                                textAlign: 'center',
-                              }}
-                            >
-                              {event.eventname}
-                            </Typography>
-                          </div>
-                          <div>
-                            <Typography
-                              sx={{
-                                fontSize: '1.3rem',
-                                color: '#000000',
-                                textAlign: 'center',
-                                marginTop: '2rem',
-                              }}
-                            >
-                              Activity - {event.activityname}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                fontSize: '1.3rem',
-                                color: '#000000',
-                                textAlign: 'center',
-                                marginTop: '2rem',
-                              }}
-                            >
-                              Distance - {event.distance}
-                            </Typography>
-                            <Typography
-                              sx={{
-                                fontSize: '1.3rem',
-                                color: '#000000',
-                                textAlign: 'center',
-                                marginTop: '2rem',
-                              }}
-                            >
-                              Duration -{' '}
-                              {Math.floor(event.duration / 3600) < 10
-                                ? `0${Math.floor(event.duration / 3600)}`
-                                : `${Math.floor(event.duration / 3600)}`}
-                              :
-                              {Math.floor((event.duration % 3600) / 60) < 10
-                                ? `0${Math.floor((event.duration % 3600) / 60)}`
-                                : `${Math.floor((event.duration % 3600) / 60)}`}
-                              :
-                              {Math.floor((event.duration % 3600) % 60) < 10
-                                ? `0${Math.floor((event.duration % 3600) % 60)}`
-                                : `${Math.floor((event.duration % 3600) % 60)}`}
-                            </Typography>
-                          </div>
-                        </Card>
-                      </Grid>
-                    </>
-                  );
-                })}
-            </Grid>
+            <Typography variant="h6" fontWeight={700} gutterBottom>
+              No Records Yet
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Be the first to record a workout for {activityName}!
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => navigate('/dashboard/fitscale')}
+              sx={{ borderRadius: 3, fontWeight: 700 }}
+            >
+              Record Workout
+            </Button>
+          </Card>
+        ) : (
+          <Stack spacing={2}>
+            {events.map((event, index) => {
+              const rank = index + 1;
+              const durationSec = event.duration || 0;
+              const h = Math.floor(durationSec / 3600);
+              const m = Math.floor((durationSec % 3600) / 60);
+              const s = durationSec % 60;
+              const formattedDuration = `${h < 10 ? `0${h}` : h}:${m < 10 ? `0${m}` : m}:${s < 10 ? `0${s}` : s}`;
+
+              return (
+                <Card
+                  key={event.eventid || event.id || index}
+                  sx={{
+                    p: 2.5,
+                    borderRadius: 4,
+                    bgcolor: mode === 'dark' ? '#111827' : '#ffffff',
+                    border:
+                      rank === 1
+                        ? '1px solid rgba(245, 158, 11, 0.4)'
+                        : mode === 'dark'
+                        ? '1px solid rgba(255, 255, 255, 0.08)'
+                        : '1px solid rgba(0, 0, 0, 0.06)',
+                    boxShadow:
+                      rank === 1
+                        ? '0 8px 24px -4px rgba(245, 158, 11, 0.15)'
+                        : 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Stack direction="row" alignItems="center" spacing={2.5}>
+                    <Box
+                      sx={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: '50%',
+                        bgcolor: `${getRankColor(rank)}20`,
+                        color: getRankColor(rank),
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 900,
+                        fontSize: '1.1rem',
+                      }}
+                    >
+                      {rank <= 3 ? <FaMedal /> : `#${rank}`}
+                    </Box>
+
+                    <Box>
+                      <Typography variant="h6" fontWeight={700}>
+                        {event.eventname || event.name || 'Workout'}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Logged on{' '}
+                        {new Date(event.created_at || event.timestamp || Date.now()).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <Stack direction="row" spacing={3} alignItems="center">
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Typography variant="h6" fontWeight={800} color="primary.main">
+                        {event.distance} {event.distanceunit || 'km'}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Duration: {formattedDuration}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Card>
+              );
+            })}
           </Stack>
-        </Container>
-      </>
-    );
-  }
+        )}
+      </Container>
+    </Box>
+  );
 };
 
 export default TopFive;

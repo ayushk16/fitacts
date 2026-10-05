@@ -8,19 +8,19 @@ import { logout } from "../features/user/userSlice";
 import { clearUsers } from "../features/user/usersSlice";
 import { clearPending } from "../features/user/pendingSlice";
 import { clearRequest } from "../features/user/requestSlice";
-import { useDispatch } from "react-redux";
+import store from "../app/store.js";
 
-export const clearAll = async () => {
-    const dispatch = useDispatch();
-    dispatch(clearTopEvents())
-        .then(dispatch(clearActivities()))
-        .then(dispatch(clearEvents()))
-        .then(dispatch(clearFollowedUser()))
-        .then(dispatch(clearFollowing()))
-        .then(dispatch(clearPending()))
-        .then(dispatch(clearUsers()))
-        .then(dispatch(clearRequest()))
-        .then(dispatch(cleanUp()))
-        .then(dispatch(logout()))
+export const clearAll = async (customDispatch) => {
+    const dispatch = customDispatch || store.dispatch;
+    dispatch(clearTopEvents());
+    dispatch(clearActivities());
+    dispatch(clearEvents());
+    dispatch(clearFollowedUser());
+    dispatch(clearFollowing());
+    dispatch(clearPending());
+    dispatch(clearUsers());
+    dispatch(clearRequest());
+    dispatch(cleanUp());
+    dispatch(logout());
     localStorage.removeItem('feedallignment');
-}
+};

@@ -49,7 +49,7 @@ const requestSlice = createSlice({
         });
         builder.addCase(fetchRequest.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to fetch friend requests';
         });
         builder.addCase(accept.pending, (state, action) => {
             state.loading = true;
@@ -57,12 +57,12 @@ const requestSlice = createSlice({
         })
         builder.addCase(accept.fulfilled, (state, action) => {
             state.loading = false;
-            state.data = state.data.filter((item) => item.id !== action.payload.data.id);
+            state.data = state.data.filter((item) => item.id !== action.payload?.data?.id);
             state.error = null;
         })
         builder.addCase(accept.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to accept request';
         })
         builder.addCase(reject.pending, (state, action) => {
             state.loading = true;
@@ -70,12 +70,12 @@ const requestSlice = createSlice({
         })
         builder.addCase(reject.fulfilled, (state, action) => {
             state.loading = false;
-            state.data = state.data.filter((item) => item.id !== action.payload.data.followeruserid);
+            state.data = state.data.filter((item) => item.id !== action.payload?.data?.followeruserid);
             state.error = null;
         })
         builder.addCase(reject.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to reject request';
         })
     }
 })

@@ -1,214 +1,186 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Card,
   Container,
-  Grid,
-  Skeleton,
-  Stack,
   Typography,
+  Skeleton,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Stack,
 } from '@mui/material';
-import { TiDeleteOutline } from 'react-icons/ti';
+import { FaPlus, FaRunning } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  fetchEvents,
-  updateEvent,
-} from '../../../features/dashboard/eventSlice.js';
-import { getUser } from '../../../functions/tokenSet.js';
-import { removeUserToken } from '../../../functions/tokenSet.js';
+import { fetchEvents, deleteEvent } from '../../../features/dashboard/eventSlice.js';
+import { getUser, getToken, removeUserToken } from '../../../functions/tokenSet.js';
+import { SnackBarContext } from '../../../App.jsx';
+import WorkoutCard from '../../Social/WorkoutCard.jsx';
+import { useThemeMode } from '../../../theme/ThemeContext.jsx';
 
 const ActivitiesShowCase = () => {
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
+  const { mode } = useThemeMode();
+  const { handleOpenSnackBar } = useContext(SnackBarContext);
 
-  const UserData = useSelector((state) => {
-    if (state.user.data.data) {
-      return state.user.data.data.user;
-    }
-  });
+  const reduxUser = useSelector((state) => state.user?.data?.data?.user || state.user?.data?.user);
+  const currentUser = reduxUser || getUser();
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   useEffect(() => {
-    const user = getUser();
-    if (!user) {
-      removeUserToken();
+    const effectiveUser = currentUser || getUser();
+    const token = getToken();
+    if (!effectiveUser && !token) {
       navigate('/login');
-    } else {
-      dispatch(fetchEvents({ userid: user.id }));
+    } else if (effectiveUser?.id) {
+      dispatch(fetchEvents({ userid: effectiveUser.id }));
     }
-  }, [UserData]);
+  }, [currentUser?.id, dispatch, navigate]);
 
-  const removeFromTimeline = (event) => {
-    dispatch(updateEvent(event));
+  const eventsState = useSelector((state) => state.events);
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId || !currentUser) return;
+    try {
+      await dispatch(deleteEvent({ eventid: deleteTargetId, userid: currentUser.id })).unwrap();
+      handleOpenSnackBar('Workout record deleted successfully');
+    } catch (err) {
+      console.error('Error deleting record:', err);
+      handleOpenSnackBar('Failed to delete workout record');
+    } finally {
+      setDeleteTargetId(null);
+    }
   };
 
-  const eventsData = useSelector((state) => {
-    if (state.events) {
-      return state.events;
-    }
-  });
-
-  if (eventsData.loading) {
-    const tempArr = [1, 2, 3];
+  if (eventsState.loading) {
     return (
-      <>
-        <Container sx={{ marginTop: 5 }}>
-          <Grid
-            container
-            rowSpacing={2}
-            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-            marginTop={3}
-          >
-            {tempArr.map((item, index) => {
-              return (
-                <Grid
-                  item
-                  xs={12}
-                  sm={6}
-                  md={4}
-                  lg={3}
-                  height={100}
-                  key={index}
-                >
-                  <Box>
-                    <Skeleton variant="wave"></Skeleton>
-                    <Skeleton variant="wave"></Skeleton>
-                  </Box>
-                </Grid>
-              );
-            })}
-          </Grid>
-        </Container>
-      </>
-    );
-  }
-  if (eventsData.error !== null) {
-    return (
-      <Container sx={{ marginTop: 5 }}>
-        <Grid
-          container
-          rowSpacing={1}
-          columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-          marginTop={3}
-        >
-          <Grid item xs={12} sm={6} md={4} lg={3} height={100}>
-            <Box>
-              <Typography variant="h4" component="h5" color="error">
-                {eventsData.error === 'Request failed with status code 404'
-                  ? 'ERROR FETCHING EVENTS'
-                  : 'NO EVENTS AVAILABLE'}
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
+      <Container maxWidth="sm" sx={{ mt: 4 }}>
+        {[1, 2].map((n) => (
+          <Box key={n} sx={{ mb: 3 }}>
+            <Skeleton variant="rounded" height={60} sx={{ mb: 1, borderRadius: 3 }} />
+            <Skeleton variant="rounded" height={220} sx={{ borderRadius: 3 }} />
+          </Box>
+        ))}
       </Container>
     );
-  } else {
-    return (
-      <>
-        <Grid
-          container
-          rowSpacing={1}
-          columnSpacing={{ xs: 3, sm: 2, md: 3 }}
-          marginTop={3}
-          height={'auto'}
-        >
-          {eventsData.data &&
-            eventsData.data.map((event, index) => {
-              return (
-                <React.Fragment key={index}>
-                  {event.showintimeline === true && (
-                    <Grid key={event.id} item xs={12} height={'auto'}>
-                      <Stack
-                        sx={{
-                          minWidth: '400px',
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          marginTop: '1rem',
-                        }}
-                      >
-                        <Card
-                          elevation={3}
-                          style={{
-                            padding: '1rem',
-                            position: 'relative',
-                            width: '400px',
-                            boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.45)',
-                            background:
-                              'linear-gradient(to top, #F9F5E7, #fff)',
-                          }}
-                        >
-                          <Box position={'absolute'} right={20}>
-                            <TiDeleteOutline
-                              fontSize={24}
-                              onClick={() => {
-                                removeFromTimeline({
-                                  userid: event.userid,
-                                  eventid: event.eventid,
-                                  showintimeline: false,
-                                });
-                              }}
-                            />
-                          </Box>
-
-                          <Stack
-                            spacing={2}
-                            width={'100%'}
-                            alignItems={'center'}
-                          >
-                            <Typography variant="h5">
-                              {event.eventname}
-                            </Typography>
-                            <Stack
-                              direction={'column'}
-                              display="flex"
-                              justifyContent="space-evenly"
-                              spacing={2}
-                            >
-                              <Typography>activity - {event.name}</Typography>
-
-                              <Typography>
-                                distance - {event.distance}
-                                {event.distanceunit}
-                              </Typography>
-
-                              <Typography>
-                                duration -{' '}
-                                {Math.floor(event.duration / 3600) < 10
-                                  ? `0${Math.floor(event.duration / 3600)}`
-                                  : `${Math.floor(event.duration / 3600)}`}
-                                :
-                                {Math.floor((event.duration % 3600) / 60) < 10
-                                  ? `0${Math.floor(
-                                      (event.duration % 3600) / 60
-                                    )}`
-                                  : `${Math.floor(
-                                      (event.duration % 3600) / 60
-                                    )}`}
-                                :
-                                {Math.floor((event.duration % 3600) % 60) < 10
-                                  ? `0${Math.floor(
-                                      (event.duration % 3600) % 60
-                                    )}`
-                                  : `${Math.floor(
-                                      (event.duration % 3600) % 60
-                                    )}`}
-                              </Typography>
-                            </Stack>
-                          </Stack>
-                        </Card>
-                      </Stack>
-                    </Grid>
-                  )}
-                </React.Fragment>
-              );
-            })}
-        </Grid>
-      </>
-    );
   }
+
+  const timelineEvents = (eventsState.data || []).filter((e) => e.showintimeline !== false);
+
+  return (
+    <Container maxWidth="sm" sx={{ mt: 3, pb: 8 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+        <Typography variant="h5" fontWeight={800}>
+          Your Fitness Timeline
+        </Typography>
+        <Button
+          variant="contained"
+          size="small"
+          startIcon={<FaPlus />}
+          onClick={() => navigate('/dashboard/fitscale')}
+          sx={{
+            borderRadius: 3,
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.35)',
+          }}
+        >
+          Record Workout
+        </Button>
+      </Box>
+
+      {timelineEvents.length === 0 ? (
+        <Box
+          sx={{
+            py: 8,
+            px: 3,
+            textAlign: 'center',
+            borderRadius: 4,
+            border:
+              mode === 'dark'
+                ? '1px dashed rgba(255, 255, 255, 0.12)'
+                : '1px dashed rgba(0, 0, 0, 0.12)',
+            bgcolor: mode === 'dark' ? '#111827' : '#ffffff',
+          }}
+        >
+          <Box
+            sx={{
+              width: 64,
+              height: 64,
+              borderRadius: '50%',
+              bgcolor: mode === 'dark' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(79, 70, 229, 0.1)',
+              color: 'primary.main',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mx: 'auto',
+              mb: 2,
+            }}
+          >
+            <FaRunning fontSize={28} />
+          </Box>
+          <Typography variant="h6" fontWeight={700} gutterBottom>
+            No Workouts Recorded Yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3, maxWidth: 360, mx: 'auto' }}>
+            Track swimming, rowing, running, or cycling with distance and duration to build your feed!
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate('/dashboard/fitscale')}
+            sx={{ borderRadius: 3, px: 3, fontWeight: 700 }}
+          >
+            Start Your First Workout
+          </Button>
+        </Box>
+      ) : (
+        <Stack spacing={1}>
+          {timelineEvents.map((event) => (
+            <WorkoutCard
+              key={event.id || event.eventid}
+              event={event}
+              onDelete={(id) => setDeleteTargetId(id)}
+              showDeleteOption={true}
+              isOwnDashboard={true}
+            />
+          ))}
+        </Stack>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={Boolean(deleteTargetId)}
+        onClose={() => setDeleteTargetId(null)}
+        PaperProps={{
+          sx: {
+            borderRadius: 3.5,
+            bgcolor: mode === 'dark' ? '#111827' : '#ffffff',
+            backgroundImage: 'none',
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 700 }}>Delete Workout Record?</DialogTitle>
+        <DialogContent>
+          <DialogContentText color="text.secondary">
+            Are you sure you want to permanently delete this workout? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={() => setDeleteTargetId(null)} sx={{ color: 'text.secondary' }}>
+            Cancel
+          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained" sx={{ borderRadius: 2 }}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Container>
+  );
 };
 
 export default ActivitiesShowCase;

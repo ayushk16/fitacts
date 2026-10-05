@@ -1,55 +1,57 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Skeleton } from '@mui/material';
+import { Skeleton, Container, Box } from '@mui/material';
 
 import { getToken, getUser, removeUserToken } from '../functions/tokenSet.js';
 import { login } from '../features/user/userSlice.js';
+import { fetchEvents } from '../features/dashboard/eventSlice.js';
 
 import DashboardHeader from '../components/DashboardHeader.jsx';
 import UserWelcome from '../components/DashBoard/Timeline/UserWelcome.jsx';
 import ActivitiesShowCase from '../components/DashBoard/Timeline/ActivitiesShowCase.jsx';
+import { useThemeMode } from '../theme/ThemeContext.jsx';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { mode } = useThemeMode();
+
+  const reduxUser = useSelector((state) => state.user?.data?.data?.user || state.user?.data?.user);
+  const currentUser = reduxUser || getUser();
+  const token = getToken();
+
   useEffect(() => {
-    const token = getToken();
-    const user = getUser();
-    if (!token && !user) {
+    if (!token && !currentUser) {
       removeUserToken();
       navigate('/login');
-    } else {
-      dispatch(login({ data: { token: { accessToken: token }, user: user } }));
+      return;
     }
-  }, []);
 
-  const userState = useSelector((state) => {
-    if (state.user) {
-      return state.user;
+    if (currentUser?.id) {
+      dispatch(fetchEvents({ userid: currentUser.id }));
     }
-  });
+  }, [currentUser?.id, token, dispatch, navigate]);
 
-  if (userState.loading) {
+  if (!currentUser) {
     return (
       <>
         <DashboardHeader />
-        <Skeleton />
-        <Skeleton />
+        <Container sx={{ mt: 4 }}>
+          <Skeleton variant="rounded" height={120} sx={{ mb: 3 }} />
+          <Skeleton variant="rounded" height={260} />
+        </Container>
       </>
     );
   }
-  if (userState.error !== null && userState.error !== '') {
-    return <div>error-{userState.error}</div>;
-  } else {
-    return (
-      <>
-        <DashboardHeader />
-        <UserWelcome />
-        <ActivitiesShowCase />
-      </>
-    );
-  }
+
+  return (
+    <Box sx={{ bgcolor: mode === 'dark' ? '#0b0f19' : '#f8fafc', minHeight: 'calc(100vh - 70px)' }}>
+      <DashboardHeader />
+      <UserWelcome />
+      <ActivitiesShowCase />
+    </Box>
+  );
 };
 
 export default Dashboard;

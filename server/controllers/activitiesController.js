@@ -1,131 +1,74 @@
-import { runQuery } from "../utility/db/queryFunc.js";
-import querries from "../utility/db/querries.js"
-
-
-import dotenv from "dotenv";
-dotenv.config();
-
+import { eq } from 'drizzle-orm';
+import { db } from '../app/config/dbConfig.js';
+import { activities, users } from '../db/schema.js';
 
 export const getAllActivities = async (req, res, next) => {
-    try {
-        const activities = await runQuery(querries.getAllActivities);
-        if (!activities) {
-            const error = new Error('fetching activities');
-            error.status = 'error fetching activities';
-            error.statusCode = 401;
-            throw (error);
-        }
-        else {
-            res.status(200).json({ data: activities.rows, message: 'activities fetched successfuly' });
-        }
-    } catch (error) {
-        const Error = error;
-        Error.status = error.status || "problem in fetching activities";
-        Error.statusCode = error.statusCode || 500;
-        next(Error);
-    }
-}
+  try {
+    const list = await db.select().from(activities);
+    res.status(200).json({ data: list, message: 'Activities fetched successfully' });
+  } catch (error) {
+    console.error('Error in getAllActivities:', error);
+    next(error);
+  }
+};
 
 export const getActivity = async (req, res, next) => {
-    try {
-        const activityId = req.query.activityId;
-        if (!activityId) {
-            const error = new Error('missing data');
-            error.status = 'missing data';
-            error.statusCode = 400;
-            throw (error);
-        }
-        else {
-            const activity = await runQuery(querries.getActivity, [activityId]);
-            if (!activity) {
-                const error = new Error('activity not found')
-                error.status = 'wrong activity id';
-                error.statusCode = 404;
-                throw (error);
-            }
-            else {
-                res.status(200).json({ data: activity.rows[0], message: "activity fetched successfully" })
-            }
-        }
-    } catch (error) {
-        const Error = error;
-        Error.status = error.status || 'error while fetching activity data';
-        Error.statusCode = error.statusCode || 500;
+  try {
+    const activityId = parseInt(req.query.activityId || req.params.id, 10);
+    if (!activityId || isNaN(activityId)) {
+      return res.status(400).json({ message: 'Activity ID is required' });
     }
-}
+
+    const item = await db.select().from(activities).where(eq(activities.id, activityId)).limit(1);
+
+    if (item.length === 0) {
+      return res.status(404).json({ message: 'Activity not found' });
+    }
+
+    res.status(200).json({ data: item[0], message: 'Activity fetched successfully' });
+  } catch (error) {
+    console.error('Error in getActivity:', error);
+    next(error);
+  }
+};
 
 export const updateFavorite = async (req, res, next) => {
-    try {
-        const { userId, activityId, value } = req.body;
-        if (userId === undefined || activityId === undefined || value === undefined) {
-            const error = new Error('missing parameters');
-            error.status = 'missing parameters';
-            error.statusCode = 400;
-            throw (error);
-        }
-        else {
-            const user = await runQuery(querries.getuser, [userId]);
-            if (!user) {
-                const error = new Error('user not found');
-                error.status = 'wrong user id';
-                error.statusCode = 404;
-                throw (error);
-            }
-            else {
-                const favorites = user.rows[0].favorites;
-                if (value === 'true') {
-                    if (favorites.includes(activityId)) {
-                        res.status(200).json({ data: user.rows[0], message: 'favorites updated successfully' });
-                    }
-                    else {
-                        favorites.push(activityId);
-                        const updatedUser = await runQuery(querries.updateUserFavorites, [favorites, userId])
-                        if (!updatedUser) {
-                            const error = new Error('error while updating favorites');
-                            error.status = 'error while updating favorites';
-                            error.statusCode = 500;
-                            throw (error);
-                        }
-                        else {
-                            const userdata = await runQuery(querries.getuser, [userId]);
-                            res.status(200).json({ data: userdata.rows[0], message: 'favorites updated successfully' });
-                        }
-                    }
-                }
-                else if (value === 'false') {
-                    if (favorites.includes(activityId)) {
-                        const index = favorites.indexOf(activityId);
-                        favorites.splice(index, 1);
-                        const updatedUser = await runQuery(querries.updateUserFavorites, [favorites, userId]);
-                        if (!updatedUser) {
-                            const error = new Error('error while updating favorites');
-                            error.status = 'error while updating favorites';
-                            error.statusCode = 500;
-                            throw (error);
-                        }
-                        else {
-                            const userdata = await runQuery(querries.getuser, [userId]);
-                            res.status(200).json({ data: userdata.rows[0], message: 'favorites updated successfully' });
-                        }
-                    }
-                    else {
-                        res.status(200).json({ data: user.rows[0], message: 'favorites updated successfully' });
-                    }
-                }
-                else {
-                    const error = new Error('wrong value');
-                    error.status = 'wrong value';
-                    error.statusCode = 400;
-                    throw (error);
-                }
+  try {
+    const { userId, activityId, value } = req.body;
+    const parsedUserId = parseInt(userId || req.user?.id, 10);
+    const actIdStr = String(activityId);
 
-            }
-        }
-
-    } catch (error) {
-        const Error = error;
-        Error.status = error.status || 'error while updating favorites';
-        Error.statusCode = error.statusCode || 500;
-        next(Error);
+    if (!parsedUserId || !actIdStr || value === undefined) {
+      return res.status(400).json({ message: 'Missing parameters' });
     }
-}
+
+    const userRecord = await db.select().from(users).where(eq(users.id, parsedUserId)).limit(1);
+    if (userRecord.length === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    let favorites = userRecord[0].favorites || [];
+    const isAdding = value === true || value === 'true';
+
+    if (isAdding) {
+      if (!favorites.includes(actIdStr)) {
+        favorites = [...favorites, actIdStr];
+      }
+    } else {
+      favorites = favorites.filter((id) => id !== actIdStr);
+    }
+
+    const updated = await db
+      .update(users)
+      .set({ favorites })
+      .where(eq(users.id, parsedUserId))
+      .returning();
+
+    const { password: _, ...userSafe } = updated[0];
+
+    res.status(200).json({ data: userSafe, message: 'Favorites updated successfully' });
+  } catch (error) {
+    console.error('Error in updateFavorite:', error);
+    next(error);
+  }
+};

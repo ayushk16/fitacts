@@ -1,30 +1,33 @@
 import pg from 'pg';
 import dotenv from 'dotenv';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import * as schema from '../../db/schema.js';
+
 dotenv.config();
 
 const { Pool } = pg;
 
-const pool = new Pool({
-	user: process.env.DBUSER,
-	password: process.env.DBPASSWORD,
-	host: process.env.HOST,
-	database: process.env.DB,
-	port: process.env.DBPORT,
-    ssl: {
-        rejectUnauthorized: false, // Allows self-signed certificates
-      },
-});
+const isLocal = !process.env.HOST || process.env.HOST === 'localhost' || process.env.HOST === '127.0.0.1';
 
-const connectDb = async (pool) => {
-	await pool.connect((err) => {
-		if (err) {
-			console.error('connection error', err.stack);
-		} else {
-			console.log('connected\ndatabase:', pool.options.database);
-		}
-	});
+const poolConfig = {
+  user: process.env.DBUSER || 'ayush.',
+  password: process.env.DBPASSWORD || '',
+  host: process.env.HOST || 'localhost',
+  database: process.env.DB || 'fit_acts',
+  port: parseInt(process.env.DBPORT || '5432', 10),
 };
 
-connectDb(pool);
+if (!isLocal && process.env.DB_SSL !== 'false') {
+  poolConfig.ssl = {
+    rejectUnauthorized: false,
+  };
+}
 
+const pool = new Pool(poolConfig);
+
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle PostgreSQL client', err);
+});
+
+export const db = drizzle(pool, { schema });
 export default pool;

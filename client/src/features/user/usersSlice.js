@@ -2,15 +2,20 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import config from "../../functions/config";
 
+import { getUser } from "../../functions/tokenSet";
+
 const initialState = {
     loading: false,
     data: [],
     error: null,
 }
 
-export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
+export const fetchUsers = createAsyncThunk('users/fetchUsers', async (params) => {
+    const currentUserId = params?.currentUserId || getUser()?.id;
     return axios
-        .get(config.API_BASE_URL + '/signup/')
+        .get(config.API_BASE_URL + '/user/all', {
+            params: { currentUserId },
+        })
         .then((res) => res.data);
 });
 
@@ -36,7 +41,7 @@ const usersSlice = createSlice({
         })
         builder.addCase(fetchUsers.rejected, (state, action) => {
             state.loading = false;
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Failed to fetch users';
         })
     }
 })

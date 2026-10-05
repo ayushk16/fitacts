@@ -15,7 +15,7 @@ const createUserSlice = createSlice({
         },
         errorsignup: (state, action) => {
             state.data = {};
-            state.error = action.payload.message;
+            state.error = action.payload?.message || action.error?.message || 'Signup failed';
         },
         cleanUp: (state) => {
             state.data = {}

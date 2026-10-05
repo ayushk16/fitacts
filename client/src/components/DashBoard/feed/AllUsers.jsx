@@ -1,3 +1,4 @@
+import React, { useContext, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -7,226 +8,285 @@ import {
   Stack,
   Skeleton,
   Typography,
+  Avatar,
+  Chip,
 } from '@mui/material';
-import React, { useContext } from 'react';
+import { FaUserPlus, FaUserCheck, FaUserClock, FaEye, FaCheck } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
-
-import { unfollow } from '../../../features/user/followingSlice';
-import { addPending, removePending } from '../../../features/user/pendingSlice';
+import { useNavigate } from 'react-router-dom';
+import { fetchUsers } from '../../../features/user/usersSlice';
+import { addPending } from '../../../features/user/pendingSlice';
+import { unfollow, fetchFollowing } from '../../../features/user/followingSlice';
+import { accept, fetchRequest } from '../../../features/user/requestSlice';
 import { SnackBarContext } from '../../../App.jsx';
+import { useThemeMode } from '../../../theme/ThemeContext';
+import { getUser } from '../../../functions/tokenSet';
 
 const AllUsers = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { mode } = useThemeMode();
   const { handleOpenSnackBar } = useContext(SnackBarContext);
-  const users = useSelector((state) => {
-    return state.users;
-  });
-  const activities = useSelector((state) => {
-    return state.activities;
-  });
-  const following = useSelector((state) => {
-    return state.following;
-  });
-  const pending = useSelector((state) => {
-    return state.pending;
-  });
-  const userData = useSelector((state) => {
-    return state.user;
-  });
 
-  const followuser = (data) => {
-    dispatch(addPending(data)).then(handleOpenSnackBar('Request sent'));
-  };
-  const unfollowuser = (data) => {
-    dispatch(unfollow(data)).then(handleOpenSnackBar('Unfollowed'));
-  };
-  const removeFromPending = (data) => {
-    dispatch(removePending(data)).then(handleOpenSnackBar('Request removed'));
+  const reduxUser = useSelector((state) => state.user?.data?.data?.user || state.user?.data?.user);
+  const currentUser = reduxUser || getUser();
+
+  const usersState = useSelector((state) => state.users);
+  const followingState = useSelector((state) => state.following);
+  const pendingState = useSelector((state) => state.pending);
+  const activitiesState = useSelector((state) => state.activities);
+
+  useEffect(() => {
+    const effectiveUser = currentUser || getUser();
+    if (effectiveUser?.id) {
+      dispatch(fetchUsers({ currentUserId: effectiveUser.id }));
+      dispatch(fetchFollowing({ userId: effectiveUser.id }));
+      dispatch(fetchRequest({ userId: effectiveUser.id }));
+    }
+  }, [dispatch, currentUser?.id]);
+
+  const handleSendRequest = (targetUserId) => {
+    const effectiveUser = currentUser || getUser();
+    if (!effectiveUser?.id) return;
+    dispatch(
+      addPending({
+        followerid: effectiveUser.id,
+        followedid: targetUserId,
+      })
+    ).then(() => {
+      handleOpenSnackBar('Friend request sent!');
+      dispatch(fetchUsers({ currentUserId: effectiveUser.id }));
+    });
   };
 
-  if (users.loading || activities.loading || following.loading) {
+  const handleAcceptRequest = (targetUserId) => {
+    const effectiveUser = currentUser || getUser();
+    if (!effectiveUser?.id) return;
+    dispatch(
+      accept({
+        userId: effectiveUser.id,
+        followerId: targetUserId,
+      })
+    ).then(() => {
+      handleOpenSnackBar('Friend request accepted!');
+      dispatch(fetchUsers({ currentUserId: effectiveUser.id }));
+      dispatch(fetchFollowing({ userId: effectiveUser.id }));
+    });
+  };
+
+  const handleUnfollow = (targetUserId) => {
+    const effectiveUser = currentUser || getUser();
+    if (!effectiveUser?.id) return;
+    dispatch(
+      unfollow({
+        userId: effectiveUser.id,
+        followingId: targetUserId,
+      })
+    ).then(() => {
+      handleOpenSnackBar('Unfollowed user');
+      dispatch(fetchUsers({ currentUserId: effectiveUser.id }));
+      dispatch(fetchFollowing({ userId: effectiveUser.id }));
+    });
+  };
+
+  if (usersState.loading && (!usersState.data || usersState.data.length === 0)) {
     return (
-      <>
-        <Container>
-          <Grid
-            container
-            rowSpacing={2}
-            columnSpacing={{ xs: 3 }}
-            marginY={5}
-            spacing={2}
-          >
-            <Grid item xs={12} marginBottom={2}>
-              <Card
-                sx={{
-                  height: '100px',
-                  padding: '30px',
-                  display: 'flex',
-                  flexDirection: 'row',
-
-                  background: 'linear-gradient(to left, #F9F5D7, #fff)',
-                }}
-              >
-                <Skeleton width={'100%'} variant="wave" />
-              </Card>
-            </Grid>
-          </Grid>
-        </Container>
-      </>
+      <Container maxWidth="md" sx={{ mt: 4 }}>
+        {[1, 2, 3].map((n) => (
+          <Skeleton key={n} variant="rounded" height={80} sx={{ mb: 2, borderRadius: 3 }} />
+        ))}
+      </Container>
     );
   }
-  if (users.error !== null && users.error !== '') {
-    return <div>error fetching users</div>;
-  }
-  if (activities.error !== null && activities.error !== '') {
-    return <div>error fetching activities</div>;
-  }
-  if (following.error !== null && following.error !== '') {
-    return <div>error fetching following</div>;
-  } else {
-    return (
-      <>
-        <Container>
-          <Grid
-            container
-            rowSpacing={2}
-            columnSpacing={{ xs: 3 }}
-            marginY={5}
-            spacing={2}
-          >
-            {users.data &&
-              users.data.map((user, index) => {
-                return (
-                  <React.Fragment key={user.id}>
-                    {userData.data.data.user.id === user.id ? null : (
-                      <Grid item xs={12} key={user.id} marginBottom={2}>
-                        <Card
-                          sx={{
-                            height: '100px',
-                            padding: '30px',
-                            display: 'flex',
-                            flexDirection: 'row',
 
-                            background:
-                              'linear-gradient(to left, #F9F5D7, #fff)',
-                          }}
-                        >
-                          <Box
-                            width={'70%'}
-                            sx={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'space-evenly',
-                              alignItems: 'start',
-                              paddingX: '30px',
-                            }}
-                          >
-                            <Box>
-                              <Typography variant="h4">
-                                {user.firstname} {user.lastname}
-                              </Typography>
-                            </Box>
-                            <Box
-                              sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                color: '#A7727D',
-                              }}
-                            >
-                              {user.favorites &&
-                                user.favorites.map((fav, index) => {
-                                  return (
-                                    <Typography
-                                      variant="h6"
-                                      sx={{ marginRight: '20px' }}
-                                      key={index}
-                                    >
-                                      {
-                                        activities.data.find(
-                                          (activity) => activity.id === fav
-                                        ).name
-                                      }
-                                    </Typography>
-                                  );
-                                })}
-                            </Box>
-                          </Box>
-                          <Box
-                            width={'29%'}
-                            sx={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'space-evenly',
-                              alignItems: 'center',
-                            }}
-                          >
-                            <Stack>
-                              {following.data.find(
-                                (follow) => follow.followeduserid === user.id
-                              ) ? (
-                                <Button
-                                  variant="contained"
-                                  style={{
-                                    backgroundColor: '#B31312',
-                                    color: '#FAFDD6',
-                                  }}
-                                  onClick={(e) => {
-                                    unfollowuser({
-                                      userId: userData.data.data.user.id,
-                                      followingId: user.id,
-                                    });
-                                  }}
-                                >
-                                  Unfollow
-                                </Button>
-                              ) : pending.data.find(
-                                  (pendingUser) =>
-                                    pendingUser.followeduserid === user.id
-                                ) ? (
-                                <Button
-                                  variant="contained"
-                                  style={{
-                                    backgroundColor: '#EA906C',
-                                    color: 'white',
-                                  }}
-                                  onClick={(e) => {
-                                    removeFromPending({
-                                      userId: userData.data.data.user.id,
-                                      pendingId: user.id,
-                                    });
-                                  }}
-                                >
-                                  Remove Request
-                                </Button>
-                              ) : (
-                                <Button
-                                  variant="contained"
-                                  style={{
-                                    backgroundColor: '#B06161',
-                                    color: '#FAFDD6',
-                                  }}
-                                  onClick={(e) => {
-                                    followuser({
-                                      userId: userData.data.data.user.id,
-                                      pendingId: user.id,
-                                    });
-                                  }}
-                                >
-                                  Send Request
-                                </Button>
-                              )}
-                            </Stack>
-                          </Box>
-                        </Card>
-                      </Grid>
+  const otherUsers = (usersState.data || []).filter((u) => u.id !== currentUser?.id);
+
+  return (
+    <Container maxWidth="md" sx={{ mt: 3, pb: 8 }}>
+      <Typography variant="h5" fontWeight={800} sx={{ mb: 2.5 }}>
+        Athletes in the Community
+      </Typography>
+
+      {otherUsers.length === 0 ? (
+        <Box sx={{ p: 6, textAlign: 'center' }}>
+          <Typography color="text.secondary">No other athletes found.</Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={2}>
+          {otherUsers.map((user) => {
+            const isFriend =
+              user.relationship === 'friend' ||
+              (followingState.data || []).some(
+                (f) => (f.id === user.id || f.followeduserid === user.id) && f.state === 'followed'
+              );
+
+            const isPendingSent =
+              user.relationship === 'pending_sent' ||
+              (pendingState.data || []).some(
+                (p) => (p.id === user.id || p.followeduserid === user.id) && p.state === 'pending'
+              );
+
+            const isPendingReceived = user.relationship === 'pending_received';
+
+            return (
+              <Grid item xs={12} key={user.id}>
+                <Card
+                  sx={{
+                    p: 2.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 2,
+                    bgcolor: mode === 'dark' ? '#111827' : '#ffffff',
+                    borderRadius: 3.5,
+                    border:
+                      isFriend
+                        ? '1px solid rgba(16, 185, 129, 0.3)'
+                        : mode === 'dark'
+                        ? '1px solid rgba(255, 255, 255, 0.08)'
+                        : '1px solid rgba(0, 0, 0, 0.08)',
+                  }}
+                >
+                  {/* Left: Avatar + Info */}
+                  <Box
+                    sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' }}
+                    onClick={() => navigate(`/profile/${user.username || user.firstname}`)}
+                  >
+                    <Avatar
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        bgcolor: mode === 'dark' ? '#6366f1' : '#4f46e5',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {user.firstname?.charAt(0).toUpperCase()}
+                    </Avatar>
+
+                    <Box>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Typography variant="subtitle1" fontWeight={700}>
+                          {user.firstname} {user.lastname}
+                        </Typography>
+                        {isFriend && (
+                          <Chip
+                            icon={<FaUserCheck fontSize={11} />}
+                            label="Friend"
+                            size="small"
+                            color="success"
+                            variant="outlined"
+                            sx={{ height: 20, fontSize: '0.68rem', fontWeight: 700 }}
+                          />
+                        )}
+                        {isPendingSent && (
+                          <Chip
+                            label="Request Sent"
+                            size="small"
+                            color="warning"
+                            variant="outlined"
+                            sx={{ height: 20, fontSize: '0.68rem', fontWeight: 600 }}
+                          />
+                        )}
+                        {isPendingReceived && (
+                          <Chip
+                            label="Pending your approval"
+                            size="small"
+                            color="info"
+                            variant="outlined"
+                            sx={{ height: 20, fontSize: '0.68rem', fontWeight: 600 }}
+                          />
+                        )}
+                      </Stack>
+
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                        @{user.username || user.firstname.toLowerCase()}
+                      </Typography>
+
+                      {/* Favorite Activities */}
+                      {user.favorites && user.favorites.length > 0 && (
+                        <Stack direction="row" spacing={0.5} sx={{ mt: 0.8 }} flexWrap="wrap">
+                          {user.favorites.map((favId) => {
+                            const act = (activitiesState.data || []).find(
+                              (a) => String(a.id) === String(favId)
+                            );
+                            return act ? (
+                              <Chip
+                                key={favId}
+                                label={act.name}
+                                size="small"
+                                variant="outlined"
+                                sx={{ fontSize: '0.7rem', height: 20, mr: 0.5, mb: 0.5 }}
+                              />
+                            ) : null;
+                          })}
+                        </Stack>
+                      )}
+                    </Box>
+                  </Box>
+
+                  {/* Right: Actions */}
+                  <Stack direction="row" spacing={1.5} alignItems="center">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      startIcon={<FaEye />}
+                      onClick={() => navigate(`/profile/${user.username || user.firstname}`)}
+                      sx={{ borderRadius: 2.5 }}
+                    >
+                      Profile
+                    </Button>
+
+                    {isFriend ? (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="error"
+                        onClick={() => handleUnfollow(user.id)}
+                        sx={{ borderRadius: 2.5 }}
+                      >
+                        Unfriend
+                      </Button>
+                    ) : isPendingReceived ? (
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="success"
+                        startIcon={<FaCheck />}
+                        onClick={() => handleAcceptRequest(user.id)}
+                        sx={{ borderRadius: 2.5 }}
+                      >
+                        Accept
+                      </Button>
+                    ) : isPendingSent ? (
+                      <Chip
+                        icon={<FaUserClock fontSize={12} />}
+                        label="Requested"
+                        variant="outlined"
+                        size="small"
+                        color="warning"
+                      />
+                    ) : (
+                      <Button
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                        startIcon={<FaUserPlus />}
+                        onClick={() => handleSendRequest(user.id)}
+                        sx={{ borderRadius: 2.5 }}
+                      >
+                        Connect
+                      </Button>
                     )}
-                  </React.Fragment>
-                );
-              })}
-          </Grid>
-        </Container>
-      </>
-    );
-  }
+                  </Stack>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+      )}
+    </Container>
+  );
 };
 
 export default AllUsers;

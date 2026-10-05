@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-
 import {
   Container,
   Grid,
@@ -11,168 +10,131 @@ import {
   Stack,
   Button,
   Skeleton,
+  Avatar,
 } from '@mui/material';
-import {
-  setFollowedUser,
-  clearFollowedUser,
-} from '../../../features/user/followedUserSlice';
-
+import { FaUserTimes, FaEye } from 'react-icons/fa';
 import { SnackBarContext } from '../../../App.jsx';
+import { unfollow, fetchFollowing } from '../../../features/user/followingSlice';
+import { useThemeMode } from '../../../theme/ThemeContext';
 
-import { unfollow } from '../../../features/user/followingSlice';
+import { getUser } from '../../../functions/tokenSet';
 
 const FollowingUsers = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { mode } = useThemeMode();
   const { handleOpenSnackBar } = useContext(SnackBarContext);
-  const followingData = useSelector((state) => {
-    return state.following;
-  });
-  const userData = useSelector((state) => {
-    return state.user;
-  });
+
+  const followingData = useSelector((state) => state.following);
+  const reduxUser = useSelector((state) => state.user?.data?.data?.user || state.user?.data?.user);
+  const userData = reduxUser || getUser();
+
+  React.useEffect(() => {
+    if (userData?.id) {
+      dispatch(fetchFollowing({ userId: userData.id }));
+    }
+  }, [dispatch, userData?.id]);
 
   if (followingData.loading) {
     return (
-      <>
-        <Container>
-          <Grid
-            container
-            rowSpacing={2}
-            columnSpacing={{ xs: 3 }}
-            marginY={5}
-            spacing={2}
-          >
-            <Grid item xs={12} marginBottom={2}>
+      <Container maxWidth="md" sx={{ mt: 3 }}>
+        {[1, 2].map((n) => (
+          <Skeleton key={n} variant="rounded" height={80} sx={{ mb: 2, borderRadius: 3 }} />
+        ))}
+      </Container>
+    );
+  }
+
+  const list = followingData.data || [];
+
+  return (
+    <Container maxWidth="md" sx={{ mt: 3, pb: 8 }}>
+      <Typography variant="h5" fontWeight={800} sx={{ mb: 2.5 }}>
+        Friends & Following ({list.length})
+      </Typography>
+
+      {list.length === 0 ? (
+        <Box sx={{ p: 6, textAlign: 'center' }}>
+          <Typography color="text.secondary">
+            You are not following anyone yet. Visit "All Users" to discover athlete friends!
+          </Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={2}>
+          {list.map((user) => (
+            <Grid item xs={12} key={user.id}>
               <Card
                 sx={{
-                  height: '100px',
-                  padding: '30px',
+                  p: 2.5,
                   display: 'flex',
-                  flexDirection: 'row',
-
-                  background: 'linear-gradient(to left, #F9F5D7, #fff)',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: 2,
+                  bgcolor: mode === 'dark' ? '#111827' : '#ffffff',
+                  borderRadius: 3.5,
                 }}
               >
-                <Skeleton width={'100%'} variant="wave" />
+                <Box
+                  sx={{ display: 'flex', alignItems: 'center', gap: 2, cursor: 'pointer' }}
+                  onClick={() => navigate(`/profile/${user.username || user.firstname}`)}
+                >
+                  <Avatar
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      bgcolor: mode === 'dark' ? '#6366f1' : '#4f46e5',
+                      fontWeight: 700,
+                    }}
+                  >
+                    {user.firstname?.charAt(0).toUpperCase()}
+                  </Avatar>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight={700}>
+                      {user.firstname} {user.lastname}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      @{user.username || user.firstname.toLowerCase()}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Stack direction="row" spacing={1.5}>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<FaEye />}
+                    onClick={() => navigate(`/profile/${user.username || user.firstname}`)}
+                    sx={{ borderRadius: 2.5 }}
+                  >
+                    Profile
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    startIcon={<FaUserTimes />}
+                    sx={{ borderRadius: 2.5 }}
+                    onClick={() => {
+                      if (!userData) return;
+                      dispatch(
+                        unfollow({
+                          userId: userData.id,
+                          followingId: user.id || user.followeduserid,
+                        })
+                      ).then(() => handleOpenSnackBar('Unfollowed'));
+                    }}
+                  >
+                    Unfollow
+                  </Button>
+                </Stack>
               </Card>
             </Grid>
-          </Grid>
-        </Container>
-      </>
-    );
-  }
-  if (followingData.error !== null && followingData.error !== '') {
-    return (
-      <>
-        <Container>
-          <Stack justifyContent={'center'} alignItems={'center'}>
-            <Typography variant="h3" marginTop={30}>
-              error fetching data
-            </Typography>
-          </Stack>
-        </Container>
-      </>
-    );
-  } else {
-    return (
-      <>
-        {followingData.data.length === 0 ? (
-          <Container>
-            <Stack justifyContent={'center'} alignItems={'center'}>
-              <Typography variant="h3" marginTop={30}>
-                You are not following anyone yet
-              </Typography>
-            </Stack>
-          </Container>
-        ) : (
-          <Container>
-            <Grid
-              container
-              rowSpacing={2}
-              columnSpacing={{ xs: 3 }}
-              marginTop={5}
-            >
-              {followingData.data.map((user, index) => {
-                return (
-                  <Grid item xs={12} key={user.id} marginBottom={2}>
-                    <Card
-                      sx={{
-                        height: '100px',
-                        padding: '30px',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        cursor: 'pointer',
-                        background: 'linear-gradient(to left, #F9F5D7, #fff)',
-                      }}
-                    >
-                      <Box
-                        width={'70%'}
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-evenly',
-                          alignItems: 'start',
-                          paddingX: '30px',
-                        }}
-                      >
-                        <Box>
-                          <Typography
-                            variant="h4"
-                            onClick={() => {
-                              dispatch(
-                                setFollowedUser({
-                                  data: {
-                                    name: `${user.firstname} ${user.lastname}`,
-                                    id: `${user.id}`,
-                                  },
-                                })
-                              );
-                              navigate(`/events/${user.firstname}`);
-                            }}
-                          >
-                            {user.firstname} {user.lastname}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box
-                        width={'29%'}
-                        sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-evenly',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <Stack>
-                          <Button
-                            style={{
-                              backgroundColor: '#B31312',
-                              color: '#FAFDD6',
-                            }}
-                            onClick={(e) => {
-                              dispatch(
-                                unfollow({
-                                  userId: userData.data.data.user.id,
-                                  followingId: user.id,
-                                })
-                              ).then(handleOpenSnackBar('unfollowed'));
-                            }}
-                          >
-                            Unfollow
-                          </Button>
-                        </Stack>
-                      </Box>
-                    </Card>
-                  </Grid>
-                );
-              })}
-            </Grid>
-          </Container>
-        )}
-      </>
-    );
-  }
+          ))}
+        </Grid>
+      )}
+    </Container>
+  );
 };
 
 export default FollowingUsers;
